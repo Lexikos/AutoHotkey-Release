@@ -1,0 +1,30 @@
+
+1 24 installer.manifest
+
+1 ICON setup.ico
+
+#include "F:\Projects\AutoHotkey\AutoHotkey_L\source\ahkversion.h"
+
+1 VERSIONINFO
+FILEVERSION     AHK_VERSION_N
+PRODUCTVERSION  AHK_VERSION_N
+FILEOS          0x40004
+FILETYPE        0x1
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "040904b0"
+        {
+            VALUE "FileDescription",    "AutoHotkey_L Setup"
+            VALUE "FileVersion",        AHK_VERSION
+            VALUE "LegalCopyright",     "Copyright (c) 2012 Steve Gray"
+            VALUE "ProductName",        "AutoHotkey_L"
+            VALUE "ProductVersion",     AHK_VERSION
+        }
+    }
+
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0409 0x04B0
+    }
+}

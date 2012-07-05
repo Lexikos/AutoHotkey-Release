@@ -1,0 +1,23 @@
+junk
+
+# Local shortcuts
+*.lnk
+
+# Install data files, utils etc.
+# should be sourced from elsewhere
+*.exe
+*.chm
+include/license.txt
+include/Compiler/*.bin
+
+# Generated script
+include/Installer.ahk
+
+# 7-zip "extras" package
+tools/7z
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
