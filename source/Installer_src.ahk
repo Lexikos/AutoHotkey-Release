@@ -174,11 +174,6 @@ DetermineVersion() {
     DefaultIsHostApp := !ErrorLevel
     RegRead v, HKCR, %FileTypeKey%\Shell\Open\Command
     DefaultToUTF8 := InStr(v, " /CP65001 ") != 0
-        ; If the existing installation was a version of AHK which
-        ; interpreted scripts as UTF-8 by default, try to keep it
-        ; that way to avoid some potential problems:
-        ; || (CurrentType != "ANSI"
-            ; && CurrentVersion && CurrentVersion <= "1.1.07.03")
 }
 
 InitUI() {
