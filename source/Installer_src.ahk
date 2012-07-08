@@ -24,8 +24,8 @@ if !A_IsAdmin && !%False%
 }
 
 SourceDir := A_ScriptDir
-StealthMode := false
-StealthErrors := 0
+SilentMode := false
+SilentErrors := 0
 
 if 0 > 0
 if 1 = /kill ; For internal use.
@@ -80,7 +80,7 @@ DetermineVersion()
 
 Loop %0%
     if %A_Index% = /S
-        StealthMode := true
+        SilentMode := true
     else if %A_Index% = /x64
         DefaultType = x64
     else if %A_Index% = /ANSI
@@ -88,14 +88,14 @@ Loop %0%
     else if InStr(%A_Index%, "/D=") = 1
         DefaultPath := SubStr(%A_Index%, 4)
     else if (%A_Index% = "/U") {
-        StealthMode := true
+        SilentMode := true
         Uninstall()
         ExitApp
     }
 
-if StealthMode {
+if SilentMode {
     QuickInstall()
-    ExitApp % StealthErrors
+    ExitApp % SilentErrors
 }
 
 ;#debug
@@ -306,7 +306,7 @@ getWindow() {
 
 ErrorExit(errMsg) {
     global
-    if StealthMode
+    if SilentMode
         ExitApp 1
     MsgBox 16, AutoHotkey_L Setup, %errMsg%
     Exit
@@ -336,8 +336,8 @@ CloseScriptsEtc(installdir, actionToContinue) {
         titles .= "  -  " title "`n"
     }
     if (titles != "") {
-        global StealthMode
-        if !StealthMode {
+        global SilentMode
+        if !SilentMode {
             MsgBox 49, AutoHotkey_L Setup,
             (LTrim
             Setup needs to close the following script(s):
@@ -370,12 +370,12 @@ GetErrorMessage(error_code="") {
 
 switchPage(page) {
     global
-    if !StealthMode
+    if !SilentMode
         getWindow().switchPage(page)
 }
 
 UpdateStatus(status) {
-    ; if !StealthMode
+    ; if !SilentMode
         ; getWindow().install_status.innerText := status
 }
 
@@ -593,7 +593,7 @@ Uninstall() {
     }
     
     Gui Cancel
-    if !StealthMode
+    if !SilentMode
         MsgBox 64, AutoHotkey_L Setup
             , Setup will now close to complete the uninstallation.
     
@@ -803,8 +803,8 @@ InstallFile(file, target="", exitAppOnAbort=false) {
             ; If successful (no exception thrown):
             return
         }
-        if StealthMode {
-            StealthErrors += 1
+        if SilentMode {
+            SilentErrors += 1
             return  ; Continue anyway.
         }
         local error_message := RTrim(GetErrorMessage(), "`r`n")
