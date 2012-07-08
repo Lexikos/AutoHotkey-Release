@@ -81,9 +81,11 @@ DetermineVersion()
 Loop %0%
     if %A_Index% = /S
         SilentMode := true
-    else if %A_Index% = /x64
+    else if %A_Index% = /U32
+        DefaultType = Unicode
+    else if %A_Index% in /U64,/x64
         DefaultType = x64
-    else if %A_Index% = /ANSI
+    else if %A_Index% in /A32,/ANSI
         DefaultType = ANSI
     else if InStr(%A_Index%, "/D=") = 1
         DefaultPath := SubStr(%A_Index%, 4)
