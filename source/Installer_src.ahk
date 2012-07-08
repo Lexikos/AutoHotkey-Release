@@ -65,15 +65,14 @@ ProductWebsite := "http://l.autohotkey.net/"
 
 EnvGet ProgramW6432, ProgramW6432
 DefaultPath := (ProgramW6432 ? ProgramW6432 : A_ProgramFiles) "\AutoHotkey"
-DefaultType := is64bitOS() ? "x64" : "Unicode"
+DefaultType := A_Is64bitOS ? "x64" : "Unicode"
 DefaultStartMenu := "AutoHotkey"
 DefaultCompiler := true
 DefaultDragDrop := true
 DefaultToUTF8 := false
 DefaultIsHostApp := false
-SoftwareKey := "SOFTWARE\" (A_PtrSize=8 ? "Wow6432Node" : "")
-AutoHotkeyKey := SoftwareKey "\AutoHotkey"
-UninstallKey := SoftwareKey "\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotkey"
+AutoHotkeyKey := "SOFTWARE\AutoHotkey"
+UninstallKey := "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotkey"
 FileTypeKey := "AutoHotkeyScript"
 
 DetermineVersion()
@@ -132,13 +131,20 @@ ExitApp
 DetermineVersion() {
     global
     local url, v
-    try {
+    ; This first section has two purposes:
+    ;  1) Determine the location of any current installation.
+    ;  2) Determine which view of the registry it was installed into
+    ;     (only applicable if the OS is 64-bit).
+    CurrentRegView := ""
+    Loop % (A_Is64bitOS ? 2 : 1) {
+        SetRegView % 32*A_Index
         RegRead CurrentPath, HKLM, %AutoHotkeyKey%, InstallDir
-        RegRead CurrentVersion, HKLM, %UninstallKey%, DisplayVersion
-        RegRead url, HKLM, %UninstallKey%, URLInfoAbout
-        if !FileExist(CurrentPath)
-            throw 404
-    } catch {
+        if !ErrorLevel {
+            CurrentRegView := A_RegView
+            break
+        }
+    }
+    if ErrorLevel {
         CurrentName := ""
         CurrentVersion := ""
         CurrentType := ""
@@ -146,7 +152,9 @@ DetermineVersion() {
         CurrentStartMenu := ""
         return
     }
+    RegRead CurrentVersion, HKLM, %AutoHotkeyKey%, Version
     RegRead CurrentStartMenu, HKLM, %AutoHotkeyKey%, StartMenuFolder
+    RegRead url, HKLM, %UninstallKey%, URLInfoAbout
     ; Identify by URL since uninstaller display name is the same:
     if (url = "http://www.autohotkey.net/~Lexikos/AutoHotkey_L/"
         || url = "http://l.autohotkey.net/")
@@ -196,9 +204,9 @@ InitUI() {
         Sleep 10
     ;#end
     w := wb.Document.parentWindow
-    w.initOptions(CurrentName, CurrentVersion, DefaultType
+    w.initOptions(CurrentName, CurrentVersion, CurrentType
                 , ProductVersion, DefaultPath, DefaultStartMenu
-                , is64bitOS())
+                , DefaultType, A_Is64bitOS)
     if (A_ScriptDir = DefaultPath) {
         w.installdir.disabled := true
         w.installdir_browse.disabled := true
@@ -214,7 +222,7 @@ InitUI() {
     w.enabledragdrop.checked := DefaultDragDrop
     w.separatebuttons.checked := DefaultIsHostApp
     ; w.defaulttoutf8.checked := DefaultToUTF8
-    if !is64bitOS()
+    if !A_Is64bitOS
         w.it_x64.style.display := "None"
     if A_OSVersion in WIN_2000,WIN_2003,WIN_XP ; i.e. not WIN_7, WIN_8 or a future OS.
         w.separatebuttons.parentNode.style.display := "none"
@@ -311,12 +319,6 @@ ErrorExit(errMsg) {
         ExitApp 1
     MsgBox 16, AutoHotkey_L Setup, %errMsg%
     Exit
-}
-
-is64bitOS() {
-    return (A_PtrSize=8)
-        || DllCall("IsWow64Process", "ptr", DllCall("GetCurrentProcess"), "int*", isWow64 := 0)
-        && isWow64
 }
 
 CloseScriptsEtc(installdir, actionToContinue) {
@@ -552,6 +554,8 @@ Uninstall() {
     /*  Registry
      */
     
+    SetRegView % CurrentRegView
+    
     RegDelete HKLM, %UninstallKey%
     RegDelete HKLM, %AutoHotkeyKey%
     RegDelete HKCU, %AutoHotkeyKey%  ; Created by Ahk2Exe.
@@ -560,7 +564,7 @@ Uninstall() {
     RegDelete HKCR, %FileTypeKey%
     RegDelete HKCR, Applications\AutoHotkey.exe
     
-    RegDelete HKLM, %SoftwareKey%\Microsoft\Windows\CurrentVersion\App Paths\AutoHotkey.exe
+    RegDelete HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AutoHotkey.exe
     
     /*  Files
      */
@@ -573,6 +577,10 @@ Uninstall() {
     FileDelete AutoHotkey.chm
     FileDelete license.txt
     
+    ; This file would only exist if an older version of AutoHotkey_L
+    ; installed it:
+    FileDelete Update.ahk
+    
     ; Although the old installer was designed not to overwrite this in
     ; case the user made customizations, the old uninstaller deletes it:
     FileDelete %A_WinDir%\ShellNew\Template.ahk
@@ -582,6 +590,10 @@ Uninstall() {
     FileDelete %ProductName% Website.url
     if (CurrentStartMenu != "")  ; Must not remove A_ProgramsCommon itself!
         FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu%, 1
+    
+    if !SilentMode
+        MsgBox 64, AutoHotkey_L Setup
+            , Setup will now close to complete the uninstallation.
     
     ; Try deleting it normally first, in case this script is running
     ; on an external exe (such as via a downloaded installer).
@@ -594,9 +606,6 @@ Uninstall() {
     }
     
     Gui Cancel
-    if !SilentMode
-        MsgBox 64, AutoHotkey_L Setup
-            , Setup will now close to complete the uninstallation.
     
     ; Use cmd.exe to work around the fact that AutoHotkey.exe is locked
     ; while it is still running.  Having a second instance of the script
@@ -626,7 +635,7 @@ _Install(opt) {
     if opt.type = "Unicode" {
         exefile := "AutoHotkeyU32.exe"
         binfile := "Unicode 32-bit.bin"
-    } else if opt.type = "x64" && is64bitOS() {
+    } else if opt.type = "x64" && A_Is64bitOS {
         exefile := "AutoHotkeyU64.exe"
         binfile := "Unicode 64-bit.bin"
     } else if opt.type = "ANSI" {
@@ -641,29 +650,45 @@ _Install(opt) {
         catch
             ErrorExit("Unable to create installation directory ('" opt.path "')")
     
+    CloseScriptsEtc(CurrentPath, "installation")
+    
     /*  Preparation
      */
     
-    CloseScriptsEtc(CurrentPath, "installation")
+    SetWorkingDir % opt.path
     
     switchPage("wait")
+    
+    ; Remove old files which are no longer relevant.
+    if (CurrentName = "AutoHotkey") {
+        FileDelete Compiler\README.txt
+        FileDelete Compiler\upx.exe
+    }
+    FileDelete uninst.exe
+    
+    if A_Is64bitOS {
+        ; For xx-bit installs, write to the xx-bit view of the registry.
+        local regView := (opt.type = "x64") ? 64 : 32
+        if (CurrentRegView && CurrentRegView != regView) {
+            ; Clean up old keys in the other registry view.
+            SetRegView % CurrentRegView
+            RegDelete HKLM, %UninstallKey%
+            RegDelete HKLM, %AutoHotkeyKey%
+            RegDelete HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AutoHotkey.exe
+            RegDelete HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe
+        }
+        SetRegView % regView
+    }
     
     /*  Install Files
      */
     
     UpdateStatus("Copying files")
     
-    SetWorkingDir % opt.path
-    
     ; If the following is "true", we have no source files to install,
     ; but we may have settings to change.  This includes replacing the
     ; binary files with %exefile% and %binfile%.
     installInPlace := (A_WorkingDir = A_ScriptDir)
-    
-    ; Remove old AutoHotkey Basic files which are no longer relevant.
-    FileDelete Compiler\README.txt
-    FileDelete Compiler\upx.exe
-    FileDelete uninst.exe
     
     ; Install all unique files.
     if !installInPlace {
@@ -767,16 +792,16 @@ _Install(opt) {
     else
         RegDelete HKCR, %FileTypeKey%\ShellEx
     
-    RegWrite REG_SZ, HKLM, %SoftwareKey%\Microsoft\Windows\CurrentVersion\App Paths\AutoHotkey.exe,, %A_WorkingDir%\AutoHotkey.exe
+    RegWrite REG_SZ, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AutoHotkey.exe,, %A_WorkingDir%\AutoHotkey.exe
     if opt.ahk2exe
-        RegWrite REG_SZ, HKLM, %SoftwareKey%\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe,, %A_WorkingDir%\Compiler\Ahk2Exe.exe
+        RegWrite REG_SZ, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe,, %A_WorkingDir%\Compiler\Ahk2Exe.exe
     
     RegDelete HKCR, Applications\AutoHotkey.exe
     if opt.isHostApp
         RegWrite REG_SZ, HKCR, Applications\AutoHotkey.exe, IsHostApp
     
     ; Write uninstaller info.
-    RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayName, %ProductName% v%ProductVersion%
+    RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayName, %ProductName% %ProductVersion%
     RegWrite REG_SZ, HKLM, %UninstallKey%, UninstallString, "%A_WorkingDir%\AutoHotkey.exe" "%A_WorkingDir%\Installer.ahk"
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayIcon, %A_WorkingDir%\AutoHotkey.exe
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayVersion, %ProductVersion%
@@ -832,7 +857,7 @@ InstallFile(file, target="", exitAppOnAbort=false) {
 InstallMainFiles() {
     InstallFile("AutoHotkeyU32.exe")
     InstallFile("AutoHotkeyA32.exe")
-    if is64bitOS()
+    if A_Is64bitOS
         InstallFile("AutoHotkeyU64.exe")
     
     InstallFile("AU3_Spy.exe")
@@ -863,7 +888,7 @@ RemoveCompiler() {
     FileDelete Compiler\Unicode 64-bit.bin
     FileDelete Compiler\AutoHotkeySC.bin
     FileRemoveDir Compiler  ; Only if empty.    
-    RegDelete HKLM, %SoftwareKey%\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe
+    RegDelete HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe
 }
 
 ;#debug
