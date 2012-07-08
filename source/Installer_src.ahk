@@ -70,7 +70,7 @@ DefaultStartMenu := "AutoHotkey"
 DefaultCompiler := true
 DefaultDragDrop := true
 DefaultToUTF8 := false
-DefaultIsHostApp := true
+DefaultIsHostApp := false
 SoftwareKey := "SOFTWARE\" (A_PtrSize=8 ? "Wow6432Node" : "")
 AutoHotkeyKey := SoftwareKey "\AutoHotkey"
 UninstallKey := SoftwareKey "\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotkey"
