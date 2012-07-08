@@ -87,6 +87,10 @@ Loop %0%
         DefaultType = ANSI
     else if InStr(%A_Index%, "/D=") = 1
         DefaultPath := SubStr(%A_Index%, 4)
+    else if (%A_Index% = "/?") {
+        ViewHelp("/docs/Scripts.htm#install")
+        ExitApp
+    }
     else if (%A_Index% = "/U") {
         SilentMode := true
         Uninstall()
