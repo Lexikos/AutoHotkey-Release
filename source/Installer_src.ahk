@@ -93,7 +93,7 @@ Loop %0%
         ViewHelp("/docs/Scripts.htm#install")
         ExitApp
     }
-    else if (%A_Index% = "/U") {
+    else if (%A_Index% = "/Uninstall") {
         SilentMode := true
         Uninstall()
         ExitApp
