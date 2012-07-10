@@ -283,6 +283,7 @@ wb_BeforeNavigate2(wb, url, flags, frame, postdata, headers, cancel) {
     static func, prms
     func := m1
     prms := []
+    StringReplace m2, m2, `%20, %A_Space%, All
     Loop Parse, m2, `,
         prms.Insert(A_LoopField)
     ; Cancel: don't load the error page (or execute ahk://whatever
