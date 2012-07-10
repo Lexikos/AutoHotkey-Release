@@ -15,6 +15,10 @@ if WinActive(A_ScriptFullPath) || %True% = "/persist" {
 packageit:
 Sleep 200
 FileRead htm, source\Installer_src.htm
+FileRead css, source\Installer_src.css
+FileRead js,  source\Installer_src.js
+htm := RegExReplace(htm, "<link rel=""StyleSheet"".*?>", "<style type=""text/css"">`n" css "`n</style>")
+htm := RegExReplace(htm, "<script .*?\K src=.*?>", ">`n" js)
 FileRead ahk, source\Installer_src.ahk
 ahk := RegExReplace(ahk, "`ams)((?<=`r`n)`r`n)?^\s*;#debug.*?^\s*;#end\R")
 ahk := RegExReplace(ahk, "`am)^FileRead html,.*", "

@@ -1,0 +1,159 @@
+body {
+	font-family: sans-serif;
+	font-size: 15px;
+	overflow: hidden;
+	cursor: default;
+	padding: 0;
+	margin: 0;
+}
+h1 {
+	font-size: 37px;
+	font-weight: normal;
+	color: #405871;
+	background-color: white;
+	padding: 15px 25px;
+	margin: -15px -15px 0 -15px;
+	position: relative; /* for IE6 */
+}
+a:link, a:visited {
+	color: #0066CC;
+}
+.options {
+	padding-right: 8%;
+	margin-left: 2em;
+}
+.options a {
+	display: block;
+	padding: 0.8em 1em;
+	margin: 0.3em 0;
+	/* for positioning of marker */
+	position: relative;
+	width: 100%;
+}
+.marker {
+	position: absolute;
+	right: 10px;
+	font-size: 25px;
+	top: 50%;
+	margin-top: -17px;
+}
+a.button,
+.options a {
+	cursor: hand;
+	border: 1px solid ButtonShadow;
+	background-color: white;
+	text-decoration: none;
+}
+a.button {
+	padding: .3em .5em;
+}
+a.button,
+a.button:visited,
+.options a,
+.options a:visited {
+	color: #405871;
+}
+a.button:hover,
+a.button:active,
+.options a:hover,
+.options a:active {
+	background-color: #F8F8FF;
+	border-color: #4774B2;
+	color: #4774B2;
+}
+.options a:active {
+	position: relative;
+	left: 3px;
+}
+.options p {
+	font-size: 80%;
+	margin: 0.2em 1em;
+}
+.license {
+	position: absolute;
+	bottom: 1em;
+	font-size: 80%;
+}
+.small {
+	font-size: 90%;
+}
+.page {
+	width: 600px; /* normally 100% within a 600px gui */
+	height: 100%;
+	position: relative;
+	padding: 15px;
+	display: none; /* overridden by script */
+	/*background-color: #eee;*/
+	background-color: ButtonFace;
+	color: ButtonText;
+}
+.pager .page {
+	padding: 15px 0;
+	width: 100%; /* for demo in IE */
+}
+.nav {
+	background-color: #405871;
+	color: white;
+	margin: 0 -15px;
+	padding: .2em 20px;
+}
+.nav a, .nav a:visited {
+	color: #ddd;
+	text-decoration: none;
+}
+.nav a:hover {
+	color: #fff;
+}
+.nav .current {
+	color: white;
+	font-weight: bold;
+	cursor: default;
+}
+.warning {
+	display: none;
+	background-color: #fee;
+	color: #800;
+	border: 1px solid #800;
+	padding: 0.5em;
+	margin: -0.5em 0 1em;
+}
+.textbox {
+	border: 1px solid ButtonShadow;
+	padding: 0 0.4em;
+	height: 29px;
+	line-height: 27px;
+	vertical-align: top;
+	margin-top: 9px;
+}
+#installdir, #startmenu {
+	width: 70%;
+}
+#installdir_browse, #startmenu_browse, #startmenu_del {
+	height: 28px;
+	margin-top: 10px;
+}
+label {
+	padding: 5px;
+	display: block;
+	width: 90%;
+}
+label.indent {
+	padding-left: 30px;
+}
+label p {
+	font-size: 85%;
+	margin: .3em 25px;
+	color: #405871;
+}
+#install_button, #next-button {
+	position: absolute;
+	top: 250px;
+	right: 5px;
+	width: 5em;
+	font-size: 125%;
+	text-align: center;
+}
+#installcompilernote {
+	display: none;
+	font-weight: bold;
+}
