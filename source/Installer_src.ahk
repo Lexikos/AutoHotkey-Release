@@ -324,19 +324,30 @@ ErrorExit(errMsg) {
 CloseScriptsEtc(installdir, actionToContinue) {
     titles := ""
     DetectHiddenWindows On
+    close := []
     WinGet w, List, ahk_class AutoHotkey
     Loop % w {
         ; Exclude the install script.
         if (w%A_Index% = A_ScriptHwnd)
             continue
-        ; Only include scripts running on an exe within installdir.
+        ; Determine if the script actually needs to be terminated.
         WinGet exe, ProcessPath, % "ahk_id " w%A_Index%
-        if (exe != "" && InStr(exe, installdir "\") != 1)
-            continue
+        if (exe != "") {
+            ; Exclude external executables.
+            if InStr(exe, installdir "\") != 1
+                continue
+            ; The main purpose of this next check is to avoid closing
+            ; SciTE4AutoHotkey's toolbar, but also may be helpful for
+            ; other situations.
+            exe := SubStr(exe, StrLen(installdir) + 2)
+            if !RegExMatch(exe, "i)^(AutoHotkey(A32|U32|U64)?\.exe|Compiler\\Ahk2Exe.exe)$")
+                continue
+        }        
         ; Append script path to the list.
         WinGetTitle title, % "ahk_id " w%A_Index%
         title := RegExReplace(title, " - AutoHotkey v.*")
         titles .= "  -  " title "`n"
+        close.Insert(w%A_Index%)
     }
     if (titles != "") {
         global SilentMode
@@ -351,9 +362,8 @@ CloseScriptsEtc(installdir, actionToContinue) {
                 Exit
         }
         ; Close script windows (typically causing them to exit).
-        Loop % w
-            if (w%A_Index% != A_ScriptHwnd)
-                WinClose % "ahk_id " w%A_Index%
+        Loop % close.MaxIndex()
+            WinClose % "ahk_id " close[A_Index]
     }
     ; Close all help file and Window Spy windows automatically:
     GroupAdd autoclosegroup, AutoHotkey_L Help ahk_class HH Parent
