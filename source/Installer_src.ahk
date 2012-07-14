@@ -86,8 +86,10 @@ Loop %0%
         DefaultType = x64
     else if %A_Index% in /A32,/ANSI
         DefaultType = ANSI
-    else if InStr(%A_Index%, "/D=") = 1
-        DefaultPath := SubStr(%A_Index%, 4)
+    else if InStr(%A_Index%, "/D=") = 1 {
+        if !RegExMatch(DllCall("GetCommandLine", "str"), "(?<!"")/D=\K[^""]*?(?=$|[ `t]+/)", DefaultPath)
+            DefaultPath := SubStr(%A_Index%, 4)
+    }
     else if (%A_Index% = "/?") {
         ViewHelp("/docs/Scripts.htm#install")
         ExitApp
