@@ -42,7 +42,8 @@ else if 1 = /fin ; For internal use.
     
     exefile = %2%
     InstallFile(exefile, "AutoHotkey.exe", true)
-    MsgBox 64, AutoHotkey_L Setup, The settings have been updated.
+    if 3 = 0 ; SilentMode
+        MsgBox 64, AutoHotkey_L Setup, The settings have been updated.
     ExitApp
 }
 else if 1 = /runahk ; For internal use.
@@ -826,7 +827,7 @@ _Install(opt) {
     if installInPlace {
         ; As AutoHotkey.exe is probably in use by this script, the final
         ; step will be completed by another instance of this script:
-        Run AutoHotkeyU32.exe "%A_ScriptFullPath%" /fin %exefile% %A_ScriptHwnd%
+        Run AutoHotkeyU32.exe "%A_ScriptFullPath%" /fin %exefile% %A_ScriptHwnd% %SilentMode%
         ExitApp
     }
     
