@@ -51,11 +51,6 @@ else if 1 = /runahk ; For internal use.
     ExitApp
 }
 
-if WinExist("AutoHotkey_L Setup ahk_class AutoHotkeyGUI") {
-    WinActivate
-    ExitApp
-}
-
 SetWorkingDir %A_ScriptDir%
 
 ProductName := "AutoHotkey_L"
@@ -103,6 +98,12 @@ Loop %0%
 if SilentMode {
     QuickInstall()
     ExitApp % SilentErrors
+}
+
+if WinExist("AutoHotkey_L Setup ahk_class AutoHotkeyGUI") {
+    MsgBox 0x30, AutoHotkey_L Setup, AutoHotkey_L Setup is already running!
+    WinActivate
+    ExitApp
 }
 
 ;#debug
