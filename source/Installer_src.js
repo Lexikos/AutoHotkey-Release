@@ -43,7 +43,7 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 	} else if (curName == "") {
 		start_intro.innerText = "Please select the type of installation you wish to perform.";
 		opt = [
-			"ahk://QuickInstall/", "Standard Installation", "Default version: " + defTypeName + "<br>Install in: " + instDir,
+			"ahk://QuickInstall/", "Express Installation", "Default version: " + defTypeName + "<br>Install in: " + instDir,
 			"ahk://Customize/", "Custom Installation", ""
 		];
 	} else if (curVer != newVer) {
