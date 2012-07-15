@@ -22,8 +22,7 @@ a:link, a:visited {
 	color: #0066CC;
 }
 .options {
-	padding-right: 8%;
-	margin-left: 2em;
+	margin: 0 3em 0 2em;
 }
 .options a {
 	display: block;
