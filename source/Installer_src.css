@@ -64,7 +64,6 @@ a.button:active,
 	color: #4774B2;
 }
 .options a:active {
-	position: relative;
 	left: 3px;
 }
 .options p {
