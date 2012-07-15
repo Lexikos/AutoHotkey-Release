@@ -65,7 +65,9 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 		html.push('<a href="', opt[i], '" id="opt', Math.floor(i/3)+1, '"><span>', opt[i+1], '</span>');
 		if (opt[i+2])
 			html.push('<p>', opt[i+2], '</p>');
-		html.push('<div class="marker">\u00BB</div></a>');
+		if (opt[i] == 'ahk://Customize/')
+			html.push('<div class="marker">\u00BB</div>');
+		html.push('</a>');
 	}
 	start_options.innerHTML = html.join("");
 	start_warning.innerHTML = warn;
