@@ -878,8 +878,10 @@ InstallMainFiles() {
     
     InstallFile("Installer.ahk")
     
-    if !FileExist(A_WinDir "\ShellNew\Template.ahk")
+    if !FileExist(A_WinDir "\ShellNew\Template.ahk") {
+        FileCreateDir %A_WinDir%\ShellNew
         InstallFile("Template.ahk", A_WinDir "\ShellNew\Template.ahk")
+    }
 }
 
 InstallCompilerFiles() {
