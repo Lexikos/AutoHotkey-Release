@@ -41,7 +41,7 @@ else if 1 = /fin ; For internal use.
     WinWaitClose % "ahk_id " %0%,, 1
     
     exefile = %2%
-    InstallFile(exefile, "AutoHotkey.exe", true)
+    InstallFile(exefile, "AutoHotkey.exe")
     if 3 = 0 ; SilentMode
         MsgBox 64, AutoHotkey_L Setup, The settings have been updated.
     ExitApp
@@ -834,7 +834,7 @@ _Install(opt) {
     switchPage("done")
 }
 
-InstallFile(file, target="", exitAppOnAbort=false) {
+InstallFile(file, target="") {
     global
     if (target = "")
         target := file
@@ -860,10 +860,7 @@ InstallFile(file, target="", exitAppOnAbort=false) {
         Ignore to skip this file.
         )
         IfMsgBox Abort
-            if exitAppOnAbort
-                ExitApp
-            else
-                Exit
+            ExitApp
         IfMsgBox Ignore
             return
     }
