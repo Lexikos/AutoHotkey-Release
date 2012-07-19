@@ -168,15 +168,18 @@ DetermineVersion() {
     ; Identify which build is installed/set as default:
     FileAppend ExitApp `% (A_IsUnicode=1) << 8 | (A_PtrSize=8) << 9, %A_Temp%\VersionTest.ahk
     RunWait %CurrentPath%\AutoHotkey.exe "%A_Temp%\VersionTest.ahk",, UseErrorLevel
-    if (ErrorLevel & 0x200)
+    if ErrorLevel = 0x300
         CurrentType := "x64"
-    else if (ErrorLevel & 0x100)
+    else if ErrorLevel = 0x100
         CurrentType := "Unicode"
-    else
+    else if ErrorLevel = 0
         CurrentType := "ANSI"
+    else
+        CurrentType := ""
     FileDelete %A_Temp%\VersionTest.ahk
     ; Set some default parameter based on current installation:
-    DefaultType := CurrentType
+    if CurrentType
+        DefaultType := CurrentType
     DefaultPath := CurrentPath
     DefaultStartMenu := CurrentStartMenu
     DefaultCompiler := FileExist(CurrentPath "\Compiler\Ahk2Exe.exe") != ""
@@ -208,6 +211,8 @@ InitUI() {
         Sleep 10
     ;#end
     w := wb.Document.parentWindow
+    if (!CurrentType && A_ScriptDir != DefaultPath)
+        CurrentName := ""  ; Avoid showing the Reinstall option since we don't know which version it was.
     w.initOptions(CurrentName, CurrentVersion, CurrentType
                 , ProductVersion, DefaultPath, DefaultStartMenu
                 , DefaultType, A_Is64bitOS)

@@ -30,6 +30,7 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 	var types = {Unicode: "Unicode 32-bit", ANSI: "ANSI 32-bit", x64: "Unicode 64-bit"};
 	var curTypeName = types[curType];
 	var defTypeName = types[defType];
+	curTypeName = curTypeName ? " (" + curTypeName + ")" : "";
 	if (curName == "AutoHotkey") {
 		start_intro.innerText = curName + " v" + curVer + " is installed. What do you want to do?";
 		var uniType = is64 ? "x64" : "Unicode";
@@ -47,13 +48,13 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 			"ahk://Customize/", "Custom Installation", ""
 		];
 	} else if (curVer != newVer) {
-		start_intro.innerText = curName + " v" + curVer + " (" + curTypeName + ") is installed. What do you want to do?";
+		start_intro.innerText = curName + " v" + curVer + curTypeName + " is installed. What do you want to do?";
 		opt = [
 			"ahk://Upgrade/" + defType, (curVer < newVer ? "Upgrade" : "Downgrade") + " to v" + newVer + " (" + defTypeName + ")", "",
 			"ahk://Customize/", "Custom Installation", ""
 		];
 	} else {
-		start_intro.innerText = curName + " v" + curVer + " (" + curTypeName + ") is installed. What do you want to do?";
+		start_intro.innerText = curName + " v" + curVer + curTypeName + " is installed. What do you want to do?";
 		opt = [
 			"ahk://QuickInstall/", "Repair", "",
 			"ahk://Customize/", "Modify", "",
