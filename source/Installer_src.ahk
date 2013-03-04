@@ -955,6 +955,10 @@ _Install(opt) {
     RegWrite REG_SZ, HKLM, %UninstallKey%, Publisher, %ProductPublisher%
     RegWrite REG_SZ, HKLM, %UninstallKey%, NoModify, 1
     
+    ; Notify other programs (e.g. explorer.exe) that file type associations have changed.
+    ; This may be necessary to update the icon when upgrading from an older version of AHK.
+    DllCall("shell32\SHChangeNotify", "uint", 0x08000000, "uint", 0, "int", 0, "int", 0) ; SHCNE_ASSOCCHANGED
+    
     if installInPlace {
         ; As AutoHotkey.exe is probably in use by this script, the final
         ; step will be completed by another instance of this script:
