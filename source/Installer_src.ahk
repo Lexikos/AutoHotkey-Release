@@ -107,6 +107,8 @@ if WinExist("AutoHotkey Setup ahk_class AutoHotkeyGUI") {
     ExitApp
 }
 
+OnExit GuiClose
+
 ;#debug
 Menu TestMenu, Add, RELOAD, Reload
 Menu TestMenu, Add, TEST, Test
@@ -130,6 +132,8 @@ MsgBox 0x34, AutoHotkey Setup, Are you sure you want to exit setup?
 IfMsgBox No
     return
 GuiClose:
+Gui Destroy
+OnExit
 ExitApp
 
 DetermineVersion() {
