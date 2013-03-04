@@ -52,8 +52,6 @@ else if 1 = /runahk ; For internal use.
     ExitApp
 }
 
-SetWorkingDir %A_ScriptDir%
-
 ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
 ProductPublisher := "Lexikos"
@@ -85,6 +83,8 @@ Loop %0%
     else if InStr(%A_Index%, "/D=") = 1 {
         if !RegExMatch(DllCall("GetCommandLine", "str"), "(?<!"")/D=\K[^""]*?(?=$|[ `t]+/)", DefaultPath)
             DefaultPath := SubStr(%A_Index%, 4)
+        Loop %DefaultPath%, 2  ; Resolve relative path.
+            DefaultPath := A_LoopFileLongPath
     }
     else if (%A_Index% = "/?") {
         ViewHelp("/docs/Scripts.htm#install")
