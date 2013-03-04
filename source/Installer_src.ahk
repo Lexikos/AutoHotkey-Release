@@ -85,6 +85,7 @@ Loop %0%
             DefaultPath := SubStr(%A_Index%, 4)
         Loop %DefaultPath%, 2  ; Resolve relative path.
             DefaultPath := A_LoopFileLongPath
+        SlashD := true
     }
     else if (%A_Index% = "/?") {
         ViewHelp("/docs/Scripts.htm#install")
@@ -94,6 +95,13 @@ Loop %0%
         SilentMode := true
         Uninstall()
         ExitApp
+    }
+    else if (%A_Index% = "/E") {
+        Extract(SlashD ? DefaultPath : "")
+        ExitApp
+    }
+    else if (SubStr(%A_Index%,1,5) = "/Test") {
+        TestMode := SubStr(%A_Index%,6)
     }
 
 if SilentMode {
@@ -123,7 +131,26 @@ Gui Margin, 0, 0
 Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
 ComObjConnect(wb, "wb_")
 OnMessage(0x100, "gui_KeyDown", 2)
-InitUI()
+try {
+    if (TestMode = "FailUI")
+        throw
+    InitUI()
+}
+catch {
+    if (A_ScriptDir = DefaultPath) {
+        MsgBox 0x10, AutoHotkey Setup, Setup failed to initialize its user interface and will now exit.
+        ExitApp
+    }
+    MsgBox 0x14, AutoHotkey Setup,
+    (LTrim Join`s`s
+    Setup failed to initialize its user interface.
+    Do you want to save the AutoHotkey program files?
+    (You will be asked which folder to save them in.)
+    )
+    IfMsgBox Yes
+        Extract()
+    ExitApp
+}
 Gui Show,, AutoHotkey Setup
 return
 
@@ -228,6 +255,7 @@ InitUI() {
         w.installcompilernote.style.display := "block"
         w.ci_nav_install.innerText := "apply"
         w.install_button.innerText := "Apply"
+        w.extract.style.display := "None"
         w.opt1.disabled := true
         w.opt1.firstChild.innerText := "Checking for updates..."
         SetTimer CheckForUpdates, -500
@@ -632,6 +660,34 @@ RunAutoHotkey_() {
 
 Quit() {
     ExitApp
+}
+
+Extract(dstDir="") {
+    if (dstDir = "") {
+        FileSelectFolder dstDir,,, Select a folder to copy program files to.
+        if ErrorLevel
+            return
+    }
+    try {
+        global TestMode, SourceDir
+        if (TestMode = "FailExtract")
+            throw
+        shell := ComObjCreate("Shell.Application")
+        try FileCreateDir %dstDir%
+        dst := shell.NameSpace(dstDir)
+        src := shell.NameSpace(SourceDir)
+        if !(dst && src)
+            throw
+        try dst.CopyHere(src.Items, 256)
+    }
+    catch {
+        FileCopyDir %SourceDir%, %dstDir%, 1
+        if ErrorLevel {
+            MsgBox 48, AutoHotkey Setup, An unspecified error occurred.
+            return
+        }
+    }
+    Run %dstDir%
 }
 
 

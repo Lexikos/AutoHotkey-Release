@@ -69,10 +69,13 @@ a.button:active,
 	font-size: 80%;
 	margin: 0.2em 1em;
 }
-#license {
+#license, #extract {
 	position: absolute;
 	bottom: 1em;
 	font-size: 80%;
+}
+#extract {
+    right: 1em;
 }
 .page {
 	width: 100%;
