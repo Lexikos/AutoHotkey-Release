@@ -31,7 +31,7 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 	var curTypeName = types[curType];
 	var defTypeName = types[defType];
 	curTypeName = curTypeName ? " (" + curTypeName + ")" : "";
-	if (curName == "AutoHotkey") {
+	if (curName == "AutoHotkey" && curVer <= "1.0.48.05") {
 		start_intro.innerText = curName + " v" + curVer + " is installed. What do you want to do?";
 		var uniType = is64 ? "x64" : "Unicode";
 		var uniTypeName = types[uniType];
@@ -40,7 +40,7 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 			"ahk://Upgrade/" + uniType, "Upgrade to v" + newVer + " (" + uniTypeName + ")", "",
 			"ahk://Customize/", "Custom Installation", ""
 		];
-		warn = '<strong>Note:</strong> Some AutoHotkey scripts are <a href="ahk://ViewHelp//docs/Compat.htm">not compatible</a> with AutoHotkey_L.';
+		warn = '<strong>Note:</strong> Some AutoHotkey 1.0 scripts are <a href="ahk://ViewHelp//docs/Compat.htm">not compatible</a> with AutoHotkey 1.1.';
 	} else if (curName == "") {
 		start_intro.innerText = "Please select the type of installation you wish to perform.";
 		opt = [

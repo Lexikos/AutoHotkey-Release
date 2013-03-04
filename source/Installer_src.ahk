@@ -11,7 +11,7 @@ if !A_IsAdmin && !%False%
         if !ErrorLevel
             ExitApp
     }
-    MsgBox 0x31, AutoHotkey_L Setup,
+    MsgBox 0x31, AutoHotkey Setup,
     (LTrim Join`s
     Setup is running as a limited user.  If you continue, some problems
     are likely to occur.  It is strongly recommended that you run Setup
@@ -43,7 +43,7 @@ else if 1 = /fin ; For internal use.
     exefile = %2%
     InstallFile(exefile, "AutoHotkey.exe")
     if 3 = 0 ; SilentMode
-        MsgBox 64, AutoHotkey_L Setup, The settings have been updated.
+        MsgBox 64, AutoHotkey Setup, The settings have been updated.
     ExitApp
 }
 else if 1 = /runahk ; For internal use.
@@ -54,10 +54,10 @@ else if 1 = /runahk ; For internal use.
 
 SetWorkingDir %A_ScriptDir%
 
-ProductName := "AutoHotkey_L"
+ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
 ProductPublisher := "Lexikos"
-ProductWebsite := "http://l.autohotkey.net/"
+ProductWebsite := "http://www.autohotkey.com/"
 
 EnvGet ProgramW6432, ProgramW6432
 DefaultPath := (ProgramW6432 ? ProgramW6432 : A_ProgramFiles) "\AutoHotkey"
@@ -101,8 +101,8 @@ if SilentMode {
     ExitApp % SilentErrors
 }
 
-if WinExist("AutoHotkey_L Setup ahk_class AutoHotkeyGUI") {
-    MsgBox 0x30, AutoHotkey_L Setup, AutoHotkey_L Setup is already running!
+if WinExist("AutoHotkey Setup ahk_class AutoHotkeyGUI") {
+    MsgBox 0x30, AutoHotkey Setup, AutoHotkey Setup is already running!
     WinActivate
     ExitApp
 }
@@ -122,11 +122,11 @@ Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
 ComObjConnect(wb, "wb_")
 OnMessage(0x100, "gui_KeyDown", 2)
 InitUI()
-Gui Show,, AutoHotkey_L Setup
+Gui Show,, AutoHotkey Setup
 return
 
 GuiEscape:
-MsgBox 0x34, AutoHotkey_L Setup, Are you sure you want to exit setup?
+MsgBox 0x34, AutoHotkey Setup, Are you sure you want to exit setup?
 IfMsgBox No
     return
 GuiClose:
@@ -327,7 +327,7 @@ ErrorExit(errMsg) {
     global
     if SilentMode
         ExitApp 1
-    MsgBox 16, AutoHotkey_L Setup, %errMsg%
+    MsgBox 16, AutoHotkey Setup, %errMsg%
     Exit
 }
 
@@ -362,7 +362,7 @@ CloseScriptsEtc(installdir, actionToContinue) {
     if (titles != "") {
         global SilentMode
         if !SilentMode {
-            MsgBox 49, AutoHotkey_L Setup,
+            MsgBox 49, AutoHotkey Setup,
             (LTrim
             Setup needs to close the following script(s):
             `n%titles%
@@ -377,6 +377,7 @@ CloseScriptsEtc(installdir, actionToContinue) {
     }
     ; Close all help file and Window Spy windows automatically:
     GroupAdd autoclosegroup, AutoHotkey_L Help ahk_class HH Parent
+    GroupAdd autoclosegroup, AutoHotkey Help ahk_class HH Parent
     GroupAdd autoclosegroup, Active Window Info ahk_exe %installdir%\AU3_Spy.exe
     ; Also close the old Ahk2Exe (but the new one is a script, so it
     ; was already handled by the section above):
@@ -495,11 +496,11 @@ RunAutoHotkey_() {
                 continue ; Back to the top of the loop.
             DetectHiddenWindows Off
             if !WinExist("ahk_pid " pid)
-                MsgBox 0x40, AutoHotkey_L Setup, Your script is running in the background.
+                MsgBox 0x40, AutoHotkey Setup, Your script is running in the background.
             return
         }
     }
-    MsgBox % message_flags, AutoHotkey_L Setup, %message%`n`nYour script is located here:`n   %script_path%`n`nDo you want to edit this file?
+    MsgBox % message_flags, AutoHotkey Setup, %message%`n`nYour script is located here:`n   %script_path%`n`nDo you want to edit this file?
     IfMsgBox Yes
         Run edit "%script_path%"
 }
@@ -612,7 +613,7 @@ Uninstall() {
         FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu%, 1
     
     if !SilentMode
-        MsgBox 64, AutoHotkey_L Setup
+        MsgBox 64, AutoHotkey Setup
             , Setup will now close to complete the uninstallation.
     
     ; Try deleting it normally first, in case this script is running
@@ -854,7 +855,7 @@ InstallFile(file, target="") {
             return  ; Continue anyway.
         }
         local error_message := RTrim(GetErrorMessage(), "`r`n")
-        MsgBox 0x12, AutoHotkey_L Setup,
+        MsgBox 0x12, AutoHotkey Setup,
         (LTrim
         Error installing file "%target%"
         
@@ -916,7 +917,7 @@ RemoveCompiler() {
     InitUI()
     return
 
-    #IfWinActive AutoHotkey_L Setup ahk_class AutoHotkeyGUI
+    #IfWinActive AutoHotkey Setup ahk_class AutoHotkeyGUI
 
     ^1::
     Test?fresh:
@@ -930,12 +931,12 @@ RemoveCompiler() {
 
     ^3::
     Test?update:
-    LoadUI("AutoHotkey_L", "1.1.00.00", CurrentType, ProductVersion)
+    LoadUI("AutoHotkey", "1.1.00.00", CurrentType, ProductVersion)
     return
 
     ^4::
     Test?repair:
-    LoadUI("AutoHotkey_L", ProductVersion, CurrentType, ProductVersion)
+    LoadUI("AutoHotkey", ProductVersion, CurrentType, ProductVersion)
     return
 
     ^5::
