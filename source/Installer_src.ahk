@@ -219,7 +219,7 @@ InitUI() {
         CurrentName := ""  ; Avoid showing the Reinstall option since we don't know which version it was.
     w.initOptions(CurrentName, CurrentVersion, CurrentType
                 , ProductVersion, DefaultPath, DefaultStartMenu
-                , DefaultType, A_Is64bitOS)
+                , DefaultType, A_Is64bitOS = 1)
     if (A_ScriptDir = DefaultPath) {
         w.installdir.disabled := true
         w.installdir_browse.disabled := true
