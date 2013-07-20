@@ -133,21 +133,32 @@ ComObjConnect(wb, "wb_")
 OnMessage(0x100, "gui_KeyDown", 2)
 try {
     if (TestMode = "FailUI")
-        throw
+        throw Exception("Testing UI")
     InitUI()
 }
-catch {
+catch excpt {
+    excpt := excpt.Message
     if (A_ScriptDir = DefaultPath) {
         MsgBox 0x10, AutoHotkey Setup, Setup failed to initialize its user interface and will now exit.
         ExitApp
     }
-    MsgBox 0x14, AutoHotkey Setup,
-    (LTrim Join`s`s
-    Setup failed to initialize its user interface.
-    Do you want to save the AutoHotkey program files?
-    (You will be asked which folder to save them in.)
-    )
+    type := DefaultType="ANSI" ? "ANSI 32-bit" : "Unicode " (DefaultType="x64"?"64":"32") "-bit"
+    MsgBox 0x13, AutoHotkey Setup,
+(
+Setup failed to initialize its user interface.
+  Error: %excpt%
+
+Do you want to install with default options?
+  %ProductName% v%ProductVersion% (%type%)
+  %DefaultPath%
+
+Click Yes to install.
+Click No to copy setup files to a directory of your choosing.
+Click Cancel to exit.
+)
     IfMsgBox Yes
+        QuickInstall()
+    else IfMsgBox No
         Extract()
     ExitApp
 }
