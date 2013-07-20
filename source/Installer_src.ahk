@@ -270,6 +270,8 @@ InitUI() {
         w.separatebuttons.parentNode.style.display := "none"
     w.switchPage("start")
     w.document.body.focus()
+    if (A_ScreenDPI != 96)
+        w.document.body.style.zoom := A_ScreenDPI/96
 }
 
 CheckForUpdates:
