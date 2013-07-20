@@ -300,7 +300,7 @@ CheckForUpdates() {
             w.opt1.firstChild.innerText := "Reinstall (download required)"
         else
             w.opt1.firstChild.innerText := "Download v" latestVersion
-        w.opt1.href := "http://l.autohotkey.net/AutoHotkey_L_Install.exe"
+        w.opt1.href := "ahk://Download/"
         w.opt1.disabled := false
     } else
         w.opt1.innerText := "An error occurred while checking for updates."
@@ -701,6 +701,11 @@ Extract(dstDir="") {
         }
     }
     Run %dstDir%
+}
+
+Download() {
+    Run http://l.autohotkey.net/AutoHotkey_L_Install.exe
+    ExitApp
 }
 
 
