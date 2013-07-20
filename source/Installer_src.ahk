@@ -539,7 +539,10 @@ CloseScriptsEtc(installdir, actionToContinue) {
         }
         ; Close script windows (typically causing them to exit).
         Loop % close.MaxIndex()
+        {
             WinClose % "ahk_id " close[A_Index]
+            WinWaitClose % "ahk_id " close[A_Index],, 1
+        }
     }
     ; Close all help file and Window Spy windows automatically:
     GroupAdd autoclosegroup, AutoHotkey_L Help ahk_class HH Parent
