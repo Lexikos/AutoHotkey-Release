@@ -283,8 +283,12 @@ InitUI() {
         w.separatebuttons.parentNode.style.display := "none"
     w.switchPage("start")
     w.document.body.focus()
+    ; Scale UI by screen DPI.  My testing showed that Vista with IE7 or IE9
+    ; did not scale by default, but Win8.1 with IE10 did.  The scaling being
+    ; done by the control itself = deviceDPI / logicalDPI.
+    logicalDPI := w.screen.logicalXDPI, deviceDPI := w.screen.deviceXDPI
     if (A_ScreenDPI != 96)
-        w.document.body.style.zoom := A_ScreenDPI/96
+        w.document.body.style.zoom := A_ScreenDPI/96 * (logicalDPI/deviceDPI)
 }
 
 CheckForUpdates:
