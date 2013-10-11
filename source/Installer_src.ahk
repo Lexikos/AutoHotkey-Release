@@ -132,6 +132,8 @@ Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
 ComObjConnect(wb, "wb_")
 OnMessage(0x100, "gui_KeyDown", 2)
 try {
+    if !wb
+        throw Exception("Failed to create IE control")
     if (TestMode = "FailUI")
         throw Exception("Testing UI")
     InitUI()
