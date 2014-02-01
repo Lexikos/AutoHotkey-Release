@@ -895,7 +895,7 @@ _Install(opt) {
     switchPage("wait")
     
     ; Remove old files which are no longer relevant.
-    if (CurrentName = "AutoHotkey") {
+    if (CurrentVersion <= "1.0.48.05") {
         FileDelete Compiler\README.txt
         FileDelete Compiler\upx.exe
     }
