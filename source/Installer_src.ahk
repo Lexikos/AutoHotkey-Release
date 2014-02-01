@@ -55,7 +55,7 @@ else if 1 = /runahk ; For internal use.
 ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
 ProductPublisher := "Lexikos"
-ProductWebsite := "http://www.autohotkey.com/"
+ProductWebsite := "http://ahkscript.org/"
 
 EnvGet ProgramW6432, ProgramW6432
 DefaultPath := (ProgramW6432 ? ProgramW6432 : A_ProgramFiles) "\AutoHotkey"
@@ -296,7 +296,7 @@ CheckForUpdates()
 return
 CheckForUpdates() {
     local w := getWindow(), latestVersion := ""
-    URLDownloadToFile http://l.autohotkey.net/version.txt, %A_Temp%\ahk_version.txt
+    URLDownloadToFile http://ahkscript.org/download/1.1/version.txt, %A_Temp%\ahk_version.txt
     if !ErrorLevel {
         FileRead latestVersion, %A_Temp%\ahk_version.txt
         FileDelete %A_Temp%\ahk_version.txt
@@ -620,7 +620,7 @@ ViewHelp(topic) {
     if FileExist(path)
         Run_("hh.exe", "mk:@MSITStore:" path "::" topic)
     else
-        Run_("http://l.autohotkey.net" topic)
+        Run_("http://ahkscript.org" topic)
 }
 
 RunAutoHotkey() {
@@ -684,6 +684,11 @@ Quit() {
     ExitApp
 }
 
+ViewWebsite() {
+    global
+    Run_(ProductWebsite)
+}
+
 Extract(dstDir="") {
     if (dstDir = "") {
         FileSelectFolder dstDir,,, Select a folder to copy program files to.
@@ -713,7 +718,7 @@ Extract(dstDir="") {
 }
 
 Download() {
-    Run http://l.autohotkey.net/AutoHotkey_L_Install.exe
+    Run http://ahkscript.org/download/ahk-install.exe
     ExitApp
 }
 
