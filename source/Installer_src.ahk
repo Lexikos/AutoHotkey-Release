@@ -124,6 +124,7 @@ Menu TestMenu, Add, New Install, Test?fresh
 Menu TestMenu, Add, Upgrade, Test?upgrade
 Menu TestMenu, Add, Update, Test?update
 Menu TestMenu, Add, Repair, Test?repair
+Menu TestMenu, Add, Complete, Test?complete
 Gui Menu, TestMenu
 ;#end
 
@@ -1154,6 +1155,10 @@ RemoveCompiler() {
     ^4::
     Test?repair:
     LoadUI("AutoHotkey", ProductVersion, CurrentType, ProductVersion)
+    return
+
+    Test?complete:
+    switchPage("done")
     return
 
     ^5::
