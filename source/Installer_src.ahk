@@ -37,12 +37,12 @@ if 1 = /kill ; For internal use.
 else if 1 = /fin ; For internal use.
 {
     DetectHiddenWindows On
-    WinKill % "ahk_id " %0%
-    WinWaitClose % "ahk_id " %0%,, 1
+    WinKill ahk_id %3%
+    WinWaitClose ahk_id %3%,, 1
     
     exefile = %2%
     InstallFile(exefile, "AutoHotkey.exe")
-    if 3 = 0 ; SilentMode
+    if 4 = 0 ; SilentMode
         MsgBox 64, AutoHotkey Setup, The settings have been updated.
     ExitApp
 }
