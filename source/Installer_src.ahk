@@ -1132,7 +1132,8 @@ RemoveCompiler() {
 ;#debug
     ~^s::
     Sleep 250
-    InitUI()
+    ; InitUI()  ; SetClientSite() currently causes a crash on Win 8.1 the second time it's called.
+    Reload
     return
 
     #IfWinActive AutoHotkey Setup ahk_class AutoHotkeyGUI
@@ -1172,7 +1173,8 @@ RemoveCompiler() {
     LoadUI(InstName, InstVer, InstType, ThisVer) {
         global
         getWindow().initOptions(InstName, InstVer, InstType, ThisVer
-                                , DefaultPath, DefaultStartMenu)
+                                , DefaultPath, DefaultStartMenu
+                                , DefaultType, A_Is64bitOS = 1)
     }
 
     Reload:
