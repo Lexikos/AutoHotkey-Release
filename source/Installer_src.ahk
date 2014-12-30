@@ -252,7 +252,7 @@ InitUI() {
         Sleep 10
     wb.Document.open()
     wb.Document.write(html)
-    wb.Document.Close()
+    wb.Document.close()
     ;#debug
     }
     wb.Navigate(A_ScriptDir "\Installer_src.htm")
@@ -260,6 +260,7 @@ InitUI() {
         Sleep 10
     ;#end
     w := wb.Document.parentWindow
+    w.AHK := Func("JS_AHK")
     if (!CurrentType && A_ScriptDir != DefaultPath)
         CurrentName := ""  ; Avoid showing the Reinstall option since we don't know which version it was.
     w.initOptions(CurrentName, CurrentVersion, CurrentType
@@ -310,7 +311,7 @@ CheckForUpdates() {
             w.opt1.firstChild.innerText := "Reinstall (download required)"
         else
             w.opt1.firstChild.innerText := "Download v" latestVersion
-        w.opt1.href := "ahk://Download/"
+        w.opt1.href := "javascript:AHK('Download')"
         w.opt1.disabled := false
     } else
         w.opt1.innerText := "An error occurred while checking for updates."
@@ -339,35 +340,12 @@ gui_KeyDown(wParam, lParam, nMsg, hWnd) {
 }
 
 
-/*  ahk://Func/Param  -->  Func("Param")
+/*  javascript:AHK('Func') --> Func()
  */
 
-wb_BeforeNavigate2(wb, url, flags, frame, postdata, headers, cancel) {
-    if !RegExMatch(url, "^ahk://(.*?)/(.*)", m)
-        return
-    static func, prms
-    func := m1
-    prms := []
-    StringReplace m2, m2, `%20, %A_Space%, All
-    Loop Parse, m2, `,
-        prms.Insert(A_LoopField)
-    ; Cancel: don't load the error page (or execute ahk://whatever
-    ; if it happens to somehow be a registered protocol).
-    NumPut(-1, ComObjValue(cancel), "short")
-    ; Call after a delay to allow navigation (this might only be
-    ; necessary if called from NavigateError; i.e. on Windows 8).
-    SetTimer wb_bn2_call, -15
-    return
-wb_bn2_call:
+JS_AHK(func, prms*) {
     %func%(prms*)
-    func := prms := ""
-    return
-}
-
-wb_NavigateError(wb, url, frame, status, cancel) {
-    ; This might only be called on Windows 8, which skips the
-    ; BeforeNavigate2 call (because the protocol is invalid?).
-    wb_BeforeNavigate2(wb, url, 0, frame, "", "", cancel)
+    return ComObject(0,0) ; undefined (don't replace document)
 }
 
 
