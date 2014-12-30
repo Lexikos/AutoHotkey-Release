@@ -24,6 +24,9 @@ if !A_IsAdmin && !%False%
 }
 
 SourceDir := A_ScriptDir
+;#debug
+SourceDir := A_ScriptDir "\..\include"
+;#end
 SilentMode := false
 SilentErrors := 0
 
