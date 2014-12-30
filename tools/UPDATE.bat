@@ -10,8 +10,9 @@ set ahk2exe=include\Compiler\Ahk2Exe.exe
 echo *** Pre-processing script
 %ahk% tools\packageit.ahk
 
-echo *** Compiling script
+echo *** Compiling scripts
 %ahk2exe% /in include\Installer.ahk /out include\setup.exe /bin "include\Compiler\Unicode 32-bit.bin" /icon source\setup.ico
+%ahk2exe% /in source\ActiveWindowInfo.ahk /out include\AU3_Spy.exe /bin "include\Compiler\Unicode 32-bit.bin" /icon source\spy.ico
 
 echo *** Updating SFX resources
 %rc% /fo installer.res source\installer.rc
