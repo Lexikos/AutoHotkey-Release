@@ -31,31 +31,6 @@ SilentMode := false
 SilentErrors := 0
 AutoRestart := false
 
-if 0 > 0
-if 1 = /kill ; For internal use.
-{
-    DetectHiddenWindows On
-    WinKill % "ahk_id " %0%
-    ExitApp
-}
-else if 1 = /fin ; For internal use.
-{
-    DetectHiddenWindows On
-    WinKill ahk_id %3%
-    WinWaitClose ahk_id %3%,, 1
-    
-    exefile = %2%
-    InstallFile(exefile, "AutoHotkey.exe")
-    if 4 = 0 ; SilentMode
-        MsgBox 64, AutoHotkey Setup, The settings have been updated.
-    ExitApp
-}
-else if 1 = /runahk ; For internal use.
-{
-    RunAutoHotkey_()
-    ExitApp
-}
-
 ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
 ProductPublisher := "Lexikos"
@@ -72,6 +47,14 @@ DefaultIsHostApp := false
 AutoHotkeyKey := "SOFTWARE\AutoHotkey"
 UninstallKey := "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotkey"
 FileTypeKey := "AutoHotkeyScript"
+
+Menu Tray, MainWindow  ; Enable debugging setup.exe.
+
+if 1 = /exec ; For internal use
+{
+    HandleExec(1)
+    ExitApp
+}
 
 DetermineVersion()
 
@@ -122,7 +105,6 @@ if WinExist("AutoHotkey Setup ahk_class AutoHotkeyGUI") {
 }
 
 OnExit GuiClose
-Menu Tray, MainWindow  ; Enable debugging setup.exe.
 
 ;#debug
 Menu TestMenu, Add, RELOAD, Reload
@@ -672,9 +654,9 @@ RunAutoHotkey() {
     ; in (i.e. an admin user), so in addition to running AutoHotkey.exe
     ; in user mode, have it call the function below to ensure the script
     ; file is correctly located.
-    Run_("AutoHotkey.exe", """" A_WorkingDir "\Installer.ahk"" /runahk")
+    Run_("AutoHotkey.exe", """" A_WorkingDir "\Installer.ahk"" /exec runahk")
 }
-RunAutoHotkey_() {
+Exec_RunAHK() {
     ; This could detect %ExeDir%\AutoHotkey.ahk (which takes precedence
     ; over %A_MyDocuments%\AutoHotkey.ahk), but that file is unlikely to
     ; exist in this situation.
@@ -891,7 +873,7 @@ Uninstall() {
     ; an arbitrary wait (e.g. by calling "ping").
     Run %ComSpec% /c "
     (Join`s&`s
-    AutoHotkey.exe "%A_ScriptFullPath%" /kill %A_ScriptHwnd%
+    AutoHotkey.exe "%A_ScriptFullPath%" /exec kill %A_ScriptHwnd%
     del Installer.ahk
     del AutoHotkey.exe
     cd %A_Temp%
@@ -1096,7 +1078,9 @@ _Install(opt) {
     if installInPlace {
         ; As AutoHotkey.exe is probably in use by this script, the final
         ; step will be completed by another instance of this script:
-        Run AutoHotkeyU32.exe "%A_ScriptFullPath%" /fin %exefile% %A_ScriptHwnd% %SilentMode%
+        Run AutoHotkeyU32.exe "%A_ScriptFullPath%"
+                /exec kill %A_ScriptHwnd%
+                /exec setExe %exefile% %SilentMode%
         ExitApp
     }
     
@@ -1174,6 +1158,34 @@ RemoveCompiler() {
     FileDelete Compiler\AutoHotkeySC.bin
     FileRemoveDir Compiler  ; Only if empty.    
     RegDelete HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe
+}
+
+HandleExec(n) {
+    Loop {
+        ++n, fn := Func("Exec_" %n%), args := []
+        Loop % %false% - n {
+            ++n, v := %n%
+            if v = /exec
+                break
+            args.Insert(v)
+        }
+        if !fn || (c := args.MaxIndex()) < fn.MinParams || c > fn.MaxParams
+            ErrorExit("Internal: bad /exec")
+        %fn%(args*)
+    }
+    until v != "/exec"
+}
+
+Exec_Kill(id) {
+    DetectHiddenWindows On
+    WinKill ahk_id %id%
+    WinWaitClose ahk_id %id%,, 10
+}
+
+Exec_SetExe(exefile, SilentMode := false) {
+    InstallFile(exefile, "AutoHotkey.exe")
+    if !SilentMode
+        MsgBox 64, AutoHotkey Setup, The settings have been updated.
 }
 
 ;#debug
