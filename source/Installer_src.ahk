@@ -29,6 +29,7 @@ SourceDir := A_ScriptDir "\..\include"
 ;#end
 SilentMode := false
 SilentErrors := 0
+AutoRestart := false
 
 if 0 > 0
 if 1 = /kill ; For internal use.
@@ -77,6 +78,8 @@ DetermineVersion()
 Loop %0%
     if %A_Index% = /S
         SilentMode := true
+    else if %A_Index% = /R
+        AutoRestart := true
     else if %A_Index% = /U32
         DefaultType = Unicode
     else if %A_Index% in /U64,/x64
@@ -483,31 +486,30 @@ getWindow() {
 
 ErrorExit(errMsg) {
     global
-    if SilentMode
-        ExitApp 1
-    MsgBox 16, AutoHotkey Setup, %errMsg%
-    Exit
+    if !SilentMode
+        MsgBox 16, AutoHotkey Setup, %errMsg%
+    ExitApp 1
 }
 
 CloseScriptsEtc(installdir, actionToContinue) {
     titles := ""
     DetectHiddenWindows On
-    close := []
+    close := [], reopen := []
     WinGet w, List, ahk_class AutoHotkey
     Loop % w {
         ; Exclude the install script.
         if (w%A_Index% = A_ScriptHwnd)
             continue
         ; Determine if the script actually needs to be terminated.
-        WinGet exe, ProcessPath, % "ahk_id " w%A_Index%
-        if (exe != "") {
+        WinGet exe_path, ProcessPath, % "ahk_id " w%A_Index%
+        if (exe_path != "") {
             ; Exclude external executables.
-            if InStr(exe, installdir "\") != 1
+            if InStr(exe_path, installdir "\") != 1
                 continue
             ; The main purpose of this next check is to avoid closing
             ; SciTE4AutoHotkey's toolbar, but also may be helpful for
             ; other situations.
-            exe := SubStr(exe, StrLen(installdir) + 2)
+            exe := SubStr(exe_path, StrLen(installdir) + 2)
             if !RegExMatch(exe, "i)^(AutoHotkey(A32|U32|U64)?\.exe|Compiler\\Ahk2Exe.exe)$")
                 continue
         }        
@@ -516,18 +518,39 @@ CloseScriptsEtc(installdir, actionToContinue) {
         title := RegExReplace(title, " - AutoHotkey v.*")
         titles .= "  -  " title "`n"
         close.Insert(w%A_Index%)
+        if FileExist(title)
+            reopen.Insert({path: title, exe: exe_path})
     }
     if (titles != "") {
-        global SilentMode
+        global SilentMode, installInPlace
         if !SilentMode {
-            MsgBox 49, AutoHotkey Setup,
+            static button_retry, button_mode
+            button_retry := 3
+            if (actionToContinue = "installation" && !installInPlace) {
+                help_text =
+                (LTrim
+                Click Reload to automatically reload the scripts later.
+                Click Close All to just close the scripts and continue.
+                )
+                button_mode := 3
+            } else {
+                help_text =
+                (LTrim
+                Click Close All to close all scripts and continue the %actionToContinue%.
+                )
+                button_mode := 1
+            }
+            SetTimer CloseScriptsEtc_Buttons, -5
+            MsgBox % 48|button_mode, AutoHotkey Setup,
             (LTrim
             Setup needs to close the following script(s):
             `n%titles%
-            Click OK to close these scripts and continue the %actionToContinue%.
+            %help_text%
             )
             IfMsgBox Cancel
                 Exit
+            IfMsgBox Yes
+                global AutoRestart := true
         }
         ; Close script windows (typically causing them to exit).
         Loop % close.MaxIndex()
@@ -544,6 +567,37 @@ CloseScriptsEtc(installdir, actionToContinue) {
     ; was already handled by the section above):
     GroupAdd autoclosegroup, Ahk2Exe v ahk_exe %installdir%\Compiler\Ahk2Exe.exe
     WinClose ahk_group autoclosegroup
+    return reopen
+    
+    CloseScriptsEtc_Buttons:
+    Critical
+    if !WinExist("ahk_class #32770 ahk_pid " DllCall("GetCurrentProcessId")) {
+        if (button_retry--)
+            SetTimer,, -5
+        return
+    }
+    if (button_mode = 1)
+        ControlSetText Button1, Close &All
+    else {
+        ControlSetText Button1, &Reload
+        ControlSetText Button2, Close &All
+    }
+    return
+}
+
+ReopenScripts(scripts) {
+    global AutoRestart
+    if !AutoRestart || !scripts || !scripts.MaxIndex()
+        return
+    failed := ""
+    for i, script in scripts {
+        try
+            Run % (script.exe ? """" script.exe """ " : "") . """" script.path """"
+        catch
+            failed .= "`n" script
+    }
+    if (failed != "" && !SilentMode)
+        MsgBox 16, AutoHotkey Setup, Failed to restart the following scripts:`n%failed%
 }
 
 GetErrorMessage(error_code="") {
@@ -871,12 +925,17 @@ _Install(opt) {
         catch
             ErrorExit("Unable to create installation directory ('" opt.path "')")
     
-    CloseScriptsEtc(CurrentPath, "installation")
-    
     /*  Preparation
      */
     
     SetWorkingDir % opt.path
+    
+    ; If the following is "true", we have no source files to install,
+    ; but we may have settings to change.  This includes replacing the
+    ; binary files with %exefile% and %binfile%.
+    installInPlace := (A_WorkingDir = A_ScriptDir)
+    
+    reopen := CloseScriptsEtc(CurrentPath, "installation")
     
     switchPage("wait")
     
@@ -905,11 +964,6 @@ _Install(opt) {
      */
     
     UpdateStatus("Copying files")
-    
-    ; If the following is "true", we have no source files to install,
-    ; but we may have settings to change.  This includes replacing the
-    ; binary files with %exefile% and %binfile%.
-    installInPlace := (A_WorkingDir = A_ScriptDir)
     
     ; Install all unique files.
     if !installInPlace {
@@ -1042,6 +1096,8 @@ _Install(opt) {
         Run AutoHotkeyU32.exe "%A_ScriptFullPath%" /fin %exefile% %A_ScriptHwnd% %SilentMode%
         ExitApp
     }
+    
+    ReopenScripts(reopen)
     
     switchPage("done")
 }
