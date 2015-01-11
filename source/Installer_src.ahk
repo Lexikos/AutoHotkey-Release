@@ -760,7 +760,9 @@ Exec_Downloaded(file) {
     ; global SilentMode := true
     DetermineVersion()
     QuickInstall()
-    Run AutoHotkeyU32.exe Installer.ahk /exec cleanup "%file%"
+    ; NOTE: .\ is required here.  Otherwise it launches the copy found
+    ; in the directory containing the current module -- the temp dir.
+    Run .\AutoHotkeyU32.exe Installer.ahk /exec cleanup "%file%"
 }
 Exec_Cleanup(file) {
     SplitPath file, name
@@ -1138,7 +1140,7 @@ _Install(opt) {
     if installInPlace {
         ; As AutoHotkey.exe is probably in use by this script, the final
         ; step will be completed by another instance of this script:
-        Run AutoHotkeyU32.exe "%A_ScriptFullPath%"
+        Run .\AutoHotkeyU32.exe "%A_ScriptFullPath%"
                 /exec kill %A_ScriptHwnd%
                 /exec setExe %exefile% %SilentMode%
         ExitApp
