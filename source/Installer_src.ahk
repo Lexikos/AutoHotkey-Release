@@ -119,6 +119,7 @@ if WinExist("AutoHotkey Setup ahk_class AutoHotkeyGUI") {
 }
 
 OnExit GuiClose
+Menu Tray, MainWindow  ; Enable debugging setup.exe.
 
 ;#debug
 Menu TestMenu, Add, RELOAD, Reload
@@ -344,8 +345,11 @@ gui_KeyDown(wParam, lParam, nMsg, hWnd) {
  */
 
 JS_AHK(func, prms*) {
-    %func%(prms*)
-    return ComObject(0,0) ; undefined (don't replace document)
+    global wb
+    ; Stop navigation so that WB won't use our return value as document content.
+    ; Another method is to return undefined (ComObject(0,0)), but if Exit is called
+    ; we have no control over the return value.
+    wb.Stop(),  %func%(prms*)
 }
 
 
@@ -556,6 +560,7 @@ switchPage(page) {
 }
 
 UpdateStatus(status) {
+    ; ToolTip % status
     ; if !SilentMode
         ; getWindow().install_status.innerText := status
 }
@@ -1028,6 +1033,8 @@ _Install(opt) {
     ; Notify other programs (e.g. explorer.exe) that file type associations have changed.
     ; This may be necessary to update the icon when upgrading from an older version of AHK.
     DllCall("shell32\SHChangeNotify", "uint", 0x08000000, "uint", 0, "int", 0, "int", 0) ; SHCNE_ASSOCCHANGED
+    
+    UpdateStatus("")
     
     if installInPlace {
         ; As AutoHotkey.exe is probably in use by this script, the final
