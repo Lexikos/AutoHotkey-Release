@@ -89,9 +89,8 @@ Loop %0%
         Extract(SlashD ? DefaultPath : "")
         ExitApp
     }
-    else if (SubStr(%A_Index%,1,5) = "/Test") {
+    else if (SubStr(%A_Index%,1,5) = "/Test")
         TestMode := SubStr(%A_Index%,6)
-    }
 
 if SilentMode {
     QuickInstall()
@@ -263,7 +262,6 @@ InitUI() {
         w.extract.style.display := "None"
         w.opt1.disabled := true
         w.opt1.firstChild.innerText := "Checking for updates..."
-        SetTimer CheckForUpdates, -500
     }
     w.installcompiler.checked := DefaultCompiler
     w.enabledragdrop.checked := DefaultDragDrop
@@ -281,11 +279,10 @@ InitUI() {
     logicalDPI := w.screen.logicalXDPI, deviceDPI := w.screen.deviceXDPI
     if (A_ScreenDPI != 96)
         w.document.body.style.zoom := A_ScreenDPI/96 * (logicalDPI/deviceDPI)
+    if (A_ScriptDir = DefaultPath)
+        CheckForUpdates()
 }
 
-CheckForUpdates:
-CheckForUpdates()
-return
 CheckForUpdates() {
     local w := getWindow(), latestVersion := ""
     try {
@@ -300,7 +297,7 @@ CheckForUpdates() {
             w.opt1.firstChild.innerText := "Reinstall (download required)"
         else
             w.opt1.firstChild.innerText := "Download v" latestVersion
-        w.opt1.href := "javascript:AHK('Download')"
+        w.opt1.href := "javascript:AHK('DownloadAHK')"
         w.opt1.disabled := false
     } else
         w.opt1.innerText := "An error occurred while checking for updates."
@@ -743,9 +740,72 @@ Extract(dstDir="") {
     Run %dstDir%
 }
 
-Download() {
-    Run http://ahkscript.org/download/ahk-install.exe
+DownloadAHK() {
+    file := A_Temp "\ahk-install.exe"
+    switchPage("downloading")
+    Sleep 10
+    if !Download("http://ahkscript.org/download/ahk-install.exe", file, "DownloadAHK_Progress") {
+        MsgBox 16,, Download failed.
+        switchPage("start")
+        return
+    }
+    Run "%file%" /exec waitclose %A_ScriptHwnd% /exec downloaded "%file%"
     ExitApp
+}
+Exec_WaitClose(hwnd) {
+    DetectHiddenWindows On
+    WinWaitClose ahk_id %hwnd%
+}
+Exec_Downloaded(file) {
+    ; global SilentMode := true
+    DetermineVersion()
+    QuickInstall()
+    Run AutoHotkeyU32.exe Installer.ahk /exec cleanup "%file%"
+}
+Exec_Cleanup(file) {
+    SplitPath file, name
+    Process WaitClose, %name%
+    MsgBox 64, AutoHotkey Setup, Installation complete.
+    FileDelete %file%
+}
+DownloadAHK_Progress(n, nMax) {
+    if !nMax
+        return
+    w := getWindow()
+    w.document.getElementById("dl_progress")
+        .style.width := (n*100/nMax) "%"
+    w.document.getElementById("dl_text")
+        .innerText := DownloadSize(n) " / " DownloadSize(nMax)
+    Sleep 10
+}
+DownloadSize(n) {
+    n /= 1024
+    if (n > 1024)
+        return Round(n/1024, 2) " MB"
+    return Round(n, 2) " KB"
+}
+
+; Based on code by Sean and SKAN @ http://www.autohotkey.com/forum/viewtopic.php?p=184468#184468
+Download(url, file, callback) {
+    static vt
+    if !VarSetCapacity(vt) {
+        VarSetCapacity(vt, A_PtrSize*11), nPar := "31132253353"
+        Loop Parse, nPar
+            NumPut(RegisterCallback("DL_Progress", "F", A_LoopField, A_Index-1), vt, A_PtrSize*(A_Index-1))
+    }
+    if !(IsObject(callback) || (callback := Func(callback)))
+        return !(ErrorLevel := 1)
+    VarSetCapacity(bobj, A_PtrSize*2), NumPut(&callback, NumPut(&vt, bobj)), VarSetCapacity(tn, 520)
+    if (0 = DllCall("urlmon\URLDownloadToCacheFile", "ptr", 0, "str", url, "str", tn, "uint", 260, "uint", 0x10, "ptr", &bobj))
+        FileCopy %tn%, %file%, 1
+    else
+        ErrorLevel := 1
+    return !ErrorLevel
+}
+DL_Progress( pthis, nP=0, nPMax=0, nSC=0, pST=0 ) {
+    if A_EventInfo = 6
+        fn := Object(NumGet(pthis+A_PtrSize)), %fn%(np, npMax)
+    return 0
 }
 
 

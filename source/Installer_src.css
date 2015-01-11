@@ -156,3 +156,24 @@ label p {
 	display: none;
 	font-weight: bold;
 }
+#dl_container {
+	position: absolute;
+	left: 12%;
+	top: 50%;
+	width: 80%;
+	height: 1em;
+	background-color: white;
+	border: 1px solid #405871;
+}
+#dl_progress {
+	width: 0;
+	height: 100%;
+	background-color: #405871;
+}
+#dl_text {
+	position: absolute;
+	left: 12%;
+	top: 60%;
+	width: 80%;
+	text-align: center;
+}
