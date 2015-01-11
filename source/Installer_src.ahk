@@ -127,6 +127,7 @@ Menu Tray, MainWindow  ; Enable debugging setup.exe.
 ;#debug
 Menu TestMenu, Add, RELOAD, Reload
 Menu TestMenu, Add, TEST, Test
+Menu TestMenu, Add, Set page, Test?page
 Menu TestMenu, Add, New Install, Test?fresh
 Menu TestMenu, Add, Upgrade, Test?upgrade
 Menu TestMenu, Add, Update, Test?update
@@ -1183,6 +1184,12 @@ RemoveCompiler() {
     return
 
     #IfWinActive AutoHotkey Setup ahk_class AutoHotkeyGUI
+    
+    Test?page:
+    InputBox _page_,, Type a page name to switch to.
+    if !ErrorLevel
+        switchPage(_page_)
+    return
 
     ^1::
     Test?fresh:
