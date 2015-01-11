@@ -305,10 +305,12 @@ CheckForUpdates()
 return
 CheckForUpdates() {
     local w := getWindow(), latestVersion := ""
-    URLDownloadToFile http://ahkscript.org/download/1.1/version.txt, %A_Temp%\ahk_version.txt
-    if !ErrorLevel {
-        FileRead latestVersion, %A_Temp%\ahk_version.txt
-        FileDelete %A_Temp%\ahk_version.txt
+    try {
+        whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
+        whr.Open("GET", "http://ahkscript.org/download/1.1/version.txt", true)
+        whr.Send()
+        whr.WaitForResponse()
+        latestVersion := whr.responseText
     }
     if RegExMatch(latestVersion, "^(\d+\.){3}\d+") {
         if (latestVersion = ProductVersion)
