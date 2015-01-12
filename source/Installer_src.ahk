@@ -1231,7 +1231,8 @@ HandleExec(n) {
                 break
             args.Insert(v)
         }
-        if !fn || (c := args.MaxIndex()) < fn.MinParams || c > fn.MaxParams
+        c := Round(args.MaxIndex())
+        if !fn || c < fn.MinParams || c > fn.MaxParams
             ErrorExit("Internal: bad /exec")
         %fn%(args*)
     }
