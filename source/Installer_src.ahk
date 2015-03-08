@@ -574,7 +574,8 @@ ReopenScripts(scripts) {
     failed := ""
     for i, script in scripts {
         try
-            Run % (script.exe ? """" script.exe """ " : "") . """" script.path """"
+            script.exe ? Run_(script.exe, """" script.path """")
+                       : Run_("""" script.path """")
         catch
             failed .= "`n" script
     }
