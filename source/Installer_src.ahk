@@ -331,9 +331,7 @@ gui_KeyDown(wParam, lParam, nMsg, hWnd) {
 
 JS_AHK(func, prms*) {
     global wb
-    ; Stop navigation so that WB won't use our return value as document content.
-    ; Another method is to return undefined (ComObject(0,0)), but if Exit is called
-    ; we have no control over the return value.
+    ; Stop navigation prior to calling the function, in case it uses Exit.
     wb.Stop(),  %func%(prms*)
 }
 
@@ -670,6 +668,13 @@ Exec_RunAHK() {
         Sleep 50
         Process Exist, %pid%
         if !ErrorLevel {
+            if !FileExist(script_path) {
+                WinWait AutoHotkey Help,, 1
+                if !ErrorLevel {
+                    WinActivate  ; Welcome screen (v1.1.20).
+                    return
+                }
+            }
             message =
             (LTrim Join`s
             AutoHotkey has exited.  You may need to edit your startup
@@ -701,7 +706,11 @@ Exec_RunAHK() {
     }
     MsgBox % message_flags, AutoHotkey Setup, %message%`n`nYour script is located here:`n   %script_path%`n`nDo you want to edit this file?
     IfMsgBox Yes
+    {
+        if !FileExist(script_path)
+            FileAppend,, %script_path%
         Run edit "%script_path%"
+    }
 }
 
 Quit() {

@@ -36,37 +36,37 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 		var uniType = is64 ? "x64" : "Unicode";
 		var uniTypeName = types[uniType];
 		opt = [
-			"javascript:AHK('Upgrade', 'ANSI')", "Upgrade to v" + newVer + " (" + types.ANSI + ")", "Recommended for compatibility.",
-			"javascript:AHK('Upgrade', '" + uniType + "')", "Upgrade to v" + newVer + " (" + uniTypeName + ")", "",
-			"javascript:AHK('Customize')", "Custom Installation", ""
+			"AHK('Upgrade', 'ANSI')", "Upgrade to v" + newVer + " (" + types.ANSI + ")", "Recommended for compatibility.",
+			"AHK('Upgrade', '" + uniType + "')", "Upgrade to v" + newVer + " (" + uniTypeName + ")", "",
+			"AHK('Customize')", "Custom Installation", ""
 		];
-		warn = '<strong>Note:</strong> Some AutoHotkey 1.0 scripts are <a href="'+"javascript:AHK('ViewHelp', '/docs/Compat.htm')"+'">not compatible</a> with AutoHotkey 1.1.';
+		warn = '<strong>Note:</strong> Some AutoHotkey 1.0 scripts are <a href="#" onclick="'+"AHK('ViewHelp', '/docs/Compat.htm'); return false"+'">not compatible</a> with AutoHotkey 1.1.';
 	} else if (curName == "") {
 		start_intro.innerText = "Please select the type of installation you wish to perform.";
 		opt = [
-			"javascript:AHK('QuickInstall')", "Express Installation", "Default version: " + defTypeName + "<br>Install in: " + instDir,
-			"javascript:AHK('Customize')", "Custom Installation", ""
+			"AHK('QuickInstall')", "Express Installation", "Default version: " + defTypeName + "<br>Install in: " + instDir,
+			"AHK('Customize')", "Custom Installation", ""
 		];
 	} else if (curVer != newVer) {
 		start_intro.innerText = curName + " v" + curVer + curTypeName + " is installed. What do you want to do?";
 		opt = [
-			"javascript:AHK('Upgrade', '" + defType + "')", (curVer < newVer ? "Upgrade" : "Downgrade") + " to v" + newVer + " (" + defTypeName + ")", "",
-			"javascript:AHK('Customize')", "Custom Installation", ""
+			"AHK('Upgrade', '" + defType + "')", (curVer < newVer ? "Upgrade" : "Downgrade") + " to v" + newVer + " (" + defTypeName + ")", "",
+			"AHK('Customize')", "Custom Installation", ""
 		];
 	} else {
 		start_intro.innerText = curName + " v" + curVer + curTypeName + " is installed. What do you want to do?";
 		opt = [
-			"javascript:AHK('QuickInstall')", "Repair", "",
-			"javascript:AHK('Customize')", "Modify", "",
-			"javascript:AHK('Uninstall')", "Uninstall", ""
+			"AHK('QuickInstall')", "Repair", "",
+			"AHK('Customize')", "Modify", "",
+			"AHK('Uninstall')", "Uninstall", ""
 		];
 	}
 	var i, html = [];
 	for (i = 0; i < opt.length; i += 3) {
-		html.push('<a href="', opt[i], '" id="opt', Math.floor(i/3)+1, '"><span>', opt[i+1], '</span>');
+		html.push('<a href="#" onclick="', opt[i], '; return false" id="opt', Math.floor(i/3)+1, '"><span>', opt[i+1], '</span>');
 		if (opt[i+2])
 			html.push('<p>', opt[i+2], '</p>');
-		if (opt[i] == "javascript:AHK('Customize')")
+		if (opt[i] == "AHK('Customize')")
 			html.push('<div class="marker">\u00BB</div>');
 		html.push('</a>');
 	}
@@ -119,7 +119,8 @@ function switchPage(page) {
 	}
 	return false;
 }
-function beforeCustomInstall() {
+function customInstall() {
 	if (startmenu.style.color == '#888')
 		startmenu.value = '';
+	return AHK('CustomInstall');
 }

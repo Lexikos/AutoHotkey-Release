@@ -9,8 +9,8 @@
 	<p id="start_intro"></p>
 	<div class="warning" id="start_warning"></div>
 	<div class="options" id="start_options"></div>
-	<div id="license">AutoHotkey is open source software: <a href="javascript:AHK('ReadLicense')">read license</a></div>
-  <div id="extract"><a href="javascript:AHK('Extract')" title="Save program files without installing.">extract to...</a></div>
+	<div id="license">AutoHotkey is open source software: <a href="#" onclick="AHK('ReadLicense'); return false">read license</a></div>
+	<div id="extract"><a href="#" onclick="AHK('Extract'); return false" title="Save program files without installing.">extract to...</a></div>
 </div>
 
 <div class="page" id="custom-install">
@@ -22,7 +22,7 @@
 			<a href="#ci_location">location</a> &#187;
 			<a href="#ci_options">options</a> &#187;
 		</span>
-		<a id="ci_nav_install" href="javascript:AHK('CustomInstall')" onclick="beforeCustomInstall()">install</a>
+		<a id="ci_nav_install" href="#" onclick="customInstall(); return false">install</a>
 	</div>
 	<div class="pager" id="ci_pager">
 		<div class="page" id="ci_version">
@@ -39,7 +39,7 @@
 		</div>
 		<div class="page" id="ci_location">
 			<label for="installdir" class="indent">Install location:<br>
-			<input type="text" class="textbox" id="installdir" value="C:\Program Files\AutoHotkey" tabindex="11"> <a href="javascript:AHK('SelectFolder', 'installdir', 'Select the folder to install AutoHotkey in.')" id="installdir_browse" class="button" tabindex="12">Browse</a></label><br>
+			<input type="text" class="textbox" id="installdir" value="C:\Program Files\AutoHotkey" tabindex="11"> <a href="#" onclick="AHK('SelectFolder', 'installdir', 'Select the folder to install AutoHotkey in.'); return false" id="installdir_browse" class="button" tabindex="12">Browse</a></label><br>
 			<label for="startmenu" class="indent"> Create shortcuts in the following Start menu folder:<br>
 			<input type="text" class="textbox" id="startmenu" value="AutoHotkey" tabindex="13"
 				onfocus="if (style.color == '#888') value='', style.color = '';"
@@ -58,7 +58,7 @@
 				<p>Files dropped onto a .ahk script will launch that script (the files will be passed as parameters).  This can lead to accidental launching so some users may wish to disable it.</p></label>
 			<label for="separatebuttons"><input type="checkbox" id="separatebuttons"> Separate taskbar buttons
 				<p>Causes each script which has visible windows to be treated as a separate program, but prevents AutoHotkey.exe from being pinned to the taskbar.</p></label>
-			<a href="javascript:AHK('CustomInstall')" onclick="beforeCustomInstall()" id="install_button" class="button">Install</a>
+			<a href="#" onclick="customInstall(); return false" id="install_button" class="button">Install</a>
 		</div>
 	</div>
 </div>
@@ -75,18 +75,18 @@
 	<div class="nav">&nbsp;</div>
 	<p>Installation complete.</p>
 	<div class="options">
-		<a href="javascript:AHK('ViewHelp', '/docs/AHKL_ChangeLog.htm')">View Changes &amp; New Features</a>
-		<a href="javascript:AHK('ViewHelp', '/docs/Tutorial.htm')">View the Tutorial</a>
-		<a href="javascript:AHK('RunAutoHotkey')">Run AutoHotkey</a>
-		<a href="javascript:AHK('Quit')" id="done_exit">Exit</a>
+		<a href="#" onclick="AHK('ViewHelp', '/docs/AHKL_ChangeLog.htm'); return false">View Changes &amp; New Features</a>
+		<a href="#" onclick="AHK('ViewHelp', '/docs/Tutorial.htm'); return false">View the Tutorial</a>
+		<a href="#" onclick="AHK('RunAutoHotkey'); return false">Run AutoHotkey</a>
+		<a href="#" onclick="AHK('Quit'); return false" id="done_exit">Exit</a>
 	</div>
 </div>
 
 <div class="page" id="downloading">
-  <h1>AutoHotkey Setup</h1>
+	<h1>AutoHotkey Setup</h1>
 	<div class="nav">&nbsp;</div>
-  <div id="dl_container"><div id="dl_progress"></div></div>
-  <div id="dl_text">Connecting...</div>
+	<div id="dl_container"><div id="dl_progress"></div></div>
+	<div id="dl_text">Connecting...</div>
 </div>
 
 </body></html>
