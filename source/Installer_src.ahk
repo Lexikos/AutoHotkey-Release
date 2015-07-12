@@ -124,21 +124,23 @@ OnMessage(0x100, "gui_KeyDown", 2)
 try {
     if !wb
         throw Exception("Failed to create IE control")
-    if (TestMode = "FailUI")
-        throw Exception("Testing UI")
+    if GetKeyState("Shift") || GetKeyState("Ctrl")
+        throw 1
     InitUI()
 }
 catch excpt {
-    excpt := excpt.Message
     if (A_ScriptDir = DefaultPath) {
         MsgBox 0x10, AutoHotkey Setup, Setup failed to initialize its user interface and will now exit.
         ExitApp
     }
+    message := IsObject(excpt)
+        ? "Setup encountered an error.`n"
+        . "  Specifically: " excpt.Message
+        : "Setup is in troubleshooting mode (you're holding Ctrl or Shift)."
     type := DefaultType="ANSI" ? "ANSI 32-bit" : "Unicode " (DefaultType="x64"?"64":"32") "-bit"
-    MsgBox 0x13, AutoHotkey Setup,
+    MsgBox 0x33, AutoHotkey Setup,
 (
-Setup failed to initialize its user interface.
-  Error: %excpt%
+%message%
 
 Do you want to install with default options?
   %ProductName% v%ProductVersion% (%type%)
