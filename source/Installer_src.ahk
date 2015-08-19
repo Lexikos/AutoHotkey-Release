@@ -300,7 +300,7 @@ CheckForUpdates() {
             w.opt1.firstChild.innerText := "Reinstall (download required)"
         else
             w.opt1.firstChild.innerText := "Download v" latestVersion
-        w.opt1.href := "javascript:AHK('DownloadAHK')"
+        w.opt1.onclick := Func("DownloadAHK")
         w.opt1.disabled := false
     } else
         w.opt1.innerText := "An error occurred while checking for updates."
@@ -754,6 +754,8 @@ Extract(dstDir="") {
 }
 
 DownloadAHK() {
+    global wb
+    wb.Stop()
     file := A_Temp "\ahk-install.exe"
     switchPage("downloading")
     Sleep 10
