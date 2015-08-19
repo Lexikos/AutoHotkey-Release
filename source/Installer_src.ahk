@@ -2,6 +2,7 @@
 #NoTrayIcon
 ; #Warn
 #SingleInstance Off
+Menu Tray, Icon, appwiz.cpl, -1500
 
 if !A_IsAdmin && !%False%
 {

@@ -11,7 +11,11 @@ echo *** Pre-processing script
 %ahk% tools\packageit.ahk
 
 echo *** Compiling scripts
-%ahk2exe% /in include\Installer.ahk /out include\setup.exe /bin "include\Compiler\Unicode 32-bit.bin" /icon source\setup.ico
+copy /y F:\Temp\lzma\C\Util\SfxSetup2\O\7zS2.sfx F:\Projects\AutoHotkey\Installer\tools\7z\7zS2.sfx
+rem  setup.exe is kept to avoid having to explain how to manually run the installer.
+rem  It shouldn't increase file size much because setup.exe is just a combination of
+rem  files which are already included in the archive.  Not used:  /icon source\setup.ico
+%ahk2exe% /in include\Installer.ahk /out include\setup.exe /bin "include\Compiler\Unicode 32-bit.bin"
 %ahk2exe% /in source\ActiveWindowInfo.ahk /out include\AU3_Spy.exe /bin "include\Compiler\Unicode 32-bit.bin" /icon source\spy.ico
 
 echo *** Updating SFX resources
