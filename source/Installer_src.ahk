@@ -119,6 +119,11 @@ Gui Menu, TestMenu
 ;#end
 
 Gui Margin, 0, 0
+Gui +LastFound
+try {  ; Hide window title.
+    DllCall("UxTheme\SetWindowThemeAttribute", "ptr", WinExist()
+        , "int", 1, "int64*", (3<<32)|3, "int", 8)
+}
 Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
 ComObjConnect(wb, "wb_")
 OnMessage(0x100, "gui_KeyDown", 2)
