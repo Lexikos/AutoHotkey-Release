@@ -3,7 +3,7 @@
 
 1 ICON setup.ico
 
-#include "C:\Projects\AutoHotkey_L\source\ahkversion.h"
+#include "C:\Projects\AutoHotkey\AutoHotkey_L\source\ahkversion.h"
 
 1 VERSIONINFO
 FILEVERSION     AHK_VERSION_N

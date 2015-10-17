@@ -37,6 +37,12 @@ else
     out = include\Installer.ahk
 FileDelete %out%
 FileAppend %ahk%, %out%
+
+FileRead man, source\installer_src.manifest
+man := RegExReplace(man, ">\s*(?:<!--.*?-->\s*)?<", "><")
+FileDelete installer.manifest
+FileAppend %man%, installer.manifest
+
 return
 
 rebuild:

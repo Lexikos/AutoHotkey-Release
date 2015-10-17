@@ -1,4 +1,5 @@
 @echo off
+set bin=F:\Projects\AutoHotkey\AutoHotkey_L\bin
 
 del %bin%\Win32w\AutoHotkey.exe > nul 2>&1
 del %bin%\Win32a\AutoHotkey.exe > nul 2>&1
@@ -8,12 +9,10 @@ del %bin%\Win32w\AutoHotkeySC.bin > nul 2>&1
 del %bin%\Win32a\AutoHotkeySC.bin > nul 2>&1
 del %bin%\x64w\AutoHotkeySC.bin > nul 2>&1
 
-"C:\Program Files (x86)\AutoHotkey\AutoHotkey.exe" F:\Projects\AutoHotkey\AutoHotkey_L_\zzz_rebuild.ahk
+start /wait C:\Projects\AutoHotkey\AutoHotkey_L_\zzz_rebuild.ahk
 
 echo.
 echo.
-
-set bin=F:\Projects\AutoHotkey\AutoHotkey_L\bin
 
 cd %~dp0..
 
