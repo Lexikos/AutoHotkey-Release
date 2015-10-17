@@ -1063,7 +1063,8 @@ _Install(opt) {
         local smpath := A_ProgramsCommon "\" opt.menu
         FileCreateDir %smpath%
         FileCreateShortcut %A_WorkingDir%\AutoHotkey.exe, %smpath%\AutoHotkey.lnk
-        FileCreateShortcut %A_WorkingDir%\AU3_Spy.exe, %smpath%\AutoIt3 Window Spy.lnk
+        FileDelete %smpath%\AutoIt3 Window Spy.lnk
+        FileCreateShortcut %A_WorkingDir%\AU3_Spy.exe, %smpath%\Active Window Info (Window Spy).lnk
         FileCreateShortcut %A_WorkingDir%\AutoHotkey.chm, %smpath%\AutoHotkey Help File.lnk
         IniWrite %ProductWebsite%, %ProductName% Website.url, InternetShortcut, URL
         FileCreateShortcut %A_WorkingDir%\%ProductName% Website.url, %smpath%\Website.lnk
