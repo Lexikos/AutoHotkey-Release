@@ -35,7 +35,7 @@ AutoRestart := false
 ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
 ProductPublisher := "Lexikos"
-ProductWebsite := "http://ahkscript.org/"
+ProductWebsite := "https://autohotkey.com/"
 
 EnvGet ProgramW6432, ProgramW6432
 DefaultPath := (ProgramW6432 ? ProgramW6432 : A_ProgramFiles) "\AutoHotkey"
@@ -295,7 +295,7 @@ CheckForUpdates() {
     local w := getWindow(), latestVersion := ""
     try {
         whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-        whr.Open("GET", "http://ahkscript.org/download/1.1/version.txt", true)
+        whr.Open("GET", "https://autohotkey.com/download/1.1/version.txt", true)
         whr.Send()
         whr.WaitForResponse()
         latestVersion := whr.responseText
@@ -650,7 +650,7 @@ ViewHelp(topic) {
     if FileExist(path)
         Run_("hh.exe", "mk:@MSITStore:" path "::" topic)
     else
-        Run_("http://ahkscript.org" topic)
+        Run_("https://autohotkey.com" topic)
 }
 
 RunAutoHotkey() {
@@ -764,7 +764,7 @@ DownloadAHK() {
     file := A_Temp "\ahk-install.exe"
     switchPage("downloading")
     Sleep 10
-    if !Download("http://ahkscript.org/download/ahk-install.exe", file, "DownloadAHK_Progress") {
+    if !Download("https://autohotkey.com/download/ahk-install.exe", file, "DownloadAHK_Progress") {
         MsgBox 16,, Download failed.
         switchPage("start")
         return
