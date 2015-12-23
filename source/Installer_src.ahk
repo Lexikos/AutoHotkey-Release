@@ -579,9 +579,11 @@ ReopenScripts(scripts) {
         return
     failed := ""
     for i, script in scripts {
+        workdir := script.path
+        SplitPath workdir,, workdir
         try
-            script.exe ? Run_(script.exe, """" script.path """")
-                       : Run_("""" script.path """")
+            script.exe ? Run_(script.exe, """" script.path """", workdir)
+                       : Run_("""" script.path """",, workdir)
         catch
             failed .= "`n" script
     }
@@ -610,11 +612,11 @@ UpdateStatus(status) {
 
 #include <ShellRun>
 
-Run_(target, args="") {
+Run_(target, args:="", workdir:="") {
     try
-        ShellRun(target, args)
+        ShellRun(target, args, workdir)
     catch e
-        Run % args="" ? target : target " " args
+        Run % args="" ? target : target " " args, % workdir
 }
 
 
