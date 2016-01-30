@@ -124,12 +124,12 @@ try {  ; Hide window title.
     DllCall("UxTheme\SetWindowThemeAttribute", "ptr", WinExist()
         , "int", 1, "int64*", (3<<32)|3, "int", 8)
 }
-Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
-ComObjConnect(wb, "wb_")
 OnMessage(0x100, "gui_KeyDown", 2)
+try Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
 try {
     if !wb
         throw Exception("Failed to create IE control")
+    ComObjConnect(wb, "wb_")
     if GetKeyState("Shift") || GetKeyState("Ctrl")
         throw 1
     InitUI()
