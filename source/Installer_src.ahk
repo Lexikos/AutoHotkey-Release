@@ -319,6 +319,8 @@ CheckForUpdates() {
 
 gui_KeyDown(wParam, lParam, nMsg, hWnd) {
     global wb
+    if (Chr(wParam) ~= "[A-Z]" || wParam = 0x74) ; Disable Ctrl+O/L/F/N and F5.
+        return
     pipa := ComObjQuery(wb, "{00000117-0000-0000-C000-000000000046}")
     VarSetCapacity(kMsg, 48), NumPut(A_GuiY, NumPut(A_GuiX
     , NumPut(A_EventInfo, NumPut(lParam, NumPut(wParam
