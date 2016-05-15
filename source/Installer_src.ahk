@@ -242,8 +242,11 @@ InitUI() {
     gosub DefineUI
     wb.Silent := true
     wb.Navigate("about:blank")
-    while wb.ReadyState != 4
+    while wb.ReadyState != 4 {
         Sleep 10
+        if (A_TickCount-initTime > 2000)
+            throw 1
+    }
     wb.Document.open()
     wb.Document.write(html)
     wb.Document.close()
@@ -254,6 +257,8 @@ InitUI() {
         Sleep 10
     ;#end
     w := wb.Document.parentWindow
+    if !w || !w.initOptions
+        throw 1
     w.AHK := Func("JS_AHK")
     if (!CurrentType && A_ScriptDir != DefaultPath)
         CurrentName := ""  ; Avoid showing the Reinstall option since we don't know which version it was.
