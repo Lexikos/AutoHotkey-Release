@@ -20,10 +20,12 @@ rem  files which are already included in the archive.  Not used:  /icon source\s
 %ahk2exe% /in source\ActiveWindowInfo.ahk /out include\AU3_Spy.exe /bin "include\Compiler\Unicode 32-bit.bin" /icon source\spy.ico
 
 echo *** Compiling SFX stub
-pushd tools\lzma\C
-%tcc% -DUSE_ASM -o 7zS2.exe 7zAlloc.c 7zArcIn.c 7zBuf.c 7zBuf2.c 7zCrc.c 7zCrcOpt.c 7zFile.c 7zDec.c 7zStream.c Bcj2.c Bra.c Bra86.c CpuArch.c Lzma2Dec.c LzmaDec.c Util\SfxSetup2\SfxSetup.c Util\SfxSetup2\rsrc.c
-set sfxsrc=%cd%\7zS2.exe
-popd
+:: pushd tools\lzma\C
+:: %tcc% -DUSE_ASM -o 7zS2.exe 7zAlloc.c 7zArcIn.c 7zBuf.c 7zBuf2.c 7zCrc.c 7zCrcOpt.c 7zFile.c 7zDec.c 7zStream.c Bcj2.c Bra.c Bra86.c CpuArch.c Lzma2Dec.c LzmaDec.c Util\SfxSetup2\SfxSetup.c Util\SfxSetup2\rsrc.c
+:: set sfxsrc=%cd%\7zS2.exe
+:: popd
+set sfxsrc=%cd%\tools\7z\7zS2.sfx
+:: N.B. Resource Hacker requires the FULL PATH.
 
 echo *** Updating SFX resources
 %rc% /fo installer.res source\installer.rc
