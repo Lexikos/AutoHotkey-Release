@@ -157,7 +157,10 @@ Click No to copy setup files to a directory of your choosing.
 Click Cancel to exit.
 )
     IfMsgBox Yes
+    {
         QuickInstall()
+        MsgBox 0, AutoHotkey Setup, Installation complete.
+    }
     else IfMsgBox No
         Extract()
     ExitApp
