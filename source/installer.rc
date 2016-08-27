@@ -15,7 +15,6 @@ FILETYPE        0x1
         {
             VALUE "FileDescription",    "AutoHotkey Setup"
             VALUE "FileVersion",        AHK_VERSION
-            VALUE "LegalCopyright",     "Copyright (c) 2015 Steve Gray"
             VALUE "ProductName",        "AutoHotkey"
             VALUE "ProductVersion",     AHK_VERSION
         }
