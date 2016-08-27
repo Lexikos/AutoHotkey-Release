@@ -1,9 +1,7 @@
 
-1 24 installer.manifest
+1 24 "installer.manifest"
 
-1 ICON setup.ico
-
-#include "C:\Projects\AutoHotkey\AutoHotkey_L\source\ahkversion.h"
+1 ICON "setup.ico"
 
 1 VERSIONINFO
 FILEVERSION     AHK_VERSION_N

@@ -35,13 +35,17 @@ if 1 !=
     out = %1%
 else
     out = include\Installer.ahk
-FileDelete %out%
-FileAppend %ahk%, %out%
+FileOpen(out, "w").Write(ahk)
 
 FileRead man, source\installer_src.manifest
 man := RegExReplace(man, ">\s*(?:<!--.*?-->\s*)?<", "><")
-FileDelete installer.manifest
-FileAppend %man%, installer.manifest
+FileOpen("temp\installer.manifest", "w").Write(man)
+
+FileGetVersion ver, include\AutoHotkeyU32.exe
+FileRead rc, source\installer.rc
+rc := StrReplace(rc, "AHK_VERSION_N", StrReplace(ver, ".", ","))
+rc := StrReplace(rc, "AHK_VERSION", """" RegExReplace(ver, "\b\d\b", "0$0",,, 4) """")
+FileOpen("temp\installer.rc", "w").Write(rc)
 
 return
 
