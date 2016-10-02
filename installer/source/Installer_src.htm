@@ -1,0 +1,92 @@
+<html><head>
+<link rel="StyleSheet" href="Installer_src.css" type="text/css">
+<script type="text/javascript" src="Installer_src.js"></script>
+</head><body>
+
+<div class="page" id="start">
+	<h1>AutoHotkey Setup</h1>
+	<div class="nav" id="start_nav">&nbsp;</div>
+	<p id="start_intro"></p>
+	<div class="warning" id="start_warning"></div>
+	<div class="options" id="start_options"></div>
+	<div id="license">AutoHotkey is open source software: <a href="#" onclick="AHK('ReadLicense'); return false">read license</a></div>
+	<div id="extract"><a href="#" onclick="AHK('Extract'); return false" title="Save program files without installing.">extract to...</a></div>
+</div>
+
+<div class="page" id="custom-install">
+	<h1>AutoHotkey Setup</h1>
+	<div class="nav" id="ci_nav">
+		<a href="#start">start</a> &#187;
+		<span id="ci_nav_list">
+			<a href="#ci_version">version</a> &#187;
+			<a href="#ci_location">location</a> &#187;
+			<a href="#ci_options">options</a> &#187;
+		</span>
+		<a id="ci_nav_install" href="#" onclick="customInstall(); return false">install</a>
+	</div>
+	<div class="pager" id="ci_pager">
+		<div class="page" id="ci_version">
+			<p>Which version of AutoHotkey.exe should run by default?</p>
+			<input type="hidden" id="installtype">
+			<div class="options">
+				<a href="#" id="it_Unicode" onclick="setInstallType('Unicode')" tabindex="1">Unicode 32-bit
+					<p>Recommended for new installations/scripts.</p> <div class="marker">&#187;</div></a>
+				<a href="#" id="it_x64" onclick="setInstallType('x64')" tabindex="2">Unicode 64-bit
+					<p>Faster, but compiled scripts won't run on 32-bit systems.</p> <div class="marker">&#187;</div></a>
+				<a href="#" id="it_ANSI" onclick="setInstallType('ANSI')" tabindex="3">ANSI 32-bit
+					<p>Better compatibility with some legacy scripts.</p> <div class="marker">&#187;</div></a>
+			</div>
+		</div>
+		<div class="page" id="ci_location">
+			<label for="installdir" class="indent">Install location:<br>
+			<input type="text" class="textbox" id="installdir" value="C:\Program Files\AutoHotkey" tabindex="11"> <a href="#" onclick="AHK('SelectFolder', 'installdir', 'Select the folder to install AutoHotkey in.'); return false" id="installdir_browse" class="button" tabindex="12">Browse</a></label><br>
+			<label for="startmenu" class="indent"> Create shortcuts in the following Start menu folder:<br>
+			<input type="text" class="textbox" id="startmenu" value="AutoHotkey" tabindex="13"
+				onfocus="if (style.color == '#888') value='', style.color = '';"
+				onblur="if (value == '') value = '(don\'t create shortcuts)', style.color = '#888';">
+			<a href="#" id="startmenu_del" class="button" style="color:red" tabindex="14"
+				onclick = "startmenu.value=''; startmenu.onblur(); return false;">X</a>
+			</label><br>
+			<a href="#" id="next-button" class="button" onclick="ci_nav_list[2].click(); return false;" tabindex="15">Next</a>
+		</div>
+		<div class="page" id="ci_options">
+			<label for="installcompiler"><input type="checkbox" id="installcompiler" checked="checked"> Install script compiler
+				<p>Installs Ahk2Exe, a tool to convert any .ahk script into a stand-alone EXE.<br>
+				Also adds a "Compile" option to .ahk context menus.</p>
+				<p id="installcompilernote">Download and re-run the installer to reinstall Ahk2Exe.</p></label>
+			<label for="enabledragdrop"><input type="checkbox" id="enabledragdrop" checked="checked"> Enable drag &amp; drop
+				<p>Files dropped onto a .ahk script will launch that script (the files will be passed as parameters).  This can lead to accidental launching so some users may wish to disable it.</p></label>
+			<label for="separatebuttons"><input type="checkbox" id="separatebuttons"> Separate taskbar buttons
+				<p>Causes each script which has visible windows to be treated as a separate program, but prevents AutoHotkey.exe from being pinned to the taskbar.</p></label>
+			<a href="#" onclick="customInstall(); return false" id="install_button" class="button">Install</a>
+		</div>
+	</div>
+</div>
+
+<div class="page" id="wait">
+	<h1>AutoHotkey Setup</h1>
+	<div class="nav">&nbsp;</div>
+	<p style="color: #999; font-size: 120%; text-align: center; margin-top: 5em">this shouldn't take long...</p>
+	<p style="text-align: center" id="install_status"></p>
+</div>
+
+<div class="page" id="done">
+	<h1>AutoHotkey Setup</h1>
+	<div class="nav">&nbsp;</div>
+	<p>Installation complete.</p>
+	<div class="options">
+		<a href="#" onclick="AHK('ViewHelp', '/docs/AHKL_ChangeLog.htm'); return false">View Changes &amp; New Features</a>
+		<a href="#" onclick="AHK('ViewHelp', '/docs/Tutorial.htm'); return false">View the Tutorial</a>
+		<a href="#" onclick="AHK('RunAutoHotkey'); return false">Run AutoHotkey</a>
+		<a href="#" onclick="AHK('Quit'); return false" id="done_exit">Exit</a>
+	</div>
+</div>
+
+<div class="page" id="downloading">
+	<h1>AutoHotkey Setup</h1>
+	<div class="nav">&nbsp;</div>
+	<div id="dl_container"><div id="dl_progress"></div></div>
+	<div id="dl_text">Connecting...</div>
+</div>
+
+</body></html>

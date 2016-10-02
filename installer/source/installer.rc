@@ -1,0 +1,27 @@
+
+1 24 "installer.manifest"
+
+1 ICON "setup.ico"
+
+1 VERSIONINFO
+FILEVERSION     AHK_VERSION_N
+PRODUCTVERSION  AHK_VERSION_N
+FILEOS          0x40004
+FILETYPE        0x1
+{
+    BLOCK "StringFileInfo"
+    {
+        BLOCK "040904b0"
+        {
+            VALUE "FileDescription",    "AutoHotkey Setup"
+            VALUE "FileVersion",        AHK_VERSION
+            VALUE "ProductName",        "AutoHotkey"
+            VALUE "ProductVersion",     AHK_VERSION
+        }
+    }
+
+    BLOCK "VarFileInfo"
+    {
+        VALUE "Translation", 0x0409 0x04B0
+    }
+}
