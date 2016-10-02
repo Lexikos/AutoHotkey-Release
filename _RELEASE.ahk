@@ -261,8 +261,7 @@ if update_installer
 {
     D("! Updating installer")
     ; Build installer package.
-    RunWait "%InstDir%\tools\UPDATE.bat"
-    FileCopy, %InstDir%\AutoHotkey_L_Install.exe, %InstPath%, 1
+    RunWait "%InstDir%\tools\UPDATE.bat" "%InstPath%"
     if ErrorLevel
         Prompt("Failed to update installer!", 0)
     else

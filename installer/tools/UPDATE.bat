@@ -1,6 +1,7 @@
 @echo off
 setlocal EnableExtensions EnableDelayedExpansion
 
+set original_cd=%cd%
 cd /d %~dp0\..
 :: Create clean temp directory.
 rmdir /q /s temp 2>nul
@@ -44,21 +45,26 @@ echo *** Building 7z archive
 if ErrorLevel 1 goto :err
 
 echo.
-echo *** Assembling Install.exe
-copy /Y /b "%td%\installer.sfx" + "%td%\installer.7z" AutoHotkey_L_Install.exe >nul
+echo *** Assembling AutoHotkey_setup.exe
+copy /Y /b "%td%\installer.sfx" + "%td%\installer.7z" AutoHotkey_setup.exe >nul
 if ErrorLevel 1 goto :err
+
+if "%~1" neq "" (
+	cd %original_cd%
+	move /y "%~dp0\..\AutoHotkey_setup.exe" "%~1"
+)
 
 :cleanup
 echo *** Cleaning up
-rmdir /s /q temp
+rmdir /s /q "%td%"
 
-exit
+exit /b
 :err
 echo.
 echo ##
-echo ## Aborting due to an error. Press Enter.
+echo ## Aborting due to an error.
 echo ##
-pause >nul
+if "%~1"=="" pause >nul
 goto :cleanup
 
 :find_tool
