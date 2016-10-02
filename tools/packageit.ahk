@@ -28,8 +28,8 @@ html=
 " htm "
 `)
 )")
-FileRead inc, %A_MyDocuments%\AutoHotkey\Lib\ShellRun.ahk
-inc := RegExReplace(inc, "`ams)^/\*.*?^\*/\R")
+FileRead inc, source\Lib\ShellRun.ahk
+inc := RegExReplace(inc, "`am)^(?:/\*[\s\S]*?^\*/| *(?:;.*)?)\R")
 ahk := RegExReplace(ahk, "`am)^#include <ShellRun>$", inc)
 if 1 !=
     out = %1%
