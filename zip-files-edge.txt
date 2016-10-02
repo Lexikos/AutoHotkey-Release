@@ -1,0 +1,10 @@
+AutoHotkeyU32.exe
+AutoHotkeyU64.exe
+AutoHotkeyA32.exe
+
+Compiler\readme.txt
+Compiler\Unicode 32-bit.bin
+Compiler\Unicode 64-bit.bin
+Compiler\ANSI 32-bit.bin
+
+license.txt
