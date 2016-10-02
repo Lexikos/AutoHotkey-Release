@@ -19,7 +19,7 @@ IniRead gh_repo,  %IniFile%, GitHub, repo,  0
 IniRead gh_token, %IniFile%, GitHub, token, 0
 
 ; Prefix for all FTP remote URLs (optional)
-IniRead FtpRoot, %IniFile%, FTP, Root, % A_Space
+IniRead FtpPrefix, %IniFile%, FTP, Prefix, % A_Space
 
 
 ProjDir = %A_ScriptDir%\..\AutoHotkey_L
