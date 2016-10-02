@@ -57,6 +57,9 @@ if !RegExMatch(head, "^ref: refs/heads/\K\S+(?=`n$)", branch)
     ExitError(head ? "Not on a branch. Current head:`n" head : ".git\HEAD is missing.")
 }
 
+; Let git() and each call to a console app use the same console
+DllCall("AllocConsole")
+
 ; Compare HEAD to most recent tag.
 if !RegExMatch(cdesc:=git("describe --long --match v* --dirty")
         , "^(?<tag>v.*)-(?<cnt>\d+)-g(?<id>\w+)(?<dirty>-dirty)?$", c)
@@ -142,8 +145,6 @@ RemoteDownloadDir := "/download/" SubStr(version, 1, 3)
  *                REBUILD ALL BINARIES
  */
 
-; Let each of the below (if done) use the same console.
-DllCall("AllocConsole")
 build_errors := 0
 
 if building
