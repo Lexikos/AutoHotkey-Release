@@ -515,9 +515,9 @@ CloseScriptsEtc(installdir, actionToContinue) {
         WinGetTitle title, % "ahk_id " w%A_Index%
         title := RegExReplace(title, " - AutoHotkey v.*")
         titles .= "  -  " title "`n"
-        close.Insert(w%A_Index%)
+        close.Push(w%A_Index%)
         if FileExist(title)
-            reopen.Insert({path: title, exe: exe_path})
+            reopen.Push({path: title, exe: exe_path})
     }
     if (titles != "") {
         global SilentMode, installInPlace
@@ -1262,7 +1262,7 @@ HandleExec(n) {
             ++n, v := %n%
             if v = /exec
                 break
-            args.Insert(v)
+            args.Push(v)
         }
         c := Round(args.MaxIndex())
         if !fn || c < fn.MinParams || c > fn.MaxParams
