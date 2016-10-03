@@ -319,10 +319,8 @@ CheckForUpdates() {
         w.opt1.innerText := "An error occurred while checking for updates."
 }
 
+
 /*  Fix keyboard shortcuts in WebBrowser control.
- *  References:
- *    http://www.autohotkey.com/community/viewtopic.php?p=186254#p186254
- *    http://msdn.microsoft.com/en-us/library/ms693360
  */
 
 gui_KeyDown(wParam, lParam, nMsg, hWnd) {
