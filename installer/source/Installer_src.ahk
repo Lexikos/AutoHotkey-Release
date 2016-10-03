@@ -4,6 +4,9 @@
 #SingleInstance Off
 Menu Tray, Icon, appwiz.cpl, -1500
 
+;#debug
+if !InStr(DllCall("GetCommandLine", "str"), "/restart ")
+;#end
 if !A_IsAdmin && !%False%
 {
     if A_OSVersion not in WIN_2003,WIN_XP,WIN_2000
@@ -1285,6 +1288,7 @@ Exec_SetExe(exefile, SilentMode := false) {
 ;#debug
     ~^s::
     Sleep 250
+    KeyWait Ctrl
     ; InitUI()  ; SetClientSite() currently causes a crash on Win 8.1 the second time it's called.
     Reload
     return
