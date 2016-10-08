@@ -289,7 +289,7 @@ InitUI() {
     ; w.defaulttoutf8.checked := DefaultToUTF8
     if !A_Is64bitOS
         w.it_x64.style.display := "None"
-    if A_OSVersion in WIN_2000,WIN_2003,WIN_XP ; i.e. not WIN_7, WIN_8 or a future OS.
+    if A_OSVersion in WIN_2000,WIN_2003,WIN_XP,WIN_VISTA ; i.e. not WIN_7, WIN_8 or a future OS.
         w.separatebuttons.parentNode.style.display := "none"
     w.switchPage("start")
     w.document.body.focus()
