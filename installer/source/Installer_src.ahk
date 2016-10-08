@@ -525,7 +525,7 @@ CloseScriptsEtc(installdir, actionToContinue) {
         if !SilentMode {
             static button_retry, button_mode
             button_retry := 3
-            if (actionToContinue = "installation" && !installInPlace) {
+            if (actionToContinue = "installation") {
                 help_text =
                 (LTrim
                 Click Reload to automatically reload the scripts later.
@@ -1177,9 +1177,13 @@ _Install(opt) {
     if installInPlace {
         ; As AutoHotkey.exe is probably in use by this script, the final
         ; step will be completed by another instance of this script:
+        reopen_args := ""
+        for _, script in reopen
+            reopen_args .= " """ script.path """ """ script.exe """"
         Run .\AutoHotkeyU32.exe "%A_ScriptFullPath%"
                 /exec kill %A_ScriptHwnd%
                 /exec setExe %exefile% %SilentMode%
+                /exec reopen%reopen_args%
         ExitApp
     }
     
@@ -1191,6 +1195,14 @@ _Install(opt) {
 SwitchDone() {
     getWindow().document.body.className := ""
     switchPage("done")
+}
+
+Exec_Reopen(args*) {
+    reopen := []
+    while args.Length()
+        reopen.Push({path: args.RemoveAt(1), exe: args.RemoveAt(1)})
+    global AutoRestart := true
+    ReopenScripts(reopen)
 }
 
 InstallFile(file, target="") {
@@ -1265,20 +1277,21 @@ RemoveCompiler() {
 }
 
 HandleExec(n) {
-    Loop {
-        ++n, fn := Func("Exec_" %n%), args := []
-        Loop % %false% - n {
-            ++n, v := %n%
+    ++n    
+    argn := %false%
+    while (n <= argn) {
+        fn := Func("Exec_" %n%), ++n, args := []
+        while (n <= argn) {
+            v := %n%, ++n
             if v = /exec
                 break
             args.Push(v)
         }
-        c := Round(args.MaxIndex())
-        if !fn || c < fn.MinParams || c > fn.MaxParams
+        c := args.Length()
+        if !fn || c < fn.MinParams || (c > fn.MaxParams && !fn.IsVariadic)
             ErrorExit("Internal: bad /exec")
         %fn%(args*)
     }
-    until v != "/exec"
 }
 
 Exec_Kill(id) {
