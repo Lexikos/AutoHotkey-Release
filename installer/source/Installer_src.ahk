@@ -172,10 +172,13 @@ Click Cancel to exit.
     ExitApp
 }
 Gui Show,, AutoHotkey Setup
+Gui +OwnDialogs
+WinWaitClose ; Let +OwnDialogs apply to threadless callbacks.
 return
 
 GuiEscape:
-MsgBox 0x34, AutoHotkey Setup, Are you sure you want to exit setup?
+Gui +OwnDialogs
+MsgBox 0x2034, AutoHotkey Setup, Are you sure you want to exit setup?
 IfMsgBox No
     return
 GuiClose:
@@ -330,6 +333,7 @@ gui_KeyDown(wParam, lParam, nMsg, hWnd) {
     global wb
     if (Chr(wParam) ~= "[A-Z]" || wParam = 0x74) ; Disable Ctrl+O/L/F/N and F5.
         return
+    Gui +OwnDialogs ; For threadless callbacks which interrupt this.
     pipa := ComObjQuery(wb, "{00000117-0000-0000-C000-000000000046}")
     VarSetCapacity(kMsg, 48), NumPut(A_GuiY, NumPut(A_GuiX
     , NumPut(A_EventInfo, NumPut(lParam, NumPut(wParam
@@ -486,7 +490,7 @@ getWindow() {
 ErrorExit(errMsg) {
     global
     if !SilentMode
-        MsgBox 16, AutoHotkey Setup, %errMsg%
+        MsgBox 0x2010, AutoHotkey Setup, %errMsg%
     ExitApp 1
 }
 
@@ -540,7 +544,7 @@ CloseScriptsEtc(installdir, actionToContinue) {
                 button_mode := 1
             }
             SetTimer CloseScriptsEtc_Buttons, -5
-            MsgBox % 48|button_mode, AutoHotkey Setup,
+            MsgBox % 0x2030|button_mode, AutoHotkey Setup,
             (LTrim
             Setup needs to close the following script(s):
             `n%titles%
@@ -599,7 +603,7 @@ ReopenScripts(scripts) {
             failed .= "`n" script
     }
     if (failed != "" && !SilentMode)
-        MsgBox 16, AutoHotkey Setup, Failed to restart the following scripts:`n%failed%
+        MsgBox 0x2010, AutoHotkey Setup, Failed to restart the following scripts:`n%failed%
 }
 
 GetErrorMessage(error_code="") {
@@ -687,7 +691,7 @@ Exec_RunAHK() {
     SetTitleMatchMode 2
     DetectHiddenWindows On
     message := ""
-    message_flags := 0x34
+    message_flags := 0x2034
     Loop {
         Sleep 50
         Process Exist, %pid%
@@ -705,7 +709,7 @@ Exec_RunAHK() {
             script.  For instance, if it exited because it had nothing
             to do, you can add a hotkey.
             )
-            message_flags := 0x44 ; Less severe, since it might be intentional.
+            message_flags := 0x2044 ; Less severe, since it might be intentional.
             break
         }
         if WinExist("ahk_class #32770 ahk_pid " pid) {
@@ -724,7 +728,7 @@ Exec_RunAHK() {
                 continue ; Back to the top of the loop.
             DetectHiddenWindows Off
             if !WinExist("ahk_pid " pid)
-                MsgBox 0x40, AutoHotkey Setup, Your script is running in the background.
+                MsgBox 0x2040, AutoHotkey Setup, Your script is running in the background.
             return
         }
     }
@@ -767,7 +771,7 @@ Extract(dstDir="") {
     catch {
         FileCopyDir %SourceDir%, %dstDir%, 1
         if ErrorLevel {
-            MsgBox 48, AutoHotkey Setup, An unspecified error occurred.
+            MsgBox 0x2030, AutoHotkey Setup, An unspecified error occurred.
             return
         }
     }
@@ -781,7 +785,7 @@ DownloadAHK() {
     switchPage("downloading")
     Sleep 10
     if !Download("https://autohotkey.com/download/ahk-install.exe", file, "DownloadAHK_Progress") {
-        MsgBox 16,, Download failed.
+        MsgBox 0x2010,, Download failed.
         switchPage("start")
         return
     }
@@ -950,7 +954,7 @@ Uninstall() {
         FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu%, 1
     
     if !SilentMode
-        MsgBox 64, AutoHotkey Setup
+        MsgBox 0x2040, AutoHotkey Setup
             , Setup will now close to complete the uninstallation.
     
     ; Try deleting it normally first, in case this script is running
@@ -1225,7 +1229,7 @@ InstallFile(file, target="") {
             return  ; Continue anyway.
         }
         local error_message := RTrim(GetErrorMessage(), "`r`n")
-        MsgBox 0x12, AutoHotkey Setup,
+        MsgBox 0x2012, AutoHotkey Setup,
         (LTrim
         Error installing file "%target%"
         
