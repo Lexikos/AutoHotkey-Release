@@ -62,6 +62,8 @@ if 1 = /exec ; For internal use
 
 DetermineVersion()
 
+ConfigureMode := DefaultPath = A_ScriptDir
+
 Loop %0%
     if %A_Index% = /S
         SilentMode := true
@@ -117,6 +119,7 @@ Menu TestMenu, Add, New Install, Test?fresh
 Menu TestMenu, Add, Upgrade, Test?upgrade
 Menu TestMenu, Add, Update, Test?update
 Menu TestMenu, Add, Repair, Test?repair
+Menu TestMenu, Add, Config, Test?config
 Menu TestMenu, Add, Complete, Test?complete
 Gui Menu, TestMenu
 ;#end
@@ -132,13 +135,13 @@ try Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
 try {
     if !wb
         throw Exception("Failed to create IE control")
-    ComObjConnect(wb, "wb_")
     if GetKeyState("Shift") || GetKeyState("Ctrl")
         throw 1
+    SetWBClientSite()
     InitUI()
 }
 catch excpt {
-    if (A_ScriptDir = DefaultPath) {
+    if ConfigureMode {
         MsgBox 0x10, AutoHotkey Setup, Setup failed to initialize its user interface and will now exit.
         ExitApp
     }
@@ -241,13 +244,12 @@ DetermineVersion() {
 
 InitUI() {
     local w
-    SetWBClientSite()
     ;#debug
     if false {
     ;#end
     gosub DefineUI
     wb.Silent := true
-    wb.Navigate("about:blank")
+    wb.Navigate("about:<!DOCTYPE HTML><meta http-equiv='x-ua-compatible' content='IE=Edge'>")
     while wb.ReadyState != 4 {
         Sleep 10
         if (A_TickCount-initTime > 2000)
@@ -271,15 +273,14 @@ InitUI() {
     w.initOptions(CurrentName, CurrentVersion, CurrentType
                 , ProductVersion, DefaultPath, DefaultStartMenu
                 , DefaultType, A_Is64bitOS = 1)
-    if (A_ScriptDir = DefaultPath) {
+    w.configureMode := ConfigureMode
+    w.document.body.className := ConfigureMode ? "config-mode" : ""
+    if ConfigureMode {
         w.installdir.disabled := true
         w.installdir_browse.disabled := true
-        w.installcompiler.disabled := !DefaultCompiler
-        w.installcompilernote.style.display := "block"
-        w.ci_nav_install.innerText := "apply"
+        w.nav_install.innerText := "apply"
         w.install_button.innerText := "Apply"
-        w.extract.style.display := "None"
-        w.opt1.disabled := true
+        w.opt1.onclick := ""
         w.opt1.firstChild.innerText := "Checking for updates..."
     }
     w.installcompiler.checked := DefaultCompiler
@@ -298,7 +299,7 @@ InitUI() {
     logicalDPI := w.screen.logicalXDPI, deviceDPI := w.screen.deviceXDPI
     if (A_ScreenDPI != 96)
         w.document.body.style.zoom := A_ScreenDPI/96 * (logicalDPI/deviceDPI)
-    if (A_ScriptDir = DefaultPath)
+    if ConfigureMode
         CheckForUpdates()
 }
 
@@ -317,7 +318,6 @@ CheckForUpdates() {
         else
             w.opt1.firstChild.innerText := "Download v" latestVersion
         w.opt1.onclick := Func("DownloadAHK")
-        w.opt1.disabled := false
     } else
         w.opt1.innerText := "An error occurred while checking for updates."
 }
@@ -635,7 +635,10 @@ Run_(target, args:="", workdir:="") {
  */
 
 Customize() {
-    getWindow().switchPage("custom-install")
+    local w := getWindow()
+    if !ConfigureMode
+        w.document.body.className := "custom-mode"
+    w.switchPage("version")
 }
 
 SelectFolder(id, prompt="", root="::{20d04fe0-3aea-1069-a2d8-08002b30309d}") {
@@ -1182,6 +1185,11 @@ _Install(opt) {
     
     ReopenScripts(reopen)
     
+    SwitchDone()
+}
+
+SwitchDone() {
+    getWindow().document.body.className := ""
     switchPage("done")
 }
 
@@ -1326,6 +1334,11 @@ Exec_SetExe(exefile, SilentMode := false) {
     return
 
     ^5::
+    Test?config:
+    ConfigureMode := true
+    InitUI()
+    return
+    
     Test:
     ThisVer := ProductVersion
     InputBox ThisVer,, Debug: Enter version to be installed.

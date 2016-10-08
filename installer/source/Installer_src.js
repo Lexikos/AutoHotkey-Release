@@ -3,22 +3,22 @@ function forEach(arr, fn) {
 	for (i = 0; i < arr.length; ++i)
 		fn.apply(arr[i]);
 }
+function selectNavTab(nav, tab) {
+	tab = '#' + tab;
+	forEach (nav.getElementsByTagName("a"), function() {
+		this.className = this.hash == tab ? this.className + ' current '
+			: this.className.replace(' current ', '');
+	})
+}
 function onload() {
-	ci_nav_list.length = 0;
-	forEach (ci_nav.getElementsByTagName("a"), function() {
+	forEach (configure_nav.getElementsByTagName("a"), function() {
 		this.tabIndex = 1000;
 		if (this.hash != "") {
-			var list = this.parentNode == ci_nav_list ? ci_nav_list : null;
-			if (list)
-				list[list.length++] = this;
 			this.onclick = function() {
-				if (list) {
-					forEach (list.getElementsByTagName("a"), function() {
-						this.className = "";
-					})
-					this.className = "current";
-				}
-				event.returnValue = switchPage(this.hash.substr(1));
+				if (event.preventDefault)
+					event.preventDefault(); // IE11
+				event.returnValue =  // IE8/IE6
+				switchPage(this.hash.substr(1));
 			}
 		}
 	})
@@ -73,7 +73,7 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 	start_options.innerHTML = html.join("");
 	start_warning.innerHTML = warn;
 	start_warning.style.display = warn ? "block" : "none";
-	start_nav.innerHTML = '<em style="text-align:right;width:100%">version ' + newVer + '</em>';
+	version_number.innerHTML = 'version ' + newVer;
 	installtype.value = defType;
 	installdir.value = instDir;
 	startmenu.value = smFolder;
@@ -91,36 +91,34 @@ document.ondragstart =
 	};
 function setInstallType(type) {
 	installtype.value = type;
-	ci_nav_list[1].click();
+	switchPage(configureMode ? 'options' : 'location');
 	event.returnValue = false;
 }
 function switchPage(page) {
 	page = document.getElementById(page);
-	if (page.id == "start")
-		ci_nav_list[0].click();
 	for (var n = page.parentNode.firstChild; n; n = n.nextSibling) if (n.className == "page") {
 		if (n != page)
 			n.style.display = "none";
 		else
 			n.style.display = "block";
 	}
+	selectNavTab(configure_nav, page.id);
 	var f;
 	switch (page.id) {
-	case "custom-install":
-	case "ci_version":  f = "it_" + installtype.value; break;
-	case "ci_location": f = "next-button"; break;
-	case "ci_options":  f = "install_button"; break;
-	case "done":        f = "done_exit"; break;
+	case "version": f = "it_" + installtype.value; break;
+	case "location": f = "next-button"; break;
+	case "options": f = "install_button"; break;
+	case "done": f = "done_exit"; break;
 	}
 	if (f) {
-		// If page == ci_version, it mightn't actually be visible at this point,
+		// If page == version, it mightn't actually be visible at this point,
 		// which causes IE7 (and perhaps older) to throw error 0x80020101.
 		try { document.getElementById(f).focus() } catch (ex) { }
 	}
 	return false;
 }
 function customInstall() {
-	if (startmenu.style.color == '#888')
+	if (startmenu.style.color)
 		startmenu.value = '';
 	return AHK('CustomInstall');
 }

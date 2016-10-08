@@ -17,6 +17,7 @@ Sleep 200
 FileRead htm, source\Installer_src.htm
 FileRead css, source\Installer_src.css
 FileRead js,  source\Installer_src.js
+htm := RegExReplace(htm, "<meta.*?>") ; Save space. Has no effect with document.write().
 htm := RegExReplace(htm, "<link rel=""StyleSheet"".*?>", "<style type=""text/css"">`n" css "`n</style>")
 htm := RegExReplace(htm, "<script .*?\K src=.*?>", ">`n" js)
 FileRead ahk, source\Installer_src.ahk
