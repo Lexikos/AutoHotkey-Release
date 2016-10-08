@@ -1151,13 +1151,18 @@ _Install(opt) {
     else
         RegDelete HKCR, %FileTypeKey%\ShellEx
     
+    ; App Paths registration isn't strictly necessary, so it's not done for the other exe versions.
     RegWrite REG_SZ, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\AutoHotkey.exe,, %A_WorkingDir%\AutoHotkey.exe
     if opt.ahk2exe
         RegWrite REG_SZ, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe,, %A_WorkingDir%\Compiler\Ahk2Exe.exe
     
-    RegDelete HKCR, Applications\AutoHotkey.exe
-    if opt.isHostApp
-        RegWrite REG_SZ, HKCR, Applications\AutoHotkey.exe, IsHostApp
+    local suffixList := "|A32|U32|U64"
+    Loop Parse, suffixList, |
+    {
+        RegDelete HKCR, Applications\AutoHotkey%A_LoopField%.exe
+        if opt.isHostApp
+            RegWrite REG_SZ, HKCR, Applications\AutoHotkey%A_LoopField%.exe, IsHostApp
+    }
     
     ; Write uninstaller info.
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayName, %ProductName% %ProductVersion%
