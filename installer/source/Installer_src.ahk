@@ -289,6 +289,7 @@ InitUI() {
         w.nav_install.innerText := "apply"
         w.install_button.innerText := "Apply"
         w.opt1.onclick := ""
+        w.opt1.removeAttribute("href")
         w.opt1.firstChild.innerText := "Checking for updates..."
     }
     w.installcompiler.checked := DefaultCompiler
@@ -332,6 +333,7 @@ CheckForUpdates() {
             w.opt1.firstChild.innerText := "Reinstall (download required)"
         else
             w.opt1.firstChild.innerText := "Download v" latestVersion
+        w.opt1.href := "#"
         w.opt1.onclick := Func("DownloadAHK")
     } else
         w.opt1.innerText := "An error occurred while checking for updates."

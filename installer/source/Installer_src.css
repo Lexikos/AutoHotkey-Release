@@ -46,7 +46,6 @@ a:link, a:visited {
 }
 a.button,
 .options a {
-	cursor: hand;
 	border: 1px solid ButtonShadow;
 	background-color: white;
 	text-decoration: none;
@@ -57,8 +56,9 @@ a.button {
 }
 a.button,
 a.button:visited,
-.options a,
+.options a:link,
 .options a:visited {
+	cursor: hand;
 	color: #405871;
 }
 a.button:hover,
