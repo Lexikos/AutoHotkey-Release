@@ -48,9 +48,12 @@ DefaultCompiler := true
 DefaultDragDrop := true
 DefaultToUTF8 := false
 DefaultIsHostApp := false
+DefaultUIAccess := false
 AutoHotkeyKey := "SOFTWARE\AutoHotkey"
 UninstallKey := "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\AutoHotkey"
 FileTypeKey := "AutoHotkeyScript"
+
+RegRead UACIsEnabled, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System, EnableLUA
 
 Menu Tray, MainWindow  ; Enable debugging setup.exe.
 
@@ -241,6 +244,8 @@ DetermineVersion() {
     DefaultDragDrop := ErrorLevel = 0
     RegRead v, HKCR, Applications\AutoHotkey.exe, IsHostApp
     DefaultIsHostApp := !ErrorLevel
+    RegRead v, HKCR, %FileTypeKey%\Shell\uiAccess\Command
+    DefaultUIAccess := !ErrorLevel && UACIsEnabled
     RegRead v, HKCR, %FileTypeKey%\Shell\Open\Command
     DefaultToUTF8 := InStr(v, " /CP65001 ") != 0
 }
@@ -289,11 +294,18 @@ InitUI() {
     w.installcompiler.checked := DefaultCompiler
     w.enabledragdrop.checked := DefaultDragDrop
     w.separatebuttons.checked := DefaultIsHostApp
+    w.enableuiaccess.checked := DefaultUIAccess && IsTrustedLocation(DefaultPath)
     ; w.defaulttoutf8.checked := DefaultToUTF8
     if !A_Is64bitOS
         w.it_x64.style.display := "None"
     if A_OSVersion in WIN_2000,WIN_2003,WIN_XP,WIN_VISTA ; i.e. not WIN_7, WIN_8 or a future OS.
         w.separatebuttons.parentNode.style.display := "none"
+    if !UACIsEnabled
+        w.enableuiaccess.parentNode.style.display := "none"
+    else {
+        w.enableuiaccess.onchange := Func("enableuiaccess_onchange")
+        w.installdir.onchange := Func("installdir_onchange")
+    }
     w.switchPage("start")
     w.document.body.focus()
     ; Scale UI by screen DPI.  My testing showed that Vista with IE7 or IE9
@@ -513,7 +525,7 @@ CloseScriptsEtc(installdir, actionToContinue) {
             ; SciTE4AutoHotkey's toolbar, but also may be helpful for
             ; other situations.
             exe := SubStr(exe_path, StrLen(installdir) + 2)
-            if !RegExMatch(exe, "i)^(AutoHotkey(A32|U32|U64)?\.exe|Compiler\\Ahk2Exe.exe)$")
+            if !RegExMatch(exe, "i)^(AutoHotkey((A32|U32|U64)(_UIA)?)?\.exe|Compiler\\Ahk2Exe.exe)$")
                 continue
         }        
         ; Append script path to the list.
@@ -653,7 +665,7 @@ SelectFolder(id, prompt="", root="::{20d04fe0-3aea-1069-a2d8-08002b30309d}") {
     FileSelectFolder path
         , % root " *" field.value
         ,, % prompt
-    if !ErrorLevel
+    if !ErrorLevel && (id != "installdir" || installdir_allowed(path))
         field.value := path
 }
 
@@ -865,6 +877,7 @@ Upgrade(Type="") {
         menu: DefaultStartMenu,
         ahk2exe: DefaultCompiler,
         dragdrop: DefaultDragDrop,
+        uiAccess: DefaultUIAccess,
         utf8: DefaultToUTF8,
         isHostApp: DefaultIsHostApp
     )})
@@ -895,6 +908,7 @@ CustomInstall() {
         menu: w.startmenu.value,
         ahk2exe: w.installcompiler.checked,
         dragdrop: w.enabledragdrop.checked,
+        uiAccess: w.enableuiaccess.checked,
         utf8: DefaultToUTF8, ;w.defaulttoutf8.checked
         isHostApp: w.separatebuttons.checked
     )})
@@ -934,6 +948,10 @@ Uninstall() {
     FileDelete AutoHotkeyU32.exe
     FileDelete AutoHotkeyA32.exe
     FileDelete AutoHotkeyU64.exe
+    
+    FileDelete AutoHotkeyU32_UIA.exe
+    FileDelete AutoHotkeyA32_UIA.exe
+    FileDelete AutoHotkeyU64_UIA.exe
     
     FileDelete AU3_Spy.exe
     FileDelete AutoHotkey.chm
@@ -1059,6 +1077,9 @@ _Install(opt) {
             InstallCompilerFiles()
     }
     
+    ; Create UIA files from main files.
+    InstallUIAccessFiles(opt.uiAccess)
+    
     ; If the user deselected Ahk2Exe and it was previously installed,
     ; ensure it is removed.
     if !opt.ahk2exe
@@ -1145,10 +1166,15 @@ _Install(opt) {
     cmd = %cmd% "`%1" `%*
     RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Open\Command,, %cmd%
     
-    ; If UAC is enabled, add a "Run as administrator" option.
-    RegRead value, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System, EnableLUA
-    if value
+    if UACIsEnabled {
+        ; Run as administrator
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\RunAs\Command,, "%A_WorkingDir%\AutoHotkey.exe" "`%1" `%*
+        ; Run with UI Access
+        if opt.uiAccess && FileExist(uiafile := StrReplace(exefile, ".exe", "_UIA.exe")) {
+            RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess,, Run with UI Access
+            RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess\Command,, "%A_WorkingDir%\%uiafile%" "`%1" `%*
+        }
+    }
     
     if opt.dragdrop
         RegWrite REG_SZ, HKCR, %FileTypeKey%\ShellEx\DropHandler,, {86C86720-42A0-1069-A2E8-08002B30309D}
@@ -1263,6 +1289,54 @@ InstallMainFiles() {
         InstallFile("Template.ahk", A_WinDir "\ShellNew\Template.ahk")
     }
 }
+
+InstallUIAccessFiles(create) {
+    local suffixList := "A32|U32" (A_Is64bitOS ? "|U64" : "")
+    Loop Parse, suffixList, |
+    {
+        file = AutoHotkey%A_LoopField%_UIA.exe
+        if !(create || FileExist(file))
+            continue
+        FileCopy AutoHotkey%A_LoopField%.exe, %file%, 1
+        try
+            EnableUIAccess(file)
+        catch
+            MsgBox 48, AutoHotkey Setup, Error creating %file%. ; Non-critical.
+    }
+}
+
+installdir_allowed(path) {
+    local w := getWindow()
+    if w.enableuiaccess.checked && !IsTrustedLocation(path) {
+        MsgBox 0x2034, AutoHotkey Setup, Installing to "%path%" will disable the "Run with UI Access" option`, which requires that you install to a subdirectory of Program Files.`n`nInstall here anyway?
+        IfMsgBox No
+            return false
+        w.enableuiaccess.checked := false
+    }
+    return true
+}
+
+installdir_onchange() {
+    local w := getWindow()
+    if !installdir_allowed(w.installdir.value)
+        w.installdir.value := DefaultPath
+}
+
+enableuiaccess_onchange() {
+    local w := getWindow()
+    if w.enableuiaccess.checked && !IsTrustedLocation(w.installdir.value) {
+        w.enableuiaccess.checked := false
+        MsgBox 0x2030, AutoHotkey Setup, This option requires installing AutoHotkey to a subdirectory of Program Files.
+    }
+}
+
+IsTrustedLocation(path) { ; http://msdn.com/library/bb756929
+    EnvGet other, % A_PtrSize=8 ? "ProgramFiles(x86)" : "ProgramW6432"
+    return InStr(path, A_ProgramFiles "\") = 1
+        || other && InStr(path, other "\") = 1
+}
+
+#include <EnableUIAccess>
 
 InstallCompilerFiles() {
     FileCreateDir Compiler

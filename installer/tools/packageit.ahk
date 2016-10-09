@@ -29,9 +29,8 @@ html=
 " htm "
 `)
 )")
-FileRead inc, source\Lib\ShellRun.ahk
-inc := RegExReplace(inc, "`am)^(?:/\*[\s\S]*?^\*/| *(?:;.*)?)\R")
-ahk := RegExReplace(ahk, "`am)^#include <ShellRun>$", inc)
+rInclude(ahk, "ShellRun")
+rInclude(ahk, "EnableUIAccess")
 if 1 !=
     out = %1%
 else
@@ -49,6 +48,12 @@ rc := StrReplace(rc, "AHK_VERSION", """" RegExReplace(ver, "\b\d\b", "0$0",,, 4)
 FileOpen("temp\installer.rc", "w").Write(rc)
 
 return
+
+rInclude(ByRef ahk, lib) {
+    FileRead inc, source\Lib\%lib%.ahk
+    inc := RegExReplace(inc, "`am)^(?:/\*[\s\S]*?^\*/| *(?:;.*)?)\R")
+    ahk := RegExReplace(ahk, "`am)^#include <" lib ">$", inc)
+}
 
 rebuild:
 Run %A_ScriptDir%\UPDATE.bat
