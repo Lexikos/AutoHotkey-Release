@@ -78,6 +78,10 @@ Loop %0%
         DefaultType = x64
     else if %A_Index% in /A32,/ANSI
         DefaultType = ANSI
+    else if %A_Index% in /uiAccess,/uiAccess=0,/uiAccess=1
+        DefaultUIAccess := SubStr(%A_Index%, 10) != "=0"
+    else if %A_Index% in /IsHostApp,/IsHostApp=0,/IsHostApp=1
+        DefaultIsHostApp := SubStr(%A_Index%, 11) != "=0"
     else if InStr(%A_Index%, "/D=") = 1 {
         if !RegExMatch(DllCall("GetCommandLine", "str"), "(?<!"")/D=\K[^""]*?(?=$|[ `t]+/)", DefaultPath)
             DefaultPath := SubStr(%A_Index%, 4)
