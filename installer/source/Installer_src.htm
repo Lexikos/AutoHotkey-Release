@@ -60,9 +60,9 @@
 	<label for="enabledragdrop"><input type="checkbox" id="enabledragdrop"> Enable drag &amp; drop
 		<p>Files dropped onto a .ahk script will launch that script (the files will be passed as parameters).  This can lead to accidental launching so you may wish to disable it.</p></label>
 	<label for="separatebuttons"><input type="checkbox" id="separatebuttons"> Separate taskbar buttons
-		<p>Causes each script which has visible windows to be treated as a separate program, but prevents AutoHotkey.exe from being pinned to the taskbar.</p></label>
+		<p>Causes each script which has visible windows to be treated as a separate program, but prevents AutoHotkey.exe from being pinned to the taskbar. <a href="#" onclick="AHK('ViewHelp', '/docs/Scripts.htm#Installer_IsHostApp')">[help]</a></p></label>
 	<label for="enableuiaccess"><input type="checkbox" id="enableuiaccess"> Add 'Run with UI Access' to context menus
-		<p><em>UI Access</em> enables scripts to automate administrative programs.</p></label>
+		<p>UI Access enables scripts to automate administrative programs. <a href="#" onclick="AHK('ViewHelp', '/docs/Scripts.htm#Installer_uiAccess')">[help]</a></p></label>
 	<a href="#" onclick="customInstall(); return false" id="install_button" class="button footer">Install</a>
 </div>
 
