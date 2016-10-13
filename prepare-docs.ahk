@@ -36,7 +36,10 @@ PrepareDocsBegin(last_tag, version)
     log := RegExReplace(log, "`n).+", "<p>$0</p>")
     
     ; Header for previewing file.
-    header := "<link href=""file:///" DocDir "/docs/static/theme.css"" rel=""stylesheet"" type=""text/css"" />"
+    header := "<head>"
+        . "<base href=""file:///" DocDir "/"" target=""_blank"">"
+        . "<link href=""file:///" DocDir "/docs/static/theme.css"" rel=""stylesheet"" type=""text/css"" />"
+        . "</head>"
     
     ; Add header and heading.
     FormatTime, date,, MMMM d, yyyy

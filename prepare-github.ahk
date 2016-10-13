@@ -11,7 +11,7 @@ PrepareGitHubBegin()
     
     ; Tidy up changelog entry for use by GitHub Release
     FileRead, log, %VersionDocsLog%
-    log := RegExReplace(log, "href=""\K(?!http|#)", "https://autohotkey.com/docs/")
+    log := RegExReplace(log, "href=""\K(?!\w+:|#)", "https://autohotkey.com/docs/")
     log := RegExReplace(log, "<h2.*</h2>\R")
     log := RegExReplace(log, "<p>(.*?)</p>", "$1")
     FileOpen(GitHubLog, "w").Write(log)

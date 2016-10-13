@@ -301,6 +301,10 @@ if gh_release
     PrepareGitHubEnd()
     
     FileRead log, %GitHubLog%
+    
+    ; Remove header used for previewing (see prepare-docs.ahk).
+    log := Trim(RegExReplace(log, "s)<!--temp.*?/temp-->"), " `t`r`n")
+    
     try
     {
         ; Create a new GitHub Release and upload the installer
