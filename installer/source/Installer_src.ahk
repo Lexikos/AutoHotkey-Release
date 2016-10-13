@@ -1179,7 +1179,8 @@ _Install(opt) {
         if opt.uiAccess && FileExist(uiafile := StrReplace(exefile, ".exe", "_UIA.exe")) {
             RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess,, Run with UI Access
             RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess\Command,, "%A_WorkingDir%\%uiafile%" "`%1" `%*
-        }
+        } else
+            RegDelete HKCR, %FileTypeKey%\Shell\uiAccess
     }
     
     if opt.dragdrop
