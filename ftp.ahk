@@ -10,6 +10,6 @@ FtpQPut(src, dst:="")
 FtpExecute()
 {
     global
-    ; RunWait "%PSFTP%" -bc -be -b "%FtpScript%",, UseErrorLevel
-    ; FileMove %FtpScript%, %OutDir%\ftp-ran-%A_Now%.txt ; Rename in case of re-release
+    RunWait "%PSFTP%" -bc -be -b "%FtpScript%",, UseErrorLevel
+    FileMove %FtpScript%, %OutDir%\ftp-ran-%A_Now%.txt ; Rename in case of re-release
 }

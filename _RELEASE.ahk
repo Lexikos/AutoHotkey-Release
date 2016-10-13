@@ -113,7 +113,7 @@ update_ahk2exe := has_ahk2exe && (building || Prompt("Update Ahk2Exe?"))
 update_installer := has_installer && (building || update_helpfile || update_ahk2exe || Prompt("Update installer?"))
 update_zip := SevenZip && (building || update_helpfile || update_ahk2exe)
 gh_release := has_github && branch == "master" && (committing || Prompt("GitHub release?"))
-; pushing := committing
+pushing := committing
 
 
 if committing
@@ -383,7 +383,7 @@ RegExUpdate(local_file, remote_file, needle, replacement)
 }
 
 D("! Executing FTP script")
-; FtpExecute()
+FtpExecute()
 
 
 D("`n")

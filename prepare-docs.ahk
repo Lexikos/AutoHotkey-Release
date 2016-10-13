@@ -104,13 +104,13 @@ PrepareDocsEnd()
     git("commit -a -m v" version, DocDir)
     if ErrorLevel
         Prompt("Failed to commit docs!", 0)
-    ; git("push", DocDir)
+    git("push", DocDir)
     
-    ; if FileExist(DocDir "..\up")
-    ; {
-        ; D("! Updating GitHub pages")
-        ; gitsh("../up", DocDir)  ; This is a shell script which updates lexikos.github.io.
-    ; }
+    if FileExist(DocDir "..\up")
+    {
+        D("! Updating GitHub pages")
+        gitsh("../up", DocDir)  ; This is a shell script which updates lexikos.github.io.
+    }
 }
 
 
