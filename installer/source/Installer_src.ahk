@@ -1194,11 +1194,11 @@ _Install(opt) {
     if opt.ahk2exe
         RegWrite REG_SZ, HKLM, SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\Ahk2Exe.exe,, %A_WorkingDir%\Compiler\Ahk2Exe.exe
     
-    local suffixList := "|A32|U32|U64"
+    local suffixList := "|A32|U32|U64|A32_UIA|U32_UIA|U64_UIA"
     Loop Parse, suffixList, |
     {
         RegDelete HKCR, Applications\AutoHotkey%A_LoopField%.exe
-        if opt.isHostApp
+        if opt.isHostApp && FileExist("AutoHotkey" A_LoopField ".exe")
             RegWrite REG_SZ, HKCR, Applications\AutoHotkey%A_LoopField%.exe, IsHostApp
     }
     
