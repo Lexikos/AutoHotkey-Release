@@ -343,6 +343,7 @@ if committing
     if (branch == "master")
     {
         ; Update 'last update' date
+        FormatTime date,, MMMM d, yyyy
         RegExUpdate(WebDir "\index.htm"
             , "/download/index.htm"
             , "(?<=<!--update-->).*(?=<!--/update-->)"
