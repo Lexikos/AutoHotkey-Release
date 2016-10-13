@@ -899,6 +899,7 @@ QuickInstall() {
         menu: DefaultStartMenu,
         ahk2exe: DefaultCompiler,
         dragdrop: DefaultDragDrop,
+        uiAccess: DefaultUIAccess,
         utf8: DefaultToUTF8,
         isHostApp: DefaultIsHostApp
     )})
