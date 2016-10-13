@@ -681,8 +681,8 @@ ReadLicense() {
 
 ViewHelp(topic) {
     local path
-    if FileExist("AutoHotkey.chm")
-        path := A_WorkingDir "\AutoHotkey.chm"
+    if FileExist(A_ScriptDir "\AutoHotkey.chm")
+        path := A_ScriptDir "\AutoHotkey.chm"
     else
         path := CurrentPath "\AutoHotkey.chm"
     if FileExist(path)
