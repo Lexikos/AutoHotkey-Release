@@ -61,7 +61,7 @@ if !RegExMatch(head, "^ref: refs/heads/\K\S+(?=`n$)", branch)
 DllCall("AllocConsole")
 
 ; Compare HEAD to most recent tag.
-if !RegExMatch(cdesc:=git("describe --long --match v* --dirty")
+if !RegExMatch(cdesc:=git("describe --long --match v* --dirty --first-parent")
         , "^(?<tag>v.*)-(?<cnt>\d+)-g(?<id>\w+)(?<dirty>-dirty)?$", c)
 {
     ExitError("Failed to determine version; git tags may be missing.")
