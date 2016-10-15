@@ -288,10 +288,6 @@ if update_zip && FileExist(A_ScriptDir "\zip-files-" branch ".txt")
 }
 
 
-; Don't need console for the rest.
-DllCall("FreeConsole")
-
-
 /*************************************************************
  *                SYNC WITH GITHUB.COM
  */
