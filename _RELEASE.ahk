@@ -77,6 +77,8 @@ if (ccnt = 0)
     committing := false
 }
 version := SubStr(ctag, 2)
+if (branch = "alpha")
+    version .= "-" cid
 
 
 /*************************************************************
@@ -127,9 +129,11 @@ if committing
 }
 else if building
 {
-    ; Generate version number for build
+    ; Set version number for build
     if (ccnt || cdirty)
         PrepareEdgeVersion()
+    else
+        PrepareVersion()
 }
 
 
