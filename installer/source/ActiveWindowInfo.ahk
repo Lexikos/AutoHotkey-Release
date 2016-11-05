@@ -98,17 +98,44 @@ Loop
 StringTrimRight, sbTxt, sbTxt, 1
 GuiControl,, Ctrl_SBText, % sbTxt
 GuiControlGet, bSlow,, Ctrl_IsSlow
-SetTitleMatchMode, % bSlow ? "Slow" : "Fast"
-DetectHiddenText, Off
-WinGetText, ovVisText
-DetectHiddenText, On
-WinGetText, ovAllText
+if bSlow
+{
+	DetectHiddenText, Off
+	WinGetText, ovVisText
+	DetectHiddenText, On
+	WinGetText, ovAllText
+}
+else
+{
+	ovVisText := WinGetTextFast(false)
+	ovAllText := WinGetTextFast(true)
+}
 GuiControl,, Ctrl_VisText, % ovVisText
 GuiControl,, Ctrl_AllText, % ovAllText
 return
 
 GuiClose:
 ExitApp
+
+WinGetTextFast(detect_hidden)
+{
+	; WinGetText ALWAYS uses the "fast" mode - TitleMatchMode only affects
+	; WinText/ExcludeText parameters.  In Slow mode, GetWindowText() is used
+	; to retrieve the text of each control.
+	WinGet controls, ControlListHwnd
+	static WINDOW_TEXT_SIZE := 32767 ; Defined in AutoHotkey source.
+	VarSetCapacity(buf, WINDOW_TEXT_SIZE * (A_IsUnicode ? 2 : 1))
+	text := ""
+	Loop Parse, controls, `n
+	{
+		if !detect_hidden && !DllCall("IsWindowVisible", "ptr", A_LoopField)
+			continue
+		if !DllCall("GetWindowText", "ptr", A_LoopField, "str", buf, "int", WINDOW_TEXT_SIZE)
+			continue
+		text .= buf "`r`n"
+	}
+	return text
+}
 
 GetClientSize(hWnd, ByRef w := "", ByRef h := "")
 {
