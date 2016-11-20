@@ -103,8 +103,8 @@ else if (branch = "alpha")
  *                      WHAT TO DO?
  */
 
-has_docs := DocDir != ""
-has_ahk2exe := Ahk2ExeDir != ""
+has_docs := DocDir != "" && InStr(FileExist(DocDir), "D")
+has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D")
 has_installer := has_docs && has_ahk2exe
 has_github := gh_owner && gh_repo && gh_token && (A_PtrSize=4 || ActiveScript)
 
