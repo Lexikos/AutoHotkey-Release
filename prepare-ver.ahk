@@ -1,12 +1,15 @@
 ﻿
 PrepareNewVersion()
 {
-    global ctag, version
+    global ctag, cid, version, branch
 
-    if RegExMatch(ctag, "^v(.*\D)(\d+)(.*)", ver)
-        version := format("{}{:0" StrLen(ver2) "}{}", ver1, ver2 + 1, ver3)
+    if RegExMatch(ctag, "^v(.*\D)(\d+)$", ver)
+        version := format("{}{:0" StrLen(ver2) "}", ver1, ver2 + 1)
     else
         version := SubStr(ctag, 2)
+    
+    if (branch = "alpha")
+        version .= "-" cid
 
     PrepareVersion()
 }
