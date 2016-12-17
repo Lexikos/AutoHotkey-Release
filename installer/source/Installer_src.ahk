@@ -2,7 +2,7 @@
 #NoTrayIcon
 ; #Warn
 #SingleInstance Off
-Menu Tray, Icon, appwiz.cpl, -1500
+try Menu Tray, Icon, appwiz.cpl, -1500
 
 ;#debug
 if !InStr(DllCall("GetCommandLine", "str"), "/restart ")
