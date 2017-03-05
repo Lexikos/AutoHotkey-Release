@@ -296,6 +296,18 @@ if update_zip && FileExist(A_ScriptDir "\zip-files-" branch ".txt")
  *                SYNC WITH GITHUB.COM
  */
 
+if pushing
+{
+    ; Push all updates to remote repo.
+    D("! Pushing")
+    if (branch == "edge")
+        git("push -f origin edge:edge")
+    else
+        git("push")
+    if tagged
+        git("push origin tag v" version)
+}
+
 if gh_release
 {
     PrepareGitHubEnd()
@@ -316,18 +328,6 @@ if gh_release
     {
         D("- GitHub release error : " error.message " (" error.extra ")")
     }
-}
-
-if pushing
-{
-    ; Push all updates to remote repo.
-    D("! Pushing")
-    if (branch == "edge")
-        git("push -f origin edge:edge")
-    else
-        git("push")
-    if tagged
-        git("push origin tag v" version)
 }
 
 
