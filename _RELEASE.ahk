@@ -200,7 +200,7 @@ if committing
     if (branch == "master" || branch == "alpha")
     {
         D("! Creating tag v" version)
-        git("tag -m v" version " v" version)
+        git("tag -m v" version " v" RegExReplace(version, "-\Q" cid "\E$"))
         tagged := true
     }
 }
