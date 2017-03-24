@@ -57,6 +57,8 @@ if !RegExMatch(head, "^ref: refs/heads/\K\S+(?=`n$)", branch)
     ExitError(head ? "Not on a branch. Current head:`n" head : ".git\HEAD is missing.")
 }
 
+on_test_branch := branch != "master" && branch != "alpha"
+
 ; Let git() and each call to a console app use the same console
 DllCall("AllocConsole")
 
@@ -108,14 +110,14 @@ has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D")
 has_installer := has_docs && has_ahk2exe
 has_github := gh_owner && gh_repo && gh_token && (A_PtrSize=4 || ActiveScript)
 
-committing := branch != "edge" && (committing || committing="" && Prompt("Commit?"))
+committing := !on_test_branch && (committing || committing="" && Prompt("Commit?"))
 building := committing || Prompt("Build?")
 update_helpfile := has_docs && (committing || Prompt("Update help file?"))
 update_ahk2exe := has_ahk2exe && (building || Prompt("Update Ahk2Exe?"))
 update_installer := has_installer && (building || update_helpfile || update_ahk2exe || Prompt("Update installer?"))
 update_zip := SevenZip && (building || update_helpfile || update_ahk2exe)
 gh_release := has_github && branch == "master" && (committing || Prompt("GitHub release?"))
-pushing := committing
+pushing := on_test_branch ? Prompt("Push test branch?") : committing
 
 
 if committing
@@ -300,8 +302,8 @@ if pushing
 {
     ; Push all updates to remote repo.
     D("! Pushing")
-    if (branch == "edge")
-        git("push -f origin edge:edge")
+    if on_test_branch
+        git("push -f origin " branch ":" branch)
     else
         git("push")
     if tagged
@@ -335,7 +337,7 @@ if gh_release
  *                SYNC WITH AUTOHOTKEY.COM
  */
 
-if committing
+if committing && !on_test_branch
 {
     FileOpen(TempDir "\version.txt", "w").Write(version)
     FtpQPut(TempDir "\version.txt", RemoteDownloadDir "/version.txt")
