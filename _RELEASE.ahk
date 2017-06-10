@@ -172,7 +172,7 @@ if building
             {cfg: "Self-contained(mbcs)" , platform: "Win32"}
         ))
     }
-    Build(builds)
+    build_errors := Build(builds)
     
     if build_errors
         ExitError(build_errors " build error(s)")
