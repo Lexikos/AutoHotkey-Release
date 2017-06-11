@@ -307,7 +307,7 @@ if pushing
     else
         git("push")
     if tagged
-        git("push origin tag v" version)
+        git("push origin tag v" RegExReplace(version, "-\Q" cid "\E$"))
 }
 
 if gh_release
