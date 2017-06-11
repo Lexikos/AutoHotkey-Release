@@ -110,7 +110,7 @@ has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D")
 has_installer := has_docs && has_ahk2exe
 has_github := gh_owner && gh_repo && gh_token && (A_PtrSize=4 || ActiveScript)
 
-committing := !on_test_branch && (committing || committing="" && Prompt("Commit?"))
+committing := !on_test_branch && (committing || committing="" && Prompt("Bump version and commit/tag?"))
 building := committing || Prompt("Build?")
 update_helpfile := has_docs && (committing || Prompt("Update help file?"))
 update_ahk2exe := has_ahk2exe && (building || Prompt("Update Ahk2Exe?"))
