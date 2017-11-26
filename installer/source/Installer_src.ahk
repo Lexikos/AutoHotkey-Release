@@ -975,8 +975,13 @@ Uninstall() {
     RemoveCompiler()
     
     FileDelete %ProductName% Website.url
-    if (CurrentStartMenu != "")  ; Must not remove A_ProgramsCommon itself!
-        FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu%, 1
+    if (CurrentStartMenu != "") { ; Must not remove A_ProgramsCommon itself!
+        local i, lnk
+        for i, lnk in ["AutoHotkey", "AutoIt3 Window Spy", "Active Window Info (Window Spy)"
+            , "AutoHotkey Help File", "Website", "AutoHotkey Setup", "Convert .ahk to .exe"]
+            FileDelete %A_ProgramsCommon%\%CurrentStartMenu%\%lnk%.lnk
+        FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu% ; Only if empty.
+    }
     
     if !SilentMode
         MsgBox 0x2040, AutoHotkey Setup
