@@ -88,7 +88,7 @@ CoordMode, Mouse, Client
 MouseGetPos, mcX, mcY
 PixelGetColor, mClr, %msX%, %msY%, RGB
 mClr := SubStr(mClr, 3)
-GuiControl,, Ctrl_MousePos, % "Absolute:`t" msX ", " msY " (less often used)`nRelative:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
+GuiControl,, Ctrl_MousePos, % "Screen:`t" msX ", " msY " (less often used)`nWindow:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
 	. "`nColor:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")"
 GuiControl,, Ctrl_CtrlLabel, % (Ctrl_FollowMouse ? txtMouseCtrl : txtFocusCtrl) ":"
 if (curCtrl)
