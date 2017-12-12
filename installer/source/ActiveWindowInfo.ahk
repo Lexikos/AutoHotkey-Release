@@ -9,9 +9,6 @@ SetWorkingDir, %A_ScriptDir%
 SetBatchLines, -1
 CoordMode, Pixel, Screen
 
-IfExist, ..\toolicon.icl ; Seems useful enough to support standalone operation.
-	Menu, Tray, Icon, ..\toolicon.icl, 9
-
 txtNotFrozen := "(Hold Ctrl or Shift to suspend updates)"
 txtFrozen := "(Updates suspended)"
 txtMouseCtrl := "Control Under Mouse Position"
