@@ -41,7 +41,7 @@ Gui, Add, Edit, w320 r2 ReadOnly vCtrl_VisText
 Gui, Add, Text,, All Text:
 Gui, Add, Edit, w320 r2 ReadOnly vCtrl_AllText
 Gui, Add, Text, w320 r1 vCtrl_Freeze, % txtNotFrozen
-Gui, Show,, Active Window Info
+Gui, Show, NoActivate, Active Window Info
 GetClientSize(hGui, temp)
 horzMargin := temp*96//A_ScreenDPI - 320
 SetTimer, Update, 250
