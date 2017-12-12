@@ -42,6 +42,7 @@ GuiSize:
 Gui %hGui%:Default
 if !horzMargin
 	return
+SetTimer, Update, % A_EventInfo=1 ? "Off" : "On" ; Suspend on minimize
 ctrlW := A_GuiWidth - horzMargin
 list = Title,MousePos,MouseCur,Pos,SBText,VisText,AllText,Freeze
 Loop, Parse, list, `,
