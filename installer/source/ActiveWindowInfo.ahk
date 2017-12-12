@@ -61,6 +61,8 @@ if (curWin = hGui)
 	return
 WinGetTitle, t1
 WinGetClass, t2
+if (t2 = "MultitaskingViewFrame") ; Alt-tab
+	return
 WinGet, t3, ProcessName
 GuiControl,, Ctrl_Title, % t1 "`nahk_class " t2 "`nahk_exe " t3
 CoordMode, Mouse, Screen
