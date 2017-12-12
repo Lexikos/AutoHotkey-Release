@@ -20,14 +20,17 @@ catch
 isUpd := true
 txtNotFrozen := "(Win+A to freeze display)"
 txtFrozen := "(Win+A to unfreeze display)"
+txtMouseCtrl := "Control Under Mouse Position"
+txtFocusCtrl := "Focused Control"
 
 Gui, New, hwndhGui AlwaysOnTop Resize MinSize
 Gui, Add, Text,, Window Title, Class and Process:
-Gui, Add, Edit, w320 r3 ReadOnly -Wrap vCtrl_Title
+Gui, Add, Checkbox, yp xp+200 w120 Right vCtrl_FollowMouse, Follow Mouse
+Gui, Add, Edit, xm w320 r3 ReadOnly -Wrap vCtrl_Title
 Gui, Add, Text,, Mouse Position:
-Gui, Add, Edit, w320 r3 ReadOnly vCtrl_MousePos
-Gui, Add, Text,, Control Under Mouse Position:
-Gui, Add, Edit, w320 r5 ReadOnly vCtrl_MouseCur
+Gui, Add, Edit, w320 r4 ReadOnly vCtrl_MousePos
+Gui, Add, Text, w320 vCtrl_CtrlLabel, % txtFocusCtrl ":"
+Gui, Add, Edit, w320 r4 ReadOnly vCtrl_Ctrl
 Gui, Add, Text,, Active Window Position:
 Gui, Add, Edit, w320 r2 ReadOnly vCtrl_Pos
 Gui, Add, Text,, Status Bar Text:
@@ -56,7 +59,21 @@ return
 
 Update:
 Gui %hGui%:Default
-curWin := WinExist("A")
+GuiControlGet, Ctrl_FollowMouse
+CoordMode, Mouse, Screen
+MouseGetPos, msX, msY, msWin, msCtrl
+actWin := WinExist("A")
+if Ctrl_FollowMouse
+{
+	curWin := msWin
+	curCtrl := msCtrl
+	WinExist("ahk_id " curWin)
+}
+else
+{
+	curWin := actWin
+	ControlGetFocus, curCtrl
+}
 if (curWin = hGui)
 	return
 WinGetTitle, t1
@@ -65,27 +82,29 @@ if (t2 = "MultitaskingViewFrame") ; Alt-tab
 	return
 WinGet, t3, ProcessName
 GuiControl,, Ctrl_Title, % t1 "`nahk_class " t2 "`nahk_exe " t3
-CoordMode, Mouse, Screen
-MouseGetPos, msX, msY, msWin, msCtrlHwnd, 2
 CoordMode, Mouse, Relative
-MouseGetPos, mrX, mrY,, msCtrl
+MouseGetPos, mrX, mrY
 CoordMode, Mouse, Client
 MouseGetPos, mcX, mcY
-GuiControl,, Ctrl_MousePos, % "Absolute:`t" msX ", " msY " (less often used)`nRelative:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
 PixelGetColor, mClr, %msX%, %msY%, RGB
 mClr := SubStr(mClr, 3)
-mText := "`nColor:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")"
-if (curWin = msWin)
+GuiControl,, Ctrl_MousePos, % "Absolute:`t" msX ", " msY " (less often used)`nRelative:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
+	. "`nColor:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")"
+GuiControl,, Ctrl_CtrlLabel, % (Ctrl_FollowMouse ? txtMouseCtrl : txtFocusCtrl) ":"
+if (curCtrl)
 {
-	ControlGetText, ctrlTxt, %msCtrl%
-	mText := "ClassNN:`t" msCtrl "`nText:`t" textMangle(ctrlTxt) mText
-    ControlGetPos cX, cY, cW, cH, %msCtrl%
-    mText .= "`n`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
-    WinToClient(msWin, cX, cY)
-    GetClientSize(msCtrlHwnd, cW, cH)
-    mText .= "`nClient:`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
-} else mText := "`n" mText
-GuiControl,, Ctrl_MouseCur, % mText
+	ControlGetText, ctrlTxt, %curCtrl%
+	cText := "ClassNN:`t" curCtrl "`nText:`t" textMangle(ctrlTxt)
+    ControlGetPos cX, cY, cW, cH, %curCtrl%
+    cText .= "`n`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
+    WinToClient(curWin, cX, cY)
+	ControlGet, curCtrlHwnd, Hwnd,, % curCtrl
+    GetClientSize(curCtrlHwnd, cW, cH)
+    cText .= "`nClient:`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
+}
+else
+	cText := ""
+GuiControl,, Ctrl_Ctrl, % cText
 WinGetPos, wX, wY, wW, wH
 GetClientSize(curWin, wcW, wcH)
 GuiControl,, Ctrl_Pos, % "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`t`t`tw: " wcW "`th: " wcH
