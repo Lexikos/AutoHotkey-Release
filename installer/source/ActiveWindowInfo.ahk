@@ -12,14 +12,8 @@ CoordMode, Pixel, Screen
 IfExist, ..\toolicon.icl ; Seems useful enough to support standalone operation.
 	Menu, Tray, Icon, ..\toolicon.icl, 9
 
-try
-    Hotkey #a, FreezeDisplay
-catch
-    Hotkey #vk41, FreezeDisplay
-
-isUpd := true
-txtNotFrozen := "(Win+A to freeze display)"
-txtFrozen := "(Win+A to unfreeze display)"
+txtNotFrozen := "(Hold Ctrl or Shift to suspend updates)"
+txtFrozen := "(Updates suspended)"
 txtMouseCtrl := "Control Under Mouse Position"
 txtFocusCtrl := "Focused Control"
 
@@ -74,12 +68,14 @@ else
 	curWin := actWin
 	ControlGetFocus, curCtrl
 }
-if (curWin = hGui)
-	return
 WinGetTitle, t1
 WinGetClass, t2
-if (t2 = "MultitaskingViewFrame") ; Alt-tab
+if (curWin = hGui || t2 = "MultitaskingViewFrame") ; Our Gui || Alt-tab
+{
+	GuiControl,, Ctrl_Freeze, % txtFrozen
 	return
+}
+GuiControl,, Ctrl_Freeze, % txtNotFrozen
 WinGet, t3, ProcessName
 GuiControl,, Ctrl_Title, % t1 "`nahk_class " t2 "`nahk_exe " t3
 CoordMode, Mouse, Relative
@@ -191,9 +187,13 @@ textMangle(x)
 	return x
 }
 
-FreezeDisplay:
-Gui %hGui%:Default
-isUpd := !isUpd
-SetTimer, Update, % isUpd ? "On" : "Off"
-GuiControl,, Ctrl_Freeze, % isUpd ? txtNotFrozen : txtFrozen
+~*Ctrl::
+~*Shift::
+SetTimer, Update, Off
+GuiControl, %hGui%:, Ctrl_Freeze, % txtFrozen
+return
+
+~*Ctrl up::
+~*Shift up::
+SetTimer, Update, On
 return
