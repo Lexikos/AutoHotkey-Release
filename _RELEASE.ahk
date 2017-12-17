@@ -283,6 +283,9 @@ ZipName := "AutoHotkey_" version ".zip"
 ZipPath := OutDir "\" ZipName
 if update_zip && FileExist(A_ScriptDir "\zip-files-" branch ".txt")
 {
+    if !update_installer && branch = "master"
+        FileCopy %InstDir%\source\WindowSpy.v1.ahk, %InstDir%\include\WindowSpy.ahk, 1
+    
     D("! Zipping")
     zip_list := """@" A_ScriptDir "\zip-files-" branch ".txt"""
     FileDelete %ZipPath%

@@ -47,6 +47,23 @@ rc := StrReplace(rc, "AHK_VERSION_N", StrReplace(ver, ".", ","))
 rc := StrReplace(rc, "AHK_VERSION", """" RegExReplace(ver, "\b\d\b", "0$0",,, 4) """")
 FileOpen("temp\installer.rc", "w").Write(rc)
 
+if (ver >= "2.")
+{
+    ; There's no WindowSpy.v2.ahk yet, so compile it with the v1 compiler.
+    SplitPath A_AhkPath, AhkDir
+    try
+        RunWait "%AhkDir%\Compiler\Ahk2Exe.exe" /out include\AU3_Spy.exe /bin "%AhkDir%\Compiler\Unicode 32-bit.bin" /icon source\spy.ico
+    catch
+        MsgBox 48,, % "Unable to compile Window Spy.  Continuing with"
+            . (FileExist("include\AU3_Spy.exe") ? "out it." : " pre-existing file.")
+    FileDelete include\WindowSpy.ahk
+}
+else
+{
+    FileCopy source\WindowSpy.v1.ahk, include\WindowSpy.ahk, 1
+    FileDelete include\AU3_Spy.exe
+}
+
 return
 
 rInclude(ByRef ahk, lib) {

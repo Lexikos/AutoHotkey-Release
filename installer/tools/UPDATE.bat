@@ -20,16 +20,14 @@ for %%f in (%rh% %ahk% %ahk2exe% %_7zr% %sfx%) do if not exist %%f (
 	goto :err
 )
 
-echo *** Pre-processing script
+echo *** Pre-processing and compiling scripts
 %ahk% tools\packageit.ahk
 
-echo *** Compiling scripts
 :: The standard 7zS2.sfx runs "setup.exe" automatically.  Even if we're using a custom
 :: sfx which runs Installer.ahk, keeping setup.exe makes it easier for users to manually
 :: extract and run setup when the sfx has a problem.  It shouldn't increase file size
 :: much because setup.exe is basically just a combination of other included files.
 %ahk2exe% /in include\Installer.ahk /out include\setup.exe /bin "include\Compiler\Unicode 32-bit.bin"
-%ahk2exe% /in source\ActiveWindowInfo.ahk /out include\AU3_Spy.exe /bin "include\Compiler\Unicode 32-bit.bin" /icon source\spy.ico
 
 echo *** Updating SFX resources
 copy source\setup.ico temp >nul

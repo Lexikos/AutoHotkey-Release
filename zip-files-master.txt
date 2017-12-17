@@ -12,5 +12,4 @@ AutoHotkey.chm
 Installer.ahk
 Template.ahk
 license.txt
-
-..\source\ActiveWindowInfo.ahk
+WindowSpy.ahk
