@@ -580,10 +580,9 @@ CloseScriptsEtc(installdir, actionToContinue) {
             WinWaitClose % "ahk_id " close[A_Index],, 1
         }
     }
-    ; Close all help file and Window Spy windows automatically:
+    ; Close all help file windows automatically:
     GroupAdd autoclosegroup, AutoHotkey_L Help ahk_class HH Parent
     GroupAdd autoclosegroup, AutoHotkey Help ahk_class HH Parent
-    GroupAdd autoclosegroup, Active Window Info ahk_exe %installdir%\AU3_Spy.exe
     ; Also close the old Ahk2Exe (but the new one is a script, so it
     ; was already handled by the section above):
     GroupAdd autoclosegroup, Ahk2Exe v ahk_exe %installdir%\Compiler\Ahk2Exe.exe
@@ -960,13 +959,14 @@ Uninstall() {
     FileDelete AutoHotkeyA32_UIA.exe
     FileDelete AutoHotkeyU64_UIA.exe
     
-    FileDelete AU3_Spy.exe
+    FileDelete WindowSpy.ahk
     FileDelete AutoHotkey.chm
     FileDelete license.txt
     
-    ; This file would only exist if an older version of AutoHotkey_L
+    ; These files would only exist if an older version of AutoHotkey(_L)
     ; installed it:
     FileDelete Update.ahk
+    FileDelete AU3_Spy.exe
     
     ; Although the old installer was designed not to overwrite this in
     ; case the user made customizations, the old uninstaller deletes it:
@@ -978,7 +978,8 @@ Uninstall() {
     if (CurrentStartMenu != "") { ; Must not remove A_ProgramsCommon itself!
         local i, lnk
         for i, lnk in ["AutoHotkey", "AutoIt3 Window Spy", "Active Window Info (Window Spy)"
-            , "AutoHotkey Help File", "Website", "AutoHotkey Setup", "Convert .ahk to .exe"]
+            , "AutoHotkey Help File", "Website", "AutoHotkey Setup", "Convert .ahk to .exe"
+            , "Window Spy"]
             FileDelete %A_ProgramsCommon%\%CurrentStartMenu%\%lnk%.lnk
         FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu% ; Only if empty.
     }
@@ -1117,7 +1118,7 @@ _Install(opt) {
         FileCreateDir %smpath%
         FileCreateShortcut %A_WorkingDir%\AutoHotkey.exe, %smpath%\AutoHotkey.lnk
         FileDelete %smpath%\AutoIt3 Window Spy.lnk
-        FileCreateShortcut %A_WorkingDir%\AU3_Spy.exe, %smpath%\Active Window Info (Window Spy).lnk
+        FileCreateShortcut %A_WorkingDir%\WindowSpy.ahk, %smpath%\Window Spy.lnk
         FileCreateShortcut %A_WorkingDir%\AutoHotkey.chm, %smpath%\AutoHotkey Help File.lnk
         IniWrite %ProductWebsite%, %ProductName% Website.url, InternetShortcut, URL
         FileCreateShortcut %A_WorkingDir%\%ProductName% Website.url, %smpath%\Website.lnk
@@ -1291,7 +1292,7 @@ InstallMainFiles() {
     if A_Is64bitOS
         InstallFile("AutoHotkeyU64.exe")
     
-    InstallFile("AU3_Spy.exe")
+    InstallFile("WindowSpy.ahk")
     InstallFile("AutoHotkey.chm")
     InstallFile("license.txt")
     
