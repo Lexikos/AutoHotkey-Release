@@ -234,6 +234,8 @@ if gh_release
 
 if update_helpfile
 {
+    if (!committing)
+        PrepareSearchIndex(true)
     PrepareDocsCHM()
 }
 

@@ -104,6 +104,8 @@ PrepareDocsEnd()
     else
         Prompt("AutoHotkey.htm not updated!", 0)
     
+    PrepareSearchIndex()
+    
     git("commit -a -m v" version, DocDir)
     if ErrorLevel
         Prompt("Failed to commit docs!", 0)
@@ -136,4 +138,18 @@ PrepareDocsCHM()
     }
     RunWait "%A_AhkPath%\..\AutoHotkeyU32.exe" compile_chm.ahk, %DocDir%
     FileCopy %DocDir%\AutoHotkey.chm, %InstDir%\include, 1
+}
+
+
+PrepareSearchIndex(commit:=false)
+{
+    global DocDir
+    
+    ; Update search index.
+    try
+    {
+        RunWait "%A_AhkPath%\..\v2-alpha\AutoHotkeyU32.exe" "%DocDir%\docs\static\source\build_search.ahk"
+        if commit
+            git("commit docs/static/source/data_search.js -m ""Update search index""", DocDir)
+    }
 }
