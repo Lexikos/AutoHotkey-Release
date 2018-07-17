@@ -101,7 +101,7 @@ else
 GuiControl,, Ctrl_Ctrl, % cText
 WinGetPos, wX, wY, wW, wH
 GetClientSize(curWin, wcW, wcH)
-GuiControl,, Ctrl_Pos, % "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`t`t`tw: " wcW "`th: " wcH
+GuiControl,, Ctrl_Pos, % "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`tx: 0`ty: 0`tw: " wcW "`th: " wcH
 sbTxt := ""
 Loop
 {
