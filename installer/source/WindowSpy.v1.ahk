@@ -44,7 +44,7 @@ if !horzMargin
 	return
 SetTimer, Update, % A_EventInfo=1 ? "Off" : "On" ; Suspend on minimize
 ctrlW := A_GuiWidth - horzMargin
-list = Title,MousePos,MouseCur,Pos,SBText,VisText,AllText,Freeze
+list = Title,MousePos,Ctrl,Pos,SBText,VisText,AllText,Freeze
 Loop, Parse, list, `,
 	GuiControl, Move, Ctrl_%A_LoopField%, w%ctrlW%
 return
@@ -101,7 +101,7 @@ else
 GuiControl,, Ctrl_Ctrl, % cText
 WinGetPos, wX, wY, wW, wH
 GetClientSize(curWin, wcW, wcH)
-GuiControl,, Ctrl_Pos, % "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`t`t`tw: " wcW "`th: " wcH
+GuiControl,, Ctrl_Pos, % "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`tx: 0`ty: 0`tw: " wcW "`th: " wcH
 sbTxt := ""
 Loop
 {
