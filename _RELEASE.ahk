@@ -24,7 +24,7 @@ IniRead FtpPrefix, %IniFile%, FTP, Prefix, % A_Space
 
 ProjDir = %A_ScriptDir%\..\AutoHotkey_L
 InstDir = %A_ScriptDir%\installer
-WebDir = %A_ScriptDir%\files\web  ; Location of index.htm and .htaccess (optional)
+WebDir = %A_ScriptDir%\files\web  ; Location of index.htm
 
 
 #NoEnv
@@ -355,28 +355,6 @@ if committing && !on_test_branch
             , "/download/index.htm"
             , "(?<=<!--update-->).*(?=<!--/update-->)"
             , "v" version " - " date)
-        
-        ; Update download redirects
-        rewrite_rules =
-        (LTrim
-        RewriteRule ^ahk-install\.exe$ 1.1/%InstName% [R=301,L,E=nocache:1]
-        RewriteRule ^ahk\.zip$ 1.1/%ZipName% [R=301,L,E=nocache:1]
-        )
-        RegExUpdate(WebDir "\.htaccess"
-            , "/download/.htaccess"
-            , "s)# v1.1`n\K.*?(?=`n#)"
-            , rewrite_rules)
-    }
-    else if (branch == "alpha")
-    {
-        rewrite_rules =
-        (LTrim
-        RewriteRule ^ahk-v2\.zip$ 2.0/%ZipName% [R=301,L,E=nocache:1]
-        )
-        RegExUpdate(WebDir "\.htaccess"
-            , "/download/.htaccess"
-            , "s)# v2.0`n\K.*?(?=`n#)"
-            , rewrite_rules)
     }
 }
 
