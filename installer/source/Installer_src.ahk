@@ -1182,6 +1182,7 @@ _Install(opt) {
     if UACIsEnabled {
         ; Run as administrator
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\RunAs\Command,, "%A_WorkingDir%\AutoHotkey.exe" "`%1" `%*
+        RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\RunAs, HasLUAShield
         ; Run with UI Access
         if opt.uiAccess && FileExist(uiafile := StrReplace(exefile, ".exe", "_UIA.exe")) {
             RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess,, Run with UI Access
