@@ -70,22 +70,22 @@ WinGetTitle, t1
 WinGetClass, t2
 if (curWin = hGui || t2 = "MultitaskingViewFrame") ; Our Gui || Alt-tab
 {
-	GuiControl,, Ctrl_Freeze, % txtFrozen
+	UpdateText("Ctrl_Freeze", txtFrozen)
 	return
 }
-GuiControl,, Ctrl_Freeze, % txtNotFrozen
+UpdateText("Ctrl_Freeze", txtNotFrozen)
 WinGet, t3, ProcessName
 WinGet, t4, PID
-GuiControl,, Ctrl_Title, % t1 "`nahk_class " t2 "`nahk_exe " t3 "`nahk_pid " t4
+UpdateText("Ctrl_Title", t1 "`nahk_class " t2 "`nahk_exe " t3 "`nahk_pid " t4)
 CoordMode, Mouse, Relative
 MouseGetPos, mrX, mrY
 CoordMode, Mouse, Client
 MouseGetPos, mcX, mcY
 PixelGetColor, mClr, %msX%, %msY%, RGB
 mClr := SubStr(mClr, 3)
-GuiControl,, Ctrl_MousePos, % "Screen:`t" msX ", " msY " (less often used)`nWindow:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
-	. "`nColor:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")"
-GuiControl,, Ctrl_CtrlLabel, % (Ctrl_FollowMouse ? txtMouseCtrl : txtFocusCtrl) ":"
+UpdateText("Ctrl_MousePos", "Screen:`t" msX ", " msY " (less often used)`nWindow:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
+	. "`nColor:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")")
+UpdateText("Ctrl_CtrlLabel", (Ctrl_FollowMouse ? txtMouseCtrl : txtFocusCtrl) ":")
 if (curCtrl)
 {
 	ControlGetText, ctrlTxt, %curCtrl%
@@ -99,10 +99,10 @@ if (curCtrl)
 }
 else
 	cText := ""
-GuiControl,, Ctrl_Ctrl, % cText
+UpdateText("Ctrl_Ctrl", cText)
 WinGetPos, wX, wY, wW, wH
 GetClientSize(curWin, wcW, wcH)
-GuiControl,, Ctrl_Pos, % "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`tx: 0`ty: 0`tw: " wcW "`th: " wcH
+UpdateText("Ctrl_Pos", "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`tx: 0`ty: 0`tw: " wcW "`th: " wcH)
 sbTxt := ""
 Loop
 {
@@ -112,7 +112,7 @@ Loop
 	sbTxt .= "(" A_Index "):`t" textMangle(ovi) "`n"
 }
 StringTrimRight, sbTxt, sbTxt, 1
-GuiControl,, Ctrl_SBText, % sbTxt
+UpdateText("Ctrl_SBText", sbTxt)
 GuiControlGet, bSlow,, Ctrl_IsSlow
 if bSlow
 {
@@ -126,8 +126,8 @@ else
 	ovVisText := WinGetTextFast(false)
 	ovAllText := WinGetTextFast(true)
 }
-GuiControl,, Ctrl_VisText, % ovVisText
-GuiControl,, Ctrl_AllText, % ovAllText
+UpdateText("Ctrl_VisText", ovVisText)
+UpdateText("Ctrl_AllText", ovAllText)
 return
 
 GuiClose:
@@ -151,6 +151,20 @@ WinGetTextFast(detect_hidden)
 		text .= buf "`r`n"
 	}
 	return text
+}
+
+UpdateText(ControlID, NewText)
+{
+	; Unlike using a pure GuiControl, this function causes the text of the
+	; controls to be updated only when the text has changed, preventing periodic
+	; flickering (especially on older systems).
+	static OldText := {}
+	global hGui
+	if (OldText[ControlID] != NewText)
+	{
+		GuiControl, %hGui%:, % ControlID, % NewText
+		OldText[ControlID] := NewText
+	}
 }
 
 GetClientSize(hWnd, ByRef w := "", ByRef h := "")
@@ -189,7 +203,7 @@ textMangle(x)
 ~*Ctrl::
 ~*Shift::
 SetTimer, Update, Off
-GuiControl, %hGui%:, Ctrl_Freeze, % txtFrozen
+UpdateText("Ctrl_Freeze", txtFrozen)
 return
 
 ~*Ctrl up::
