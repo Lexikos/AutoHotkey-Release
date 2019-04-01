@@ -47,6 +47,8 @@ echo *** Assembling AutoHotkey_setup.exe
 copy /Y /b "%td%\installer.sfx" + "%td%\installer.7z" AutoHotkey_setup.exe >nul
 if ErrorLevel 1 goto :err
 
+if exist "%~dp0\sign-installer.bat" call "%~dp0\sign-installer.bat" "%~dp0\..\AutoHotkey_setup.exe"
+
 if "%~1" neq "" (
 	cd %original_cd%
 	move /y "%~dp0\..\AutoHotkey_setup.exe" "%~1"
