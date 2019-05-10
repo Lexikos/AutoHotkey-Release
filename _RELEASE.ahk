@@ -172,9 +172,7 @@ if building
             {cfg: "Self-contained(mbcs)" , platform: "Win32"}
         ))
     }
-    build_errors := Build(builds)
-    
-    if build_errors
+    if !Build(builds)
         ExitError(build_errors " build error(s)")
     
     ; Update installer includes.
