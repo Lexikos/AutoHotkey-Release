@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 
 :: Untested: ProgramFiles(x86) is not set for 32-bit programs pre Windows 10
 if not defined ProgramFiles(x86) set ProgramFiles(x86)=%ProgramFiles%
@@ -34,11 +35,13 @@ if not defined VSCOMNTOOLS (
 call "%VSCOMNTOOLS%..\..\VC\vcvarsall.bat"
 
 :building
-if [%1]==[] exit /b 0
-echo ++++ Building %1 :: %2 ++++
-MSBuild AutoHotkeyx.sln /t:Rebuild /p:Configuration=%1 /p:Platform=%2
+set config=%1
+set platform=%2
+if [%platform%]==[] exit /b 0
+echo ++++ Building %config% :: %platform% ++++
+MSBuild AutoHotkeyx.sln /t:Rebuild /p:Configuration=%config% /p:Platform=%platform%
 if ErrorLevel 1 (
-    echo ---- BUILD FAILED: %1 :: %2 ----
+    echo ---- BUILD FAILED: !config! :: !platform! ----
     exit /b %ErrorLevel%
 )
 echo.
