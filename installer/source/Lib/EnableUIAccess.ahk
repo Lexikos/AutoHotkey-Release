@@ -53,14 +53,18 @@ EnableUIAccess_SetManifest(file)
 EnableUIAccess_CreateCert(CertName, hStore)
 {
     if !DllCall("Advapi32\CryptAcquireContext", "ptr*", hProv
+        , "str", CertName, "ptr", 0, "uint", 1, "uint", 0) ; PROV_RSA_FULL=1, open existing=0
+    {
+        if !DllCall("Advapi32\CryptAcquireContext", "ptr*", hProv
             , "str", CertName, "ptr", 0, "uint", 1, "uint", 8) ; PROV_RSA_FULL=1, CRYPT_NEWKEYSET=8
-        throw
-    prov := new CryptContext(hProv)
+            throw
+        prov := new CryptContext(hProv)
 
-    if !DllCall("Advapi32\CryptGenKey", "ptr", hProv
-            , "uint", 2, "uint", 0x4000001, "ptr*", hKey) ; AT_SIGNATURE=2, EXPORTABLE=..01
-        throw
-    key := new CryptKey(hKey)
+        if !DllCall("Advapi32\CryptGenKey", "ptr", hProv
+                , "uint", 2, "uint", 0x4000001, "ptr*", hKey) ; AT_SIGNATURE=2, EXPORTABLE=..01
+            throw
+        (new CryptKey(hKey)) ; To immediately release it.
+    }
 
     Loop 2
     {
