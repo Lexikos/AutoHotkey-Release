@@ -95,6 +95,24 @@ EnableUIAccess_CreateCert(CertName, hStore)
     return cert
 }
 
+EnableUIAccess_DeleteCertAndKey(CertName)
+{
+    DllCall("Advapi32\CryptAcquireContext", "ptr*", undefined
+        , "str", CertName, "ptr", 0, "uint", 1, "uint", 16) ; PROV_RSA_FULL=1, CRYPT_DELETEKEYSET=16
+    if !hStore := DllCall("Crypt32\CertOpenStore", "ptr", 10 ; STORE_PROV_SYSTEM_W
+        , "uint", 0, "ptr", 0, "uint", 0x20000 ; SYSTEM_STORE_LOCAL_MACHINE
+        , "wstr", "Root", "ptr")
+		throw
+	if !p := DllCall("Crypt32\CertFindCertificateInStore", "ptr", hStore
+        , "uint", 0x10001 ; X509_ASN_ENCODING|PKCS_7_ASN_ENCODING
+        , "uint", 0, "uint", 0x80007 ; FIND_SUBJECT_STR
+        , "wstr", CertName, "ptr", 0, "ptr")
+		return 0
+	if !DllCall("Crypt32\CertDeleteCertificateFromStore", "ptr", p)
+		throw
+	return 1
+}
+
 class CryptContext {
     __New(p) {
         this.p := p

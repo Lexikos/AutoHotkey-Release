@@ -998,6 +998,9 @@ Uninstall() {
         ExitApp
     }
     
+    ; Delete certificate and private key used to sign UIA executables.
+    try EnableUIAccess_DeleteCertAndKey("AutoHotkey")
+    
     Gui Cancel
     
     ; Use cmd.exe to work around the fact that AutoHotkey.exe is locked
