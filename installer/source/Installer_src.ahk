@@ -326,12 +326,18 @@ InitUI() {
 CheckForUpdates() {
     local w := getWindow(), latestVersion := ""
     try {
-        whr := ComObjCreate("WinHttp.WinHttpRequest.5.1")
-        whr.Open("GET", "https://autohotkey.com/download/1.1/version.txt", true)
-        whr.Send()
-        whr.WaitForResponse()
-        latestVersion := whr.responseText
+        req := ComObjCreate("Msxml2.XMLHTTP")
+        req.open("GET", "https://autohotkey.com/download/1.1/version.txt?" SubStr(A_Now,1,8), true)
+        req.onreadystatechange := Func("VersionReceived").Bind(req)
+        req.send()
     }
+}
+
+VersionReceived(req) {
+    local w := getWindow(), latestVersion := ""
+    if req.readyState != 4
+        return
+    latestVersion := req.responseText
     if RegExMatch(latestVersion, "^(\d+\.){3}\d+") {
         if (latestVersion = ProductVersion)
             w.opt1.firstChild.innerText := "Reinstall (download required)"
