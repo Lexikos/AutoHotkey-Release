@@ -138,7 +138,7 @@ try {  ; Hide window title.
         , "int", 1, "int64*", (3<<32)|3, "int", 8)
 }
 OnMessage(0x100, "gui_KeyDown", 2)
-try Gui Add, ActiveX, vwb w600 h400 hwndhwb, Shell.Explorer
+try Gui Add, ActiveX, vwb w600 h420 hwndhwb, Shell.Explorer
 try {
     if !wb
         throw Exception("Failed to create IE control")
@@ -300,7 +300,7 @@ InitUI() {
     w.enabledragdrop.checked := DefaultDragDrop
     w.separatebuttons.checked := DefaultIsHostApp
     w.enableuiaccess.checked := DefaultUIAccess && IsTrustedLocation(DefaultPath)
-    ; w.defaulttoutf8.checked := DefaultToUTF8
+    w.defaulttoutf8.checked := DefaultToUTF8
     if !A_Is64bitOS
         w.it_x64.style.display := "None"
     if A_OSVersion in WIN_2000,WIN_2003,WIN_XP,WIN_VISTA ; i.e. not WIN_7, WIN_8 or a future OS.
@@ -918,7 +918,7 @@ CustomInstall() {
         ahk2exe: w.installcompiler.checked,
         dragdrop: w.enabledragdrop.checked,
         uiAccess: w.enableuiaccess.checked,
-        utf8: DefaultToUTF8, ;w.defaulttoutf8.checked
+        utf8: w.defaulttoutf8.checked,
         isHostApp: w.separatebuttons.checked
     )})
 }
