@@ -305,12 +305,9 @@ InitUI() {
         w.it_x64.style.display := "None"
     if A_OSVersion in WIN_2000,WIN_2003,WIN_XP,WIN_VISTA ; i.e. not WIN_7, WIN_8 or a future OS.
         w.separatebuttons.parentNode.style.display := "none"
-    if !UACIsEnabled
-        w.enableuiaccess.parentNode.style.display := "none"
-    else {
+    ; Check UIAccess and install dir do not conflict:
         w.enableuiaccess.onchange := Func("enableuiaccess_onchange")
         w.installdir.onchange := Func("installdir_onchange")
-    }
     w.switchPage("start")
     w.document.body.focus()
     ; Scale UI by screen DPI.  My testing showed that Vista with IE7 or IE9
@@ -1192,13 +1189,13 @@ _Install(opt) {
         ; Run as administrator
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\RunAs\Command,, "%A_WorkingDir%\AutoHotkey.exe" "`%1" `%*
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\RunAs, HasLUAShield
-        ; Run with UI Access
-        if opt.uiAccess && FileExist(uiafile := StrReplace(exefile, ".exe", "_UIA.exe")) {
-            RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess,, Run with UI Access
-            RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess\Command,, "%A_WorkingDir%\%uiafile%" "`%1" `%*
-        } else
-            RegDelete HKCR, %FileTypeKey%\Shell\uiAccess
     }
+    ; Run with UI Access
+    if opt.uiAccess && FileExist(uiafile := StrReplace(exefile, ".exe", "_UIA.exe")) {
+        RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess,, Run with UI Access
+        RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\uiAccess\Command,, "%A_WorkingDir%\%uiafile%" "`%1" `%*
+    } else
+        RegDelete HKCR, %FileTypeKey%\Shell\uiAccess
     
     if opt.dragdrop
         RegWrite REG_SZ, HKCR, %FileTypeKey%\ShellEx\DropHandler,, {86C86720-42A0-1069-A2E8-08002B30309D}
