@@ -27,7 +27,7 @@ echo *** Pre-processing and compiling scripts
 :: sfx which runs Installer.ahk, keeping setup.exe makes it easier for users to manually
 :: extract and run setup when the sfx has a problem.  It shouldn't increase file size
 :: much because setup.exe is basically just a combination of other included files.
-%ahk2exe% /in include\Installer.ahk /out include\setup.exe /bin "include\Compiler\Unicode 32-bit.bin"
+%ahk2exe% /in "%cd%\include\Installer.ahk" /out "%cd%\include\setup.exe" /bin "%cd%\include\Compiler\Unicode 32-bit.bin"
 
 echo *** Updating SFX resources
 copy source\setup.ico temp >nul
