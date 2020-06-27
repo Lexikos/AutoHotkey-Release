@@ -18,7 +18,10 @@ PrepareEdgeVersion()
 {
     global cdesc, version
 
-    version := RegExReplace(LTrim(cdesc, "v"), "-(\d+)-", "-$1+")
+    if RegExMatch(cdesc, "^v(\d+\.\d+\.)(?:(\d+)?\.\d+)?-\d+-(.*)", ver)
+        version := format("{}{:02}-TEST+{}", ver1, (ver2="" ? 0 : ver2) + 1, ver3)
+    else
+        version := SubStr(cdesc, 2)
 
     PrepareVersion()
 }
