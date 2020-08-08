@@ -1234,8 +1234,9 @@ _Install(opt) {
         ; As AutoHotkey.exe is probably in use by this script, the final
         ; step will be completed by another instance of this script:
         reopen_args := ""
-        for _, script in reopen
-            reopen_args .= " """ script.path """ """ script.exe """"
+        if AutoRestart
+            for _, script in reopen
+                reopen_args .= " """ script.path """ """ script.exe """"
         Run .\AutoHotkeyU32.exe "%A_ScriptFullPath%"
                 /exec kill %A_ScriptHwnd%
                 /exec setExe %exefile% %SilentMode%
