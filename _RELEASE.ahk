@@ -22,9 +22,39 @@ IniRead gh_token, %IniFile%, GitHub, token, 0
 IniRead FtpPrefix, %IniFile%, FTP, Prefix, % A_Space
 
 
-ProjDir = %A_ScriptDir%\..\AutoHotkey_L
+ProjDir := SelectProjDir()
 InstDir = %A_ScriptDir%\installer
 WebDir = %A_ScriptDir%\files\web  ; Location of index.htm
+
+SelectProjDir() {
+    local
+    try Menu ProjDirs, DeleteAll
+    SetWorkingDir ..
+    count := 0
+    Loop Files, *, D
+        if FileExist(A_LoopFilePath "\AutoHotkeyx.sln") {
+            Menu ProjDirs, Add, %A_LoopFilePath%, SelectProjDirLbl
+            last := A_LoopFilePath
+            ++count
+        }
+    switch count {
+    case 0:
+        MsgBox AutoHotkeyx.sln not found.
+        ExitApp
+    case 1:
+        return last
+    }
+    ProjDir := ""
+    Menu ProjDirs, Show
+    if (ProjDir = "") {
+        MsgBox Project directory not selected. Exiting.
+        ExitApp
+    }
+    return A_WorkingDir "\" ProjDir
+    SelectProjDirLbl:
+    ProjDir := A_ThisMenuItem
+    return
+}
 
 
 #NoEnv
