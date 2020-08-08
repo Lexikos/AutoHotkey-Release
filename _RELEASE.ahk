@@ -301,7 +301,11 @@ if update_installer
     if ErrorLevel
         Prompt("Failed to update installer!", 0)
     else
+    {
+        MakeSha256(InstPath)
         FtpQPut(InstPath, RemoteDownloadDir "/" InstName)
+        FtpQPut(InstPath ".sha256", RemoteDownloadDir "/" InstName ".sha256")
+    }
 }
 
 
@@ -323,7 +327,11 @@ if update_zip && FileExist(A_ScriptDir "\zip-files-" branch ".txt")
     if ErrorLevel
         Prompt("Zipping failed (exit code " ErrorLevel ")", 0)
     else
+    {
+        MakeSha256(ZipPath)
         FtpQPut(ZipPath, RemoteDownloadDir "/" ZipName)
+        FtpQPut(ZipPath ".sha256", RemoteDownloadDir "/" ZipName ".sha256")
+    }
 }
 
 
@@ -412,6 +420,16 @@ ExitApp
 /*************************************************************
  *                   MISC FUNCTIONS
  */
+
+#include HashFile.ahk
+MakeSha256(path)
+{
+    hash := HashFile(path, 4)
+    FileOpen(path ".sha256", "w").Write(hash)
+    SplitPath path, name
+    ; Print the hashes last for easy copying to the forum
+    OnExit(Func("D").Bind("[c]" hash "[/c] " name))
+}
 
 Prompt(t, yesNoCancel=true)
 {
