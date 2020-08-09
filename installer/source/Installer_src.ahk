@@ -1158,8 +1158,10 @@ _Install(opt) {
     ; Set up system verbs:
     RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Open,, Run Script
     RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Edit,, Edit Script
-    if opt.ahk2exe
+    if opt.ahk2exe {
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Compile,, Compile Script
+        RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Compile-Gui,, Compile Script (GUI)...
+    }
     
     local value
     
@@ -1175,8 +1177,10 @@ _Install(opt) {
     catch
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Edit\Command,, notepad.exe `%1
     
-    if opt.ahk2exe
+    if opt.ahk2exe {
         RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Compile\Command,, "%A_WorkingDir%\Compiler\Ahk2Exe.exe" /in "`%l" `%*
+        RegWrite REG_SZ, HKCR, %FileTypeKey%\Shell\Compile-Gui\Command,, "%A_WorkingDir%\Compiler\Ahk2Exe.exe" /gui /in "`%l" `%*
+    }
     
     local cmd
     cmd = "%A_WorkingDir%\AutoHotkey.exe"
