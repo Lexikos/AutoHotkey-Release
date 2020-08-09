@@ -33,9 +33,9 @@ echo *** Updating SFX resources
 copy source\setup.ico temp >nul
 :: Working directory must be set for the rc script.
 pushd %td%
-%rh% -compile %td%\installer.rc, %td%\installer.res
+%rh% -action compile -open %td%\installer.rc -save %td%\installer.res
 popd
-%rh% -addoverwrite %sfx%, %td%\installer.sfx, %td%\installer.res, ,,
+%rh% -action addoverwrite -open %sfx% -save %td%\installer.sfx -resource %td%\installer.res
 if not exist "%td%\installer.res" goto :err
 
 echo *** Building 7z archive
