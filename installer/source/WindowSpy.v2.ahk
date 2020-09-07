@@ -8,87 +8,106 @@ SetWorkingDir A_ScriptDir
 ; SetBatchLines -1
 CoordMode "Pixel", "Screen"
 
-txtNotFrozen := "(Hold Ctrl or Shift to suspend updates)"
-txtFrozen := "(Updates suspended)"
-txtMouseCtrl := "Control Under Mouse Position"
-txtFocusCtrl := "Focused Control"
+global textList := Map(
+    "NotFrozen", "(Hold Ctrl or Shift to suspend updates)",
+    "Frozen", "(Updates suspended)",
+    "MouseCtrl", "Control Under Mouse Position",
+    "FocusCtrl", "Focused Control",
+)
 
-Gui := GuiCreate("+AlwaysOnTop +Resize -DPIScale MinSize")
-Gui.Add("Text",, "Window Title, Class and Process:")
-Gui.Add("Checkbox", "yp xp+200 w120 Right vCtrl_FollowMouse", "Follow Mouse")
-Gui.Add("Edit", "xm w320 r4 ReadOnly -Wrap vCtrl_Title")
-Gui.Add("Text",, "Mouse Position:")
-Gui.Add("Edit", "w320 r4 ReadOnly -Wrap vCtrl_MousePos")
-Gui.Add("Text", "w320 vCtrl_CtrlLabel", txtFocusCtrl ":")
-Gui.Add("Edit", "w320 r4 ReadOnly -Wrap vCtrl_Ctrl")
-Gui.Add("Text",, "Active Window Position:")
-Gui.Add("Edit", "w320 r2 ReadOnly -Wrap vCtrl_Pos")
-Gui.Add("Text",, "Status Bar Text:")
-Gui.Add("Edit", "w320 r2 ReadOnly -Wrap vCtrl_SBText")
-Gui.Add("Checkbox", "vCtrl_IsSlow", "Slow TitleMatchMode")
-Gui.Add("Text",, "Visible Text:")
-Gui.Add("Edit", "w320 r2 ReadOnly -Wrap vCtrl_VisText")
-Gui.Add("Text",, "All Text:")
-Gui.Add("Edit", "w320 r2 ReadOnly -Wrap vCtrl_AllText")
-Gui.Add("Text", "w320 r1 vCtrl_Freeze", txtNotFrozen)
-Gui.Show("NoActivate")
-Gui.OnEvent("Size", "GuiSize")
-Gui.OnEvent("Close", "GuiClose")
-guiMargin := Gui.Pos.W - Gui["Ctrl_Title"].Pos.W
-SetTimer "Update", 250
-return
-
-GuiSize(Gui, minMax, width, height) {
-    ; Gui %hGui%:Default
-    global guiMargin
-    if !guiMargin {
-        return
-    }
-    if (minMax == -1) {
-        SetTimer "Update", 0
-    } else {
-        SetTimer "Update"
-    }
-    ctrlW := Gui.Pos.W - guiMargin
-    list := "Title,MousePos,Ctrl,Pos,SBText,VisText,AllText,Freeze"
-    Loop Parse, list, ","
-        Gui["Ctrl_" A_LoopField].Move("w" ctrlW)
+createWindow() {
+    window := Gui.New("+AlwaysOnTop +Resize +DPIScale MinSize")
+    window.Add("Text",, "Window Title, Class and Process:")
+    window.Add("Checkbox", "yp xp+200 w120 Right vFollowMouse", "Follow Mouse")
+    window.Add("Edit", "xm w320 r4 ReadOnly -Wrap vTitle")
+    window.Add("Text",, "Mouse Position:")
+    window.Add("Edit", "w320 r4 ReadOnly -Wrap vMousePos")
+    window.Add("Text", "w320 vCtrlLabel", textList["FocusCtrl"] ":")
+    window.Add("Edit", "w320 r4 ReadOnly -Wrap vCtrl")
+    window.Add("Text",, "Active Window Position:")
+    window.Add("Edit", "w320 r2 ReadOnly -Wrap vPos")
+    window.Add("Text",, "Status Bar Text:")
+    window.Add("Edit", "w320 r2 ReadOnly -Wrap vSBText")
+    window.Add("Checkbox", "vIsSlow", "Slow TitleMatchMode")
+    window.Add("Text",, "Visible Text:")
+    window.Add("Edit", "w320 r2 ReadOnly -Wrap vVisText")
+    window.Add("Text",, "All Text:")
+    window.Add("Edit", "w320 r2 ReadOnly -Wrap vAllText")
+    window.Add("Text", "w320 r1 vFreeze", textList["NotFrozen"])
+    return window
 }
 
-Update() {
-    global
-    CoordMode "Mouse", "Screen"
-    MouseGetPos msX, msY, msWin, msCtrl
-    actWin := WinExist("A")
-    if Gui["Ctrl_FollowMouse"].Value {
+global window := createWindow()
+window.OnEvent("Size", "onWindowSize")
+window.OnEvent("Close", "onWindowClose")
+window.Show("NoActivate")
+global windowUpdate := Func("Update").Bind(window)
+SetTimer(windowUpdate, 250)
+
+onWindowSize(window, minMax, width, height) {
+    global windowUpdate
+
+    if (minMax == -1) {
+        SetTimer(windowUpdate, 0)
+    } else {
+        SetTimer(windowUpdate)
+    }
+
+    window["Title"].GetPos(x,,)
+    list := "Title,MousePos,Ctrl,Pos,SBText,VisText,AllText,Freeze"
+    Loop Parse, list, ","
+        window[A_LoopField].Move(,,width - x*2)
+}
+
+onWindowClose(window) {
+    ExitApp
+}
+
+Update(window) {
+    local curCtrl
+    global textList
+    CoordMode("Mouse", "Screen")
+    MouseGetPos(msX, msY, msWin, msCtrl)
+    if window["FollowMouse"].Value {
         curWin := msWin
         curCtrl := msCtrl
         WinExist("ahk_id " curWin)
     } else {
-        curWin := actWin
-        ControlGetFocus curCtrl
+        curWin := WinExist("A")
+        if (!curWin) {
+            return
+        }
+        curCtrl := ControlGetFocus()
     }
     t1 := WinGetTitle()
     t2 := WinGetClass()
 
     ; Our Gui || Alt-tab
-    if (curWin = hGui || t2 = "MultitaskingViewFrame") {
-        UpdateText("Ctrl_Freeze", txtFrozen)
+    if (curWin = window.Hwnd || t2 = "MultitaskingViewFrame") {
+        UpdateText("Freeze", textList["Frozen"])
         return
     }
-    UpdateText("Ctrl_Freeze", txtNotFrozen)
+    UpdateText("Freeze", textList["NotFrozen"])
     t3 := WinGetProcessName()
     t4 := WinGetPID()
-    UpdateText("Ctrl_Title", t1 "`nahk_class " t2 "`nahk_exe " t3 "`nahk_pid " t4)
-    CoordMode "Mouse", "Relative"
+    UpdateText("Title", t1 "`nahk_class " t2 "`nahk_exe " t3 "`nahk_pid " t4)
+    CoordMode "Mouse", "Window"
     MouseGetPos mrX, mrY
     CoordMode "Mouse", "Client"
     MouseGetPos mcX, mcY
     mClr := PixelGetColor(msX, msY)
     mClr := SubStr(mClr, 3)
-    UpdateText("Ctrl_MousePos", "Screen:`t" msX ", " msY " (less often used)`nWindow:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)"
-        . "`nColor:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")")
-    UpdateText("Ctrl_CtrlLabel", (Ctrl_FollowMouse ? txtMouseCtrl : txtFocusCtrl) ":")
+    UpdateText(
+        "MousePos", 
+        "Screen:`t" msX ", " msY "`n"
+        "Window:`t" mrX ", " mrY "`n"
+        "Client:`t" mcX ", " mcY "`n"
+        "Color:`t" mClr " (Red=0x" SubStr(mClr, 1, 2) " Green=0x" SubStr(mClr, 3, 2) " Blue=0x" SubStr(mClr, 5) ")"
+    )
+    UpdateText(
+        "CtrlLabel", 
+        (window["FollowMouse"].Value ? textList["MouseCtrl"] : textList["FocusCtrl"]) ":"
+    )
     if (curCtrl) {
         ctrlTxt := ControlGetText(curCtrl)
         cText := "ClassNN:`t" curCtrl "`nText:`t" textMangle(ctrlTxt)
@@ -101,45 +120,41 @@ Update() {
     } else {
         cText := ""
     }
-    UpdateText("Ctrl_Ctrl", cText)
-    WinGetPos wX, wY, wW, wH
+    UpdateText("Ctrl", cText)
+    WinGetPos(wX, wY, wW, wH)
     GetClientSize(curWin, wcW, wcH)
-    UpdateText("Ctrl_Pos", "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`tx: 0`ty: 0`tw: " wcW "`th: " wcH)
+    UpdateText("Pos", "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`nClient:`tx: 0`ty: 0`tw: " wcW "`th: " wcH)
     sbTxt := ""
     Loop {
-        StatusBarGetText "ovi", A_Index
-        if ovi = ""
+        try {
+            sbTxt .= "[" A_Index "]`t" textMangle(StatusBarGetText(A_Index)) "`n"
+        } catch e {
             break
-        sbTxt .= "(" A_Index "):`t" textMangle(ovi) "`n"
+        }
     }
     sbTxt := SubStr(sbTxt, 1, -1)
-    UpdateText("Ctrl_SBText", sbTxt)
-    if Gui["Ctrl_IsSlow"].Value {
-        DetectHiddenText False
-        WinGetText ovVisText
-        DetectHiddenText True
-        WinGetText ovAllText
+    UpdateText("SBText", sbTxt)
+    if window["IsSlow"].Value {
+        DetectHiddenText(False)
+        ovVisText := WinGetText()
+        DetectHiddenText(True)
+        ovAllText := WinGetText()
     } else {
         ovVisText := WinGetTextFast(false)
         ovAllText := WinGetTextFast(true)
     }
-    UpdateText("Ctrl_VisText", ovVisText)
-    UpdateText("Ctrl_AllText", ovAllText)
+    UpdateText("VisText", ovVisText)
+    UpdateText("AllText", ovAllText)
 }
 
-GuiClose(Gui) {
-    ExitApp
-}
-
-WinGetTextFast(detect_hidden)
-{
+WinGetTextFast(detect_hidden) {
     ; WinGetText ALWAYS uses the "fast" mode - TitleMatchMode only affects
     ; WinText/ExcludeText parameters.  In Slow mode, GetWindowText() is used
     ; to retrieve the text of each control.
     controls := WinGetControlsHwnd()
     static WINDOW_TEXT_SIZE := 32767 ; Defined in AutoHotkey source.
-    VarSetCapacity(buf, WINDOW_TEXT_SIZE * (A_IsUnicode ? 2 : 1))
-    text := ""
+    buf := BufferAlloc(WINDOW_TEXT_SIZE * 2)
+    local text := ""
     Loop Parse controls `n
     {
         if !detect_hidden && !DllCall("IsWindowVisible", "ptr", A_LoopField)
@@ -156,31 +171,31 @@ UpdateText(ControlID, NewText) {
     ; controls to be updated only when the text has changed, preventing periodic
     ; flickering (especially on older systems).
     static OldText := Map()
-    global Gui
+    global window
     if (!OldText.Has(ControlID) || OldText[ControlID] != NewText) {
         OldText[ControlID] := NewText
-        Gui[ControlID].Value := NewText
+        window[ControlID].Value := NewText
     }
 }
 
 GetClientSize(hWnd, ByRef w := "", ByRef h := "") {
-    VarSetCapacity(rect, 16)
-    DllCall("GetClientRect", "ptr", hWnd, "ptr", &rect)
+    rect := BufferAlloc(16)
+    DllCall("GetClientRect", "ptr", hWnd, "ptr", rect)
     w := NumGet(rect, 8, "int")
     h := NumGet(rect, 12, "int")
 }
 
 WinToClient(hWnd, ByRef x, ByRef y) {
-    WinGetPos wX, wY,,, "ahk_id " hWnd
-    if (wX is "integer") {
+    WinGetPos(wX, wY,,, "ahk_id " hWnd)
+    if (IsInteger(wX)) {
         x += wX
     }
-    if (wY is "integer") {
+    if (IsInteger(wY)) {
         y += wY
     }
-    VarSetCapacity(pt, 8)
-    NumPut(y, NumPut(x, pt, "int"), "int")
-    if !DllCall("ScreenToClient", "ptr", hWnd, "ptr", &pt)
+    pt := BufferAlloc(8)
+    NumPut("int", x, "int", y, pt)
+    if !DllCall("ScreenToClient", "ptr", hWnd, "ptr", pt)
         return false
     x := NumGet(pt, 0, "int")
     y := NumGet(pt, 4, "int")
@@ -188,24 +203,30 @@ WinToClient(hWnd, ByRef x, ByRef y) {
 }
 
 textMangle(x) {
-    if pos := InStr(x, "`n")
-        x := SubStr(x, 1, pos-1), elli := true
-    if StrLen(x) > 40 {
+    elli := false
+    pos := InStr(x, "`n")
+    if (pos) {
+        x := SubStr(x, 1, pos-1)
+        elli := true
+    }
+    if (StrLen(x) > 40) {
         x := SubStr(x, 1, 40)
         elli := true
     }
-    if elli
+    if (elli) 
         x .= " (...)"
     return x
 }
 
 ~*Ctrl::
-~*Shift::
-SetTimer "Update", 0
-UpdateText("Ctrl_Freeze", txtFrozen)
-return
+~*Shift:: {
+    global windowUpdate
+    SetTimer(windowUpdate, 0)
+    UpdateText("Freeze", textList["Frozen"])
+}
 
 ~*Ctrl up::
-~*Shift up::
-SetTimer "Update"
-return
+~*Shift up:: {
+    global windowUpdate
+    SetTimer(windowUpdate)
+}
