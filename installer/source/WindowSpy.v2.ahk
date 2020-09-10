@@ -7,6 +7,9 @@
 SetWorkingDir A_ScriptDir
 ; SetBatchLines -1
 CoordMode "Pixel", "Screen"
+; Ignore error, sometimes update() will issue window not found error
+; Comment this out when debug
+OnError((*) => true)
 
 WinGetTextFast(detect_hidden) {
     ; WinGetText ALWAYS uses the "fast" mode - TitleMatchMode only affects
