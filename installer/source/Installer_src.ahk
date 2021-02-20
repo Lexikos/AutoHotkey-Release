@@ -1222,6 +1222,7 @@ _Install(opt) {
     ; Write uninstaller info.
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayName, %ProductName% %ProductVersion%
     RegWrite REG_SZ, HKLM, %UninstallKey%, UninstallString, "%A_WorkingDir%\AutoHotkey.exe" "%A_WorkingDir%\Installer.ahk"
+    RegWrite REG_SZ, HKLM, %UninstallKey%, QuietUninstallString, "%A_WorkingDir%\AutoHotkey.exe" "%A_WorkingDir%\Installer.ahk" /Uninstall
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayIcon, %A_WorkingDir%\AutoHotkey.exe
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayVersion, %ProductVersion%
     RegWrite REG_SZ, HKLM, %UninstallKey%, URLInfoAbout, %ProductWebsite%
