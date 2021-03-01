@@ -38,8 +38,9 @@ call "%VSCOMNTOOLS%..\..\VC\vcvarsall.bat"
 set config=%1
 set platform=%2
 if [%platform%]==[] exit /b 0
+if "%AUTOHOTKEY_BUILD_TARGET%"=="" set AUTOHOTKEY_BUILD_TARGET=Rebuild
 echo ++++ Building %config% :: %platform% ++++
-MSBuild AutoHotkeyx.sln /t:Rebuild /p:Configuration=%config% /p:Platform=%platform%
+MSBuild AutoHotkeyx.sln /t:%AUTOHOTKEY_BUILD_TARGET% /p:Configuration=%config% /p:Platform=%platform%
 if ErrorLevel 1 (
     echo ---- BUILD FAILED: !config! :: !platform! ----
     exit /b %ErrorLevel%
