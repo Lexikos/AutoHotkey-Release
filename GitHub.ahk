@@ -60,7 +60,7 @@ class GitHub
                 if InStr(req.responseText, "JSON")
                     throw Exception("Bad release payload", -1, release)
                 else
-                    throw Exception("Error creating release", -1, req.responseText)
+                    throw Exception("Error creating release; status " req.statusText, -1, req.responseText)
             }
             JSON_parse_into(req.responseText, this)
             this.context := context
