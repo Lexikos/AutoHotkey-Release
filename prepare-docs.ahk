@@ -149,7 +149,13 @@ PrepareSearchIndex(commit:=false)
     try
     {
         RunWait "%A_AhkPath%\..\v2-alpha\AutoHotkeyU32.exe" "%DocDir%\docs\static\source\build_search.ahk"
+        if ErrorLevel
+            throw Exception("AutoHotkey exited with code " ErrorLevel)
         if commit
             git("commit docs/static/source/data_search.js -m ""Update search index""", DocDir)
+    }
+    catch e
+    {
+        Prompt("Failed to build search index`n`n" e.message, 0)
     }
 }
