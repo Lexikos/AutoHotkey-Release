@@ -135,8 +135,8 @@ ExitApp
 
 WinGetTextFast(detect_hidden)
 {
-	; WinGetText ALWAYS uses the "fast" mode - TitleMatchMode only affects
-	; WinText/ExcludeText parameters.  In Slow mode, GetWindowText() is used
+	; WinGetText ALWAYS uses the "Slow" mode - TitleMatchMode only affects the
+	; WinText/ExcludeText parameters.  In "Fast" mode, GetWindowText() is used
 	; to retrieve the text of each control.
 	WinGet controls, ControlListHwnd
 	static WINDOW_TEXT_SIZE := 32767 ; Defined in AutoHotkey source.
