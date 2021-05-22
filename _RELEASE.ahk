@@ -190,28 +190,36 @@ if building
     builds := [
     (Join,
         {cfg: "Release"              , platform: "Win32"}
-        {cfg: "Self-contained"       , platform: "Win32"}
         {cfg: "Release"              , platform:   "x64"}
-        {cfg: "Self-contained"       , platform:   "x64"}
     )]
     if (version < "2.")
     {
         builds.push(
         (Join,
             {cfg: "Release(mbcs)"        , platform: "Win32"}
+            {cfg: "Self-contained"       , platform: "Win32"}
             {cfg: "Self-contained(mbcs)" , platform: "Win32"}
+            {cfg: "Self-contained"       , platform:   "x64"}
         ))
     }
     if !Build(builds)
         ExitError(build_errors " build error(s)")
     
-    ; Update installer includes.
-    FileCopy bin\Win32w\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyU32.exe, 1
-    FileCopy bin\Win32a\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyA32.exe, 1
-    FileCopy bin\x64w\AutoHotkey.exe,     %InstDir%\include\AutoHotkeyU64.exe, 1
-    FileCopy bin\Win32w\AutoHotkeySC.bin, %InstDir%\include\Compiler\Unicode 32-bit.bin, 1
-    FileCopy bin\Win32a\AutoHotkeySC.bin, %InstDir%\include\Compiler\ANSI 32-bit.bin,    1
-    FileCopy bin\x64w\AutoHotkeySC.bin,   %InstDir%\include\Compiler\Unicode 64-bit.bin, 1
+    ; Update installer/zip includes
+    if (version < "2.")
+    {
+        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyU32.exe, 1
+        FileCopy bin\Win32a\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyA32.exe, 1
+        FileCopy bin\x64w\AutoHotkey.exe,     %InstDir%\include\AutoHotkeyU64.exe, 1
+        FileCopy bin\Win32w\AutoHotkeySC.bin, %InstDir%\include\Compiler\Unicode 32-bit.bin, 1
+        FileCopy bin\Win32a\AutoHotkeySC.bin, %InstDir%\include\Compiler\ANSI 32-bit.bin,    1
+        FileCopy bin\x64w\AutoHotkeySC.bin,   %InstDir%\include\Compiler\Unicode 64-bit.bin, 1
+    }
+    else
+    {
+        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDir%\include\AutoHotkey32.exe, 1
+        FileCopy bin\x64w\AutoHotkey.exe,     %InstDir%\include\AutoHotkey64.exe, 1
+    }
 }
 
 

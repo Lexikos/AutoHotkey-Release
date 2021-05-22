@@ -1,8 +1,4 @@
-AutoHotkeyU32.exe
-AutoHotkeyU64.exe
-
-Compiler\Unicode 32-bit.bin
-Compiler\Unicode 64-bit.bin
-
+AutoHotkey32.exe
+AutoHotkey64.exe
 AutoHotkey.chm
 license.txt
