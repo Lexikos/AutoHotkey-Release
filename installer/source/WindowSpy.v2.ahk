@@ -120,8 +120,8 @@ TryUpdate() {
         cText := "ClassNN:`t" curCtrlClassNN "`nText:`t" textMangle(ctrlTxt)
         ControlGetPos &cX, &cY, &cW, &cH, curCtrl
         cText .= "`n`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
-        WinToClient(curWin, &cX, &cY)
-        WinGetClientPos(,,&cW, &cH,"ahk_id " curWin) ; GetClientSize(curCtrl, &cW, &cH)
+        WinGetClientPos(&cX,&cY,,,curCtrl) ; WinToClient(curCtrl, &cX, &cY)
+        GetClientSize(curCtrl, &cW, &cH)
         cText .= "`nClient:`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
     } else
         cText := ""
@@ -203,12 +203,12 @@ UpdateText(vCtl, NewText) {
     }
 }
 
-; GetClientSize(hWnd, &w, &h) {
-    ; rect := Buffer(16,0) ; VarSetCapacity(rect, 16)
+GetClientSize(hWnd, &w, &h) {
+    rect := Buffer(16,0) ; VarSetCapacity(rect, 16)
     
-    ; DllCall("GetClientRect", "ptr", hWnd, "ptr", rect.ptr)
-    ; w := NumGet(rect, 8, "int"), h := NumGet(rect, 12, "int")
-; }
+    DllCall("GetClientRect", "ptr", hWnd, "ptr", rect.ptr)
+    w := NumGet(rect, 8, "int"), h := NumGet(rect, 12, "int")
+}
 
 WinToClient(hWnd, &x, &y) {
     WinGetPos &wX, &wY,,, "ahk_id " hWnd
