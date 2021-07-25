@@ -7,9 +7,6 @@ PrepareNewVersion()
         version := format("{}{:0" StrLen(ver2) "}", ver1, ver2 + 1)
     else
         version := SubStr(ctag, 2)
-    
-    if (branch = "alpha")
-        version .= "-" cid
 
     PrepareVersion()
 }
