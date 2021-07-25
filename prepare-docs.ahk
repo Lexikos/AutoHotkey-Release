@@ -148,7 +148,7 @@ PrepareSearchIndex(commit:=false)
     ; Update search index.
     try
     {
-        RunWait "%A_AhkPath%\..\v2-alpha\AutoHotkeyU32.exe" "%DocDir%\docs\static\source\build_search.ahk"
+        RunWait "%A_AhkPath%\..\v2-alpha\AutoHotkey32.exe" "%DocDir%\docs\static\source\build_search.ahk"
         if ErrorLevel
             throw Exception("AutoHotkey exited with code " ErrorLevel)
         if commit
