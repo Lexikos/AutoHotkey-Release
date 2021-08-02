@@ -37,7 +37,7 @@ WinSpyGui() {
     oGui.Add("Text","w320 r1 vCtrl_Freeze",(txtNotFrozen := "(Hold Ctrl or Shift to suspend updates)"))
     
     oGui.Show("NoActivate")
-    WinGetClientPos(&x_temp, &y_temp2,,,"ahk_id " oGui.hwnd) ; GetClientSize(hGui, &x_temp, &y_temp2)
+    WinGetClientPos(&x_temp, &y_temp2,,,"ahk_id " oGui.hwnd)
     
     ; oGui.horzMargin := x_temp*96//A_ScreenDPI - 320 ; now using oGui.MarginX
     
@@ -101,7 +101,13 @@ TryUpdate() {
     UpdateText("Ctrl_Freeze", oGui.txtNotFrozen)
     t3 := WinGetProcessName(), t4 := WinGetPID()
     
-    UpdateText("Ctrl_Title", t1 "`nahk_class " t2 "`nahk_exe " t3 "`nahk_pid " t4 "`nahk_id " curWin)
+    WinDataText := t1 "`n" ; ZZZ
+                 . "ahk_class " t2 "`n"
+                 . "ahk_exe " t3 "`n"
+                 . "ahk_pid " t4 "`n"
+                 . "ahk_id " curWin
+    
+    UpdateText("Ctrl_Title", WinDataText)
     CoordMode "Mouse", "Window"
     MouseGetPos &mrX, &mrY
     CoordMode "Mouse", "Client"
@@ -109,30 +115,36 @@ TryUpdate() {
     mClr := PixelGetColor(msX,msY,"RGB")
     mClr := SubStr(mClr, 3)
     
-    UpdateText("Ctrl_MousePos", "Screen:`t" msX ", " msY " (less often used)`n"
-             . "Window:`t" mrX ", " mrY " (default)`nClient:`t" mcX ", " mcY " (recommended)`n"
-             . "Color:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")")
+    mpText := "Screen:`t" msX ", " msY "`n"
+            . "Window:`t" mrX ", " mrY "`n"
+            . "Client:`t" mcX ", " mcY " (default)`n"
+            . "Color:`t" mClr " (Red=" SubStr(mClr, 1, 2) " Green=" SubStr(mClr, 3, 2) " Blue=" SubStr(mClr, 5) ")"
+    
+    UpdateText("Ctrl_MousePos", mpText)
     
     UpdateText("Ctrl_CtrlLabel", (Ctrl_FollowMouse ? oGui.txtMouseCtrl : oGui.txtFocusCtrl) ":")
     
     if (curCtrl) {
         ctrlTxt := ControlGetText(curCtrl)
-        cText := "ClassNN:`t" curCtrlClassNN "`nText:`t" textMangle(ctrlTxt)
+        WinGetClientPos(&sX, &sY, &sW, &sH, curCtrl)
         ControlGetPos &cX, &cY, &cW, &cH, curCtrl
-        cText .= "`n`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
-        WinGetClientPos(&cX,&cY,,,curCtrl) ; WinToClient(curCtrl, &cX, &cY)
-        GetClientSize(curCtrl, &cW, &cH)
-        cText .= "`nClient:`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
+        
+        cText := "ClassNN:`t" curCtrlClassNN "`n"
+               . "Text:`t" textMangle(ctrlTxt) "`n"
+               . "Screen:`tx: " sX "`ty: " sY "`tw: " sW "`th: " sH "`n"
+               . "Client`tx: " cX "`ty: " cY "`tw: " cW "`th: " cH
     } else
         cText := ""
     
     UpdateText("Ctrl_Ctrl", cText)
     wX := "", wY := "", wW := "", wH := ""
     WinGetPos &wX, &wY, &wW, &wH, "ahk_id " curWin
-    WinGetClientPos(&wcX,&wcY,&wcW, &wcH,"ahk_id " curWin) ; GetClientSize(curWin, &wcW, &wcH)
+    WinGetClientPos(&wcX, &wcY, &wcW, &wcH, "ahk_id " curWin)
     
-    UpdateText("Ctrl_Pos", "`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`n"
-             . "Client:`tx: " wcX "`ty: " wcY "`tw: " wcW "`th: " wcH)
+    wText := "Screen:`tx: " wX "`ty: " wY "`tw: " wW "`th: " wH "`n"
+           . "Client:`tx: " wcX "`ty: " wcY "`tw: " wcW "`th: " wcH
+    
+    UpdateText("Ctrl_Pos", wText)
     sbTxt := ""
     
     Loop {
@@ -201,29 +213,6 @@ UpdateText(vCtl, NewText) {
         ctl.Value := NewText
         OldText.%hCtl% := NewText
     }
-}
-
-GetClientSize(hWnd, &w, &h) {
-    rect := Buffer(16,0) ; VarSetCapacity(rect, 16)
-    
-    DllCall("GetClientRect", "ptr", hWnd, "ptr", rect.ptr)
-    w := NumGet(rect, 8, "int"), h := NumGet(rect, 12, "int")
-}
-
-WinToClient(hWnd, &x, &y) {
-    WinGetPos &wX, &wY,,, "ahk_id " hWnd
-    If (wX != "" And wY != "") {
-        x += wX, y += wY
-        pt := Buffer(8,0) ; VarSetCapacity(pt, 8)
-        
-        NumPut "Int", x, "Int", y, pt ; NumPut(y, NumPut(x, pt, "int"), "int")
-        
-        if !DllCall("ScreenToClient", "ptr", hWnd, "ptr", pt.ptr)
-            return false
-        x := NumGet(pt, 0, "int"), y := NumGet(pt, 4, "int")
-        return true
-    } Else
-        return false
 }
 
 textMangle(x) {
