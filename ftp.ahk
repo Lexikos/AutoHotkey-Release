@@ -11,5 +11,8 @@ FtpExecute()
 {
     global
     RunWait "%PSFTP%" -bc -be -b "%FtpScript%",, UseErrorLevel
-    FileMove %FtpScript%, %OutDir%\ftp-ran-%A_Now%.txt ; Rename in case of re-release
+    if !ErrorLevel
+        FileMove %FtpScript%, %OutDir%\ftp-ran-%A_Now%.txt ; Rename in case of re-release
+    else
+        MsgBox FTP error
 }
