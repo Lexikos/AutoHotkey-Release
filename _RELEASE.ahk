@@ -208,6 +208,8 @@ if building
     ; Update installer/zip includes
     if (version < "2.")
     {
+        FileDelete %InstDir%\include\AutoHotkey32.exe
+        FileDelete %InstDir%\include\AutoHotkey64.exe
         FileCopy bin\Win32w\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyU32.exe, 1
         FileCopy bin\Win32a\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyA32.exe, 1
         FileCopy bin\x64w\AutoHotkey.exe,     %InstDir%\include\AutoHotkeyU64.exe, 1
