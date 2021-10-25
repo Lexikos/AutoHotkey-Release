@@ -36,16 +36,28 @@ PrepareVersion()
         version_n := RegExReplace(version_n, "\.(0(?=\d))?", ",")
     else
         version_n := 0
+    
+    EnvSet RawAhkVersion, % version
 
-    ; Update ahkversion.h ...
-    FileDelete, source\ahkversion.h
-    FileAppend,
-    (LTrim
-    #define AHK_VERSION "%version%"
-    #define AHK_VERSION_N %version_n%`n
-    ), source\ahkversion.h
+    local ahkversion_h
+    FileReadLine ahkversion_h, source\ahkversion.h, 1
+    if modified_ahkversion_h := !(ahkversion_h ~= "^#define AHK_VERSION ")
+    {
+        if !FileExist("source\ahkversion.cpp")
+            Prompt("ahkversion.h content not recognized and there is no ahkversion.cpp; continue anyway?")
+    }
+    else
+    {
+        ; Update ahkversion.h ...
+        FileDelete, source\ahkversion.h
+        FileAppend,
+        (LTrim
+        #define AHK_VERSION "%version%"
+        #define AHK_VERSION_N %version_n%`n
+        ), source\ahkversion.h
 
-    OnExit(Func("PrepareVer_OnExit"))
+        OnExit(Func("PrepareVer_OnExit"))
+    }
 }
 
 PrepareVer_OnExit()

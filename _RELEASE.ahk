@@ -231,7 +231,7 @@ if building
 
 if committing
 {
-    if (branch == "master")
+    if modified_ahkversion_h
     {
         D("! Committing v" version)
         git("commit -m ""v" version """ --only source/ahkversion.h")
