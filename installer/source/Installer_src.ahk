@@ -1319,6 +1319,7 @@ InstallMainFiles() {
 
 InstallUIAccessFiles(create) {
     local suffixList := "A32|U32" (A_Is64bitOS ? "|U64" : "")
+    local err, deleted_cert := false
     Loop Parse, suffixList, |
     {
         file = AutoHotkey%A_LoopField%_UIA.exe
@@ -1327,8 +1328,16 @@ InstallUIAccessFiles(create) {
         FileCopy AutoHotkey%A_LoopField%.exe, %file%, 1
         try
             EnableUIAccess(file)
-        catch
-            MsgBox 48, AutoHotkey Setup, Error creating %file%. ; Non-critical.
+        catch err {
+            if (err & 0xffff0000) = 0x80090000 && !deleted_cert {
+                try {
+                    EnableUIAccess_DeleteCertAndKey("AutoHotkey")
+                    EnableUIAccess(file)
+                    continue ; on success
+                }
+            }
+            MsgBox 48, AutoHotkey Setup, Error creating %file% (%err%). ; Non-critical.
+        }
     }
 }
 

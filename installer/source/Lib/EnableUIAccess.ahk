@@ -4,7 +4,7 @@ EnableUIAccess(filename)
         , "uint", 0, "ptr", 0, "uint", 0x20000 ; SYSTEM_STORE_LOCAL_MACHINE
         , "wstr", "Root", "ptr")
     if !hStore
-        throw
+        throw "CertOpenStore"
     ; Find or create certificate for signing.
     p := DllCall("Crypt32\CertFindCertificateInStore", "ptr", hStore
         , "uint", 0x10001 ; X509_ASN_ENCODING|PKCS_7_ASN_ENCODING
@@ -29,12 +29,12 @@ EnableUIAccess_SetManifest(file)
         , "xmlns:v1='urn:schemas-microsoft-com:asm.v1' "
         . "xmlns:v3='urn:schemas-microsoft-com:asm.v3'")
     if !xml.load("res://" file "/#24/#1") ; Load current manifest
-        throw
+        throw "manifest/load"
     
     node := xml.selectSingleNode("/v1:assembly/v3:trustInfo/v3:security"
                     . "/v3:requestedPrivileges/v3:requestedExecutionLevel")
     if !node ; Not AutoHotkey v1.1?
-        throw
+        throw "manifest/parse"
     
     node.setAttribute("uiAccess", "true")
     xml := RTrim(xml.xml, "`r`n")
@@ -43,11 +43,11 @@ EnableUIAccess_SetManifest(file)
     StrPut(xml, &data, "utf-8")
     
     if !(hupd := DllCall("BeginUpdateResource", "str", file, "int", false))
-        throw
+        throw "rsrc"
     r := DllCall("UpdateResource", "ptr", hupd, "ptr", 24, "ptr", 1
                     , "ushort", 1033, "ptr", &data, "uint", data_size)
     if !DllCall("EndUpdateResource", "ptr", hupd, "int", !r) && r
-        throw
+        throw "rsrc"
 }
 
 EnableUIAccess_CreateCert(CertName, hStore)
@@ -57,12 +57,12 @@ EnableUIAccess_CreateCert(CertName, hStore)
     {
         if !DllCall("Advapi32\CryptAcquireContext", "ptr*", hProv
             , "str", CertName, "ptr", 0, "uint", 1, "uint", 8) ; PROV_RSA_FULL=1, CRYPT_NEWKEYSET=8
-            throw
+            throw "CryptAcquireContext"
         prov := new CryptContext(hProv)
 
         if !DllCall("Advapi32\CryptGenKey", "ptr", hProv
                 , "uint", 2, "uint", 0x4000001, "ptr*", hKey) ; AT_SIGNATURE=2, EXPORTABLE=..01
-            throw
+            throw "CryptGenKey"
         (new CryptKey(hKey)) ; To immediately release it.
     }
 
@@ -74,7 +74,7 @@ EnableUIAccess_CreateCert(CertName, hStore)
             VarSetCapacity(bName, cbName), pbName := &bName
         if !DllCall("Crypt32\CertStrToName", "uint", 1, "str", "CN=" CertName
             , "uint", 3, "ptr", 0, "ptr", pbName, "uint*", cbName, "ptr", 0) ; X509_ASN_ENCODING=1, CERT_X500_NAME_STR=3
-            throw
+            throw "CertStrToName"
     }
     VarSetCapacity(cnb, 2*A_PtrSize), NumPut(pbName, NumPut(cbName, cnb))
 
@@ -85,12 +85,12 @@ EnableUIAccess_CreateCert(CertName, hStore)
     if !hCert := DllCall("Crypt32\CertCreateSelfSignCertificate"
         , "ptr", hProv, "ptr", &cnb, "uint", 0, "ptr", 0
         , "ptr", 0, "ptr", 0, "ptr", &endTime, "ptr", 0, "ptr")
-        throw
+        throw "CertCreateSelfSignCertificate"
     cert := new CertContext(hCert)
 
     if !DllCall("Crypt32\CertAddCertificateContextToStore", "ptr", hStore
         , "ptr", hCert, "uint", 1, "ptr", 0) ; STORE_ADD_NEW=1
-        throw
+        throw "CertAddCertificateContextToStore"
 
     return cert
 }
@@ -102,14 +102,14 @@ EnableUIAccess_DeleteCertAndKey(CertName)
     if !hStore := DllCall("Crypt32\CertOpenStore", "ptr", 10 ; STORE_PROV_SYSTEM_W
         , "uint", 0, "ptr", 0, "uint", 0x20000 ; SYSTEM_STORE_LOCAL_MACHINE
         , "wstr", "Root", "ptr")
-		throw
+		throw "CertOpenStore"
 	if !p := DllCall("Crypt32\CertFindCertificateInStore", "ptr", hStore
         , "uint", 0x10001 ; X509_ASN_ENCODING|PKCS_7_ASN_ENCODING
         , "uint", 0, "uint", 0x80007 ; FIND_SUBJECT_STR
         , "wstr", CertName, "ptr", 0, "ptr")
 		return 0
 	if !DllCall("Crypt32\CertDeleteCertificateFromStore", "ptr", p)
-		throw
+		throw "CertDeleteCertificateFromStore"
 	return 1
 }
 
