@@ -418,6 +418,9 @@ RegExUpdate(local_file, remote_file, needle, replacement)
     else Prompt(local_file " not updated!", 0)
 }
 
+D("! Executing pre-FTP #include (if any)")
+#include *i pre-ftp.ahk
+
 D("! Executing FTP script")
 FtpExecute()
 
