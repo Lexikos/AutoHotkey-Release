@@ -41,7 +41,7 @@ PrepareVersion()
 
     local ahkversion_h
     FileReadLine ahkversion_h, source\ahkversion.h, 1
-    if modified_ahkversion_h := !(ahkversion_h ~= "^#define AHK_VERSION ")
+    if !(modified_ahkversion_h := (ahkversion_h ~= "^#define AHK_VERSION "))
     {
         if !FileExist("source\ahkversion.cpp")
             Prompt("ahkversion.h content not recognized and there is no ahkversion.cpp; continue anyway?")
