@@ -38,7 +38,7 @@ AutoRestart := false
 ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
 ProductPublisher := "Lexikos"
-ProductWebsite := "https://autohotkey.com/"
+ProductWebsite := "https://www.autohotkey.com/"
 
 EnvGet ProgramW6432, ProgramW6432
 DefaultPath := (ProgramW6432 ? ProgramW6432 : A_ProgramFiles) "\AutoHotkey"
@@ -324,7 +324,7 @@ CheckForUpdates() {
     local w := getWindow(), latestVersion := ""
     try {
         req := ComObjCreate("Msxml2.XMLHTTP")
-        req.open("GET", "https://autohotkey.com/download/1.1/version.txt?" SubStr(A_Now,1,8), true)
+        req.open("GET", "https://www.autohotkey.com/download/1.1/version.txt?" SubStr(A_Now,1,8), true)
         req.onreadystatechange := Func("VersionReceived").Bind(req)
         req.send()
     }
@@ -690,7 +690,7 @@ ViewHelp(topic) {
     if FileExist(path)
         Run_("hh.exe", "mk:@MSITStore:" path "::" topic)
     else
-        Run_("https://autohotkey.com" topic)
+        Run_("https://www.autohotkey.com" topic)
 }
 
 RunAutoHotkey() {
@@ -804,7 +804,7 @@ DownloadAHK() {
     file := A_Temp "\ahk-install.exe"
     switchPage("downloading")
     Sleep 10
-    if !Download("https://autohotkey.com/download/ahk-install.exe", file, "DownloadAHK_Progress") {
+    if !Download("https://www.autohotkey.com/download/ahk-install.exe", file, "DownloadAHK_Progress") {
         MsgBox 0x2010,, Download failed.
         switchPage("start")
         return
