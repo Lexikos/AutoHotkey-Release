@@ -847,7 +847,7 @@ DownloadSize(n) {
     return Round(n, 2) " KB"
 }
 
-; Based on code by Sean and SKAN @ http://www.autohotkey.com/forum/viewtopic.php?p=184468#184468
+; Based on code by Sean and SKAN @ https://www.autohotkey.com/board/topic/17915-/?p=174581
 Download(url, file, callback) {
     static vt
     if !VarSetCapacity(vt) {
