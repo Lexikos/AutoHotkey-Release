@@ -321,10 +321,9 @@ InitUI() {
 }
 
 CheckForUpdates() {
-    local w := getWindow(), latestVersion := ""
     try {
         req := ComObjCreate("Msxml2.XMLHTTP")
-        req.open("GET", "https://autohotkey.com/download/1.1/version.txt?" SubStr(A_Now,1,8), true)
+        req.open("GET", "https://www.autohotkey.com/download/1.1/version.txt?" SubStr(A_Now,1,8), true)
         req.onreadystatechange := Func("VersionReceived").Bind(req)
         req.send()
     }
