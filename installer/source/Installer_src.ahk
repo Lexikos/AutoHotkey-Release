@@ -1301,8 +1301,7 @@ InstallFile(file, target="") {
 InstallMainFiles() {
     InstallFile("AutoHotkeyU32.exe")
     InstallFile("AutoHotkeyA32.exe")
-    if A_Is64bitOS
-        InstallFile("AutoHotkeyU64.exe")
+    InstallFile("AutoHotkeyU64.exe")
     
     InstallFile("WindowSpy.ahk")
     InstallFile("AutoHotkey.chm")
