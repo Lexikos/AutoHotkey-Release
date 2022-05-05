@@ -1133,7 +1133,7 @@ _Install(opt) {
         FileCreateShortcut %A_WorkingDir%\WindowSpy.ahk, %smpath%\Window Spy.lnk
         FileCreateShortcut %A_WorkingDir%\AutoHotkey.chm, %smpath%\AutoHotkey Help File.lnk
         IniWrite %ProductWebsite%, %ProductName% Website.url, InternetShortcut, URL
-        FileCreateShortcut %A_WorkingDir%\%ProductName% Website.url, %smpath%\Website.lnk
+        FileCreateShortcut %A_WorkingDir%\%ProductName% Website.url, %smpath%\Website.lnk,,,, shell32.dll,, -14
         FileCreateShortcut %A_WorkingDir%\Installer.ahk, %smpath%\AutoHotkey Setup.lnk
             ,,,, %A_WinDir%\System32\appwiz.cpl,, -1500
         if opt.ahk2exe
