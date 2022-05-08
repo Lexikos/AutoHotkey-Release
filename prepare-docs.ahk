@@ -26,8 +26,8 @@ PrepareDocsBegin(last_tag, version)
     ; Unwrap. | Remove empty lines.
     log := RegExReplace(log, "`n (?= \S)|`n(?=`n|$)")
     
-    ; Encode < >
-    log := StrReplace(StrReplace(log, "<", "&lt;"), ">", "&gt;")
+    ; Encode < > &
+    log := StrReplace(StrReplace(StrReplace(log, "<", "&lt;"), ">", "&gt;"), "&", "&amp;")
     
     ; `code`
     log := RegExReplace(log, "``(.*?)``", "<code>$1</code>")

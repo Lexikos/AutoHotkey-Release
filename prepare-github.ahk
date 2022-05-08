@@ -13,7 +13,7 @@ PrepareGitHubBegin()
     FileRead, log, %VersionDocsLog%
     log := RegExReplace(log, "href=""\K(?!\w+:|#)", "https://autohotkey.com/docs/")
     log := RegExReplace(log, "<h2.*</h2>\R")
-    log := RegExReplace(log, "<p>(.*?)</p>", "$1")
+    ; log := RegExReplace(log, "<p>(.*?)</p>", "$1") ; Not necessary when using markup, but mixing in HTML sometimes causes lines to merge if <p> is removed.
     FileOpen(GitHubLog, "w").Write(log)
     
     ; Open for review
