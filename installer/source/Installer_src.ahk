@@ -1233,7 +1233,6 @@ _Install(opt) {
     RegWrite REG_SZ, HKLM, %UninstallKey%, DisplayVersion, %ProductVersion%
     RegWrite REG_SZ, HKLM, %UninstallKey%, URLInfoAbout, %ProductWebsite%
     RegWrite REG_SZ, HKLM, %UninstallKey%, Publisher, %ProductPublisher%
-    RegWrite REG_SZ, HKLM, %UninstallKey%, NoModify, 1
     
     ; Notify other programs (e.g. explorer.exe) that file type associations have changed.
     ; This may be necessary to update the icon when upgrading from an older version of AHK.
