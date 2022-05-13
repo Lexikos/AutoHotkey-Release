@@ -993,6 +993,9 @@ Uninstall() {
         FileRemoveDir %A_ProgramsCommon%\%CurrentStartMenu% ; Only if empty.
     }
     
+    ; Delete certificate and private key used to sign UIA executables.
+    try EnableUIAccess_DeleteCertAndKey("AutoHotkey")
+    
     if !SilentMode
         MsgBox 0x2040, AutoHotkey Setup
             , Setup will now close to complete the uninstallation.
@@ -1006,9 +1009,6 @@ Uninstall() {
         FileRemoveDir %CurrentPath%  ; Only if empty.
         ExitApp
     }
-    
-    ; Delete certificate and private key used to sign UIA executables.
-    try EnableUIAccess_DeleteCertAndKey("AutoHotkey")
     
     Gui Cancel
     
