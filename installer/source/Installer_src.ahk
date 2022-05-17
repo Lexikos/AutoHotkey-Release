@@ -303,11 +303,11 @@ InitUI() {
         w.opt1.removeAttribute("href")
         w.opt1.firstChild.innerText := "Checking for updates..."
     }
-    w.installcompiler.checked := DefaultCompiler
-    w.enabledragdrop.checked := DefaultDragDrop
-    w.separatebuttons.checked := DefaultIsHostApp
-    w.enableuiaccess.checked := DefaultUIAccess && IsTrustedLocation(DefaultPath)
-    w.defaulttoutf8.checked := DefaultToUTF8
+    w.installcompiler.checked := ComObject(0xB, -DefaultCompiler)  ; Some systems seem to treat 0 as true, so pass proper boolean.
+    w.enabledragdrop.checked := ComObject(0xB, -DefaultDragDrop)
+    w.separatebuttons.checked := ComObject(0xB, -DefaultIsHostApp)
+    w.enableuiaccess.checked := ComObject(0xB, -(DefaultUIAccess && IsTrustedLocation(DefaultPath)))
+    w.defaulttoutf8.checked := ComObject(0xB, -DefaultToUTF8)
     if !A_Is64bitOS
         w.it_x64.style.display := "None"
     if A_OSVersion in WIN_2000,WIN_2003,WIN_XP,WIN_VISTA ; i.e. not WIN_7, WIN_8 or a future OS.
