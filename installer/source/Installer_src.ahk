@@ -400,7 +400,7 @@ SetWBClientSite()
         IServiceProvider: [3]
         IInternetSecurityManager: [1,1,3,4,8,7,3,3]
     )}
-    unkQI      := RegisterCallback("WBClientSite_QI", "Fast")
+    unkQI      := RegisterCallback("WBClientSite_QI")
     unkAddRef  := RegisterCallback("WBClientSite_AddRef", "Fast")
     unkRelease := RegisterCallback("WBClientSite_Release", "Fast")
     WBClientSite := {_buffers: bufs := {}}, bufn := 0, 
@@ -413,7 +413,7 @@ SetWBClientSite()
         NumPut(unkAddRef,   buf + 2*A_PtrSize)
         NumPut(unkRelease,  buf + 3*A_PtrSize)
         for i, prmc in prms
-            NumPut(RegisterCallback("WBClientSite_" name, "Fast", prmc+1, i), buf + (3+i)*A_PtrSize)
+            NumPut(RegisterCallback("WBClientSite_" name, "", prmc+1, i), buf + (3+i)*A_PtrSize)
         NumPut(buf + A_PtrSize, buf + 0)
         WBClientSite[name] := buf
     }
