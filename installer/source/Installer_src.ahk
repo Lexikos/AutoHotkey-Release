@@ -217,6 +217,7 @@ DetermineVersion() {
         CurrentStartMenu := ""
         return
     }
+    RegRead CurrentInstallCommand, HKLM, %AutoHotkeyKey%, InstallCommand
     RegRead CurrentVersion, HKLM, %AutoHotkeyKey%, Version
     RegRead CurrentStartMenu, HKLM, %AutoHotkeyKey%, StartMenuFolder
     RegRead url, HKLM, %UninstallKey%, URLInfoAbout
@@ -287,11 +288,11 @@ InitUI() {
     if !w || !w.initOptions
         throw 1
     w.AHK := Func("JS_AHK")
-    if (!CurrentType && A_ScriptDir != DefaultPath)
+    if (!CurrentType && A_ScriptDir != DefaultPath && !CurrentInstallCommand)
         CurrentName := ""  ; Avoid showing the Reinstall option since we don't know which version it was.
     w.initOptions(CurrentName, CurrentVersion, CurrentType
                 , ProductVersion, DefaultPath, DefaultStartMenu
-                , DefaultType, A_Is64bitOS = 1)
+                , DefaultType, A_Is64bitOS = 1, CurrentInstallCommand)
     w.configureMode := ConfigureMode
     w.document.body.className := ConfigureMode ? "config-mode" : ""
     if ConfigureMode {
@@ -343,9 +344,9 @@ VersionReceived(req) {
     latestVersion := req.responseText
     if RegExMatch(latestVersion, "^(\d+\.){3}\d+") {
         if (latestVersion = ProductVersion)
-            w.opt1.firstChild.innerText := "Reinstall (download required)"
+            w.opt1.innerHTML := "<span>Reinstall (download required)</span>"
         else
-            w.opt1.firstChild.innerText := "Download v" latestVersion
+            w.opt1.innerHTML := "<span>Download v" latestVersion "</span>"
         w.opt1.href := "#"
         w.opt1.onclick := Func("DownloadAHK")
     } else
@@ -927,6 +928,13 @@ CustomInstall() {
         utf8: w.defaulttoutf8.checked,
         isHostApp: w.separatebuttons.checked
     )})
+}
+
+RunInstallCommand() {
+    global
+    switchPage("wait")
+    RunWait % StrReplace(CurrentInstallCommand, "%1", A_ScriptDir)
+    ExitApp
 }
 
 ; Uninstall.

@@ -23,7 +23,7 @@ function onload() {
 		}
 	})
 }
-function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defType, is64) {
+function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defType, is64, instCmd) {
 	if (onload) onload(), onload = null;
 	var opt;
 	var warn;
@@ -47,19 +47,25 @@ function initOptions(curName, curVer, curType, newVer, instDir, smFolder, defTyp
 			"AHK('QuickInstall')", "Express Installation", "Default version: " + defTypeName + "<br>Install in: " + instDir,
 			"AHK('Customize')", "Custom Installation", ""
 		];
-	} else if (curVer != newVer) {
-		start_intro.innerText = curName + " v" + curVer + curTypeName + " is installed. What do you want to do?";
-		opt = [
-			"AHK('Upgrade', '" + defType + "')", (curVer < newVer ? "Upgrade" : "Downgrade") + " to v" + newVer + " (" + defTypeName + ")", "",
-			"AHK('Customize')", "Custom Installation", ""
-		];
 	} else {
 		start_intro.innerText = curName + " v" + curVer + curTypeName + " is installed. What do you want to do?";
-		opt = [
-			"AHK('QuickInstall')", "Repair", "",
-			"AHK('Customize')", "Modify", "",
-			"AHK('Uninstall')", "Uninstall", ""
-		];
+		if (instCmd) {
+			opt = [
+				"AHK('RunInstallCommand')", "Install as additional version", "Run a previously installed script to integrate v" + newVer,
+				"AHK('Customize')", "Custom Installation", "Not recommended: may partially overwrite the existing installation"
+			];
+		} else if (curVer != newVer) {
+			opt = [
+				"AHK('Upgrade', '" + defType + "')", (curVer < newVer ? "Upgrade" : "Downgrade") + " to v" + newVer + " (" + defTypeName + ")", "",
+				"AHK('Customize')", "Custom Installation", ""
+			];
+		} else {
+			opt = [
+				"AHK('QuickInstall')", "Repair", "",
+				"AHK('Customize')", "Modify", "",
+				"AHK('Uninstall')", "Uninstall", ""
+			];
+		}
 	}
 	var i, html = [];
 	for (i = 0; i < opt.length; i += 3) {
