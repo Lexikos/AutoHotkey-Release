@@ -24,6 +24,7 @@ IniRead FtpPrefix, %IniFile%, FTP, Prefix, % A_Space
 
 ProjDir := SelectProjDir()
 InstDir = %A_ScriptDir%\installer
+InstDataDir = %InstDir%\include  ; May be overridden below
 WebDir = %A_ScriptDir%\files\web  ; Location of index.htm
 
 SelectProjDir() {
@@ -109,8 +110,8 @@ if (ccnt = 0)
     committing := false
 }
 version := SubStr(ctag, 2)
-if (branch = "alpha")
-    version .= "-" cid
+if (branch = "alpha" && ccnt)
+    version .= "+" cid
 
 
 /*************************************************************
@@ -128,6 +129,7 @@ else if (branch = "alpha")
 {
     DocDir = %A_ScriptDir%\..\Docs\v2
     ChangeLogFile =
+    InstDataDir = %A_ScriptDir%\include-v2
 }
 
 
@@ -145,7 +147,7 @@ building := committing || Prompt("Build?")
 update_helpfile := has_docs && (committing || Prompt("Update help file?"))
 update_ahk2exe := has_ahk2exe && (building || Prompt("Update Ahk2Exe?"))
 update_installer := has_installer && (building || update_helpfile || update_ahk2exe || Prompt("Update installer?"))
-update_zip := SevenZip && (building || update_helpfile || update_ahk2exe)
+update_zip := SevenZip && (building || update_helpfile || update_ahk2exe || Prompt("Update zip?"))
 gh_release := has_github && branch == "master" && (committing || Prompt("GitHub release?"))
 pushing := on_test_branch ? Prompt("Push test branch?") : committing
 
@@ -208,19 +210,17 @@ if building
     ; Update installer/zip includes
     if (version < "2.")
     {
-        FileDelete %InstDir%\include\AutoHotkey32.exe
-        FileDelete %InstDir%\include\AutoHotkey64.exe
-        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyU32.exe, 1
-        FileCopy bin\Win32a\AutoHotkey.exe,   %InstDir%\include\AutoHotkeyA32.exe, 1
-        FileCopy bin\x64w\AutoHotkey.exe,     %InstDir%\include\AutoHotkeyU64.exe, 1
-        FileCopy bin\Win32w\AutoHotkeySC.bin, %InstDir%\include\Compiler\Unicode 32-bit.bin, 1
-        FileCopy bin\Win32a\AutoHotkeySC.bin, %InstDir%\include\Compiler\ANSI 32-bit.bin,    1
-        FileCopy bin\x64w\AutoHotkeySC.bin,   %InstDir%\include\Compiler\Unicode 64-bit.bin, 1
+        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDataDir%\AutoHotkeyU32.exe, 1
+        FileCopy bin\Win32a\AutoHotkey.exe,   %InstDataDir%\AutoHotkeyA32.exe, 1
+        FileCopy bin\x64w\AutoHotkey.exe,     %InstDataDir%\AutoHotkeyU64.exe, 1
+        FileCopy bin\Win32w\AutoHotkeySC.bin, %InstDataDir%\Compiler\Unicode 32-bit.bin, 1
+        FileCopy bin\Win32a\AutoHotkeySC.bin, %InstDataDir%\Compiler\ANSI 32-bit.bin,    1
+        FileCopy bin\x64w\AutoHotkeySC.bin,   %InstDataDir%\Compiler\Unicode 64-bit.bin, 1
     }
     else
     {
-        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDir%\include\AutoHotkey32.exe, 1
-        FileCopy bin\x64w\AutoHotkey.exe,     %InstDir%\include\AutoHotkey64.exe, 1
+        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDataDir%\AutoHotkey32.exe, 1
+        FileCopy bin\x64w\AutoHotkey.exe,     %InstDataDir%\AutoHotkey64.exe, 1
     }
 }
 
@@ -290,10 +290,23 @@ if update_ahk2exe
     D("! Compiling Ahk2Exe")
     RunWait %Ahk2ExeCmd%
         /in "%Ahk2ExeDir%\Ahk2Exe.ahk"
-        /out "%InstDir%\include\Compiler\Ahk2Exe.exe"
-        /bin "%InstDir%\include\Compiler\Unicode 32-bit.bin"
+        /out "%InstDataDir%\Compiler\Ahk2Exe.exe"
+        /bin "%InstDataDir%\Compiler\Unicode 32-bit.bin"
         /icon "%A_ScriptDir%\ahk2exe.ico"
         , %Ahk2ExeDir%
+}
+
+
+/*************************************************************
+ *                UPDATE UX
+ */
+
+if FileExist(InstDataDir "\UX")
+{
+    D("! Pulling UX")
+    git("pull --ff-only", InstDataDir "\UX")
+    if ErrorLevel
+        Prompt("Error updating UX; check log", 0)
 }
 
 
@@ -328,12 +341,12 @@ ZipPath := OutDir "\" ZipName
 if update_zip && FileExist(A_ScriptDir "\zip-files-" branch ".txt")
 {
     if !update_installer && branch = "master"
-        FileCopy %InstDir%\source\WindowSpy.v1.ahk, %InstDir%\include\WindowSpy.ahk, 1
+        FileCopy %InstDir%\source\WindowSpy.v1.ahk, %InstDataDir%\WindowSpy.ahk, 1
     
     D("! Zipping")
     zip_list := """@" A_ScriptDir "\zip-files-" branch ".txt"""
     FileDelete %ZipPath%
-    RunWait "%SevenZip%" a -tzip "%ZipPath%" %zip_list%, %InstDir%\include, UseErrorLevel
+    RunWait "%SevenZip%" a -tzip "%ZipPath%" %zip_list%, %InstDataDir%, UseErrorLevel
     if ErrorLevel
         Prompt("Zipping failed (exit code " ErrorLevel ")", 0)
     else

@@ -121,7 +121,7 @@ PrepareDocsEnd()
 
 PrepareDocsCHM()
 {
-    global InstDir, DocDir
+    global InstDir, DocDir, InstDataDir
     
     D("! Updating AutoHotkey.chm")
     Loop {
@@ -137,7 +137,7 @@ PrepareDocsCHM()
         }
     }
     RunWait "%A_AhkPath%\..\AutoHotkeyU32.exe" compile_chm.ahk, %DocDir%
-    FileCopy %DocDir%\AutoHotkey.chm, %InstDir%\include, 1
+    FileCopy %DocDir%\AutoHotkey.chm, %InstDataDir%, 1
 }
 
 
@@ -148,7 +148,7 @@ PrepareSearchIndex(commit:=false)
     ; Update search index.
     try
     {
-        RunWait "%A_AhkPath%\..\v2-alpha\AutoHotkey32.exe" "%DocDir%\docs\static\source\build_search.ahk"
+        RunWait "%A_AhkPath%\..\v2\AutoHotkey32.exe" "%DocDir%\docs\static\source\build_search.ahk"
         if ErrorLevel
             throw Exception("AutoHotkey exited with code " ErrorLevel)
         if commit
