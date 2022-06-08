@@ -2,6 +2,8 @@
 ; Window Spy for AHKv2
 ;
 
+#Requires AutoHotkey v2.0-beta
+
 #NoTrayIcon
 #SingleInstance Ignore
 SetWorkingDir A_ScriptDir
