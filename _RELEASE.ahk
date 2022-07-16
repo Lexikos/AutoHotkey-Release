@@ -291,7 +291,7 @@ if update_ahk2exe
     RunWait %Ahk2ExeCmd%
         /in "%Ahk2ExeDir%\Ahk2Exe.ahk"
         /out "%InstDataDir%\Compiler\Ahk2Exe.exe"
-        /bin "%InstDataDir%\Compiler\Unicode 32-bit.bin"
+        /base "%InstDataDir%\AutoHotkeyU32.exe"
         /icon "%A_ScriptDir%\ahk2exe.ico"
         , %Ahk2ExeDir%
 }
