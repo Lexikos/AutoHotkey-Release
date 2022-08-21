@@ -26,6 +26,8 @@ ProjDir := SelectProjDir()
 InstDir = %A_ScriptDir%\installer
 InstDataDir = %InstDir%\include  ; May be overridden below
 WebDir = %A_ScriptDir%\files\web  ; Location of index.htm
+Ahk2ExeDir = %A_ScriptDir%\..\Ahk2Exe
+Ahk2ExeCmd = "%A_AhkPath%" "%Ahk2ExeDir%\Ahk2Exe.ahk"
 
 SelectProjDir() {
     local
@@ -122,8 +124,6 @@ if (branch = "master")
 {
     DocDir = %A_ScriptDir%\..\Docs\v1
     ChangeLogFile = %DocDir%\docs\AHKL_ChangeLog.htm
-    Ahk2ExeDir = %A_ScriptDir%\..\Ahk2Exe
-    Ahk2ExeCmd = "%A_AhkPath%" "%Ahk2ExeDir%\Ahk2Exe.ahk"
 }
 else if (branch = "alpha")
 {
@@ -138,8 +138,8 @@ else if (branch = "alpha")
  */
 
 has_docs := DocDir != "" && InStr(FileExist(DocDir), "D")
-has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D")
-has_installer := has_docs && has_ahk2exe
+has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D") && branch = "master"
+has_installer := has_docs && has_ahk2exe || branch = "alpha"
 has_github := gh_owner && gh_repo && gh_token && (A_PtrSize=4 || ActiveScript)
 
 committing := !on_test_branch && (committing || committing="" && Prompt("Bump version and commit/tag?"))
@@ -319,8 +319,17 @@ InstPath := OutDir "\" InstName
 if update_installer
 {
     D("! Updating installer")
-    ; Build installer package.
-    RunWait "%InstDir%\tools\UPDATE.bat" "%InstPath%"
+    if (branch = "alpha")
+    {
+        RunWait %Ahk2ExeCmd%
+            /in "%InstDataDir%\AutoHotkey_setup.ahk"
+            /out "%InstPath%"
+            /base "%InstDataDir%\AutoHotkey32.exe"
+            /compress 2
+            , %Ahk2ExeDir%
+    }
+    else
+        RunWait "%InstDir%\tools\UPDATE.bat" "%InstPath%"
     if ErrorLevel
         Prompt("Failed to update installer!", 0)
     else
