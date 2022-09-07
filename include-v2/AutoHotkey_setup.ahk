@@ -7,13 +7,14 @@
 #NoTrayIcon
 #SingleInstance Off
 
+#include UX\install.ahk
+
 if A_Args.Length {
     Install_Main
     ExitApp
 }
 
 #include UX\ui-setup.ahk
-#include UX\install.ahk
 
 UnpackFiles(installDir) {
     DirCreate dir := installDir "\.staging\" A_ScriptName
