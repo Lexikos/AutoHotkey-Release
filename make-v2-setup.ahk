@@ -21,4 +21,6 @@ AddFile() {
 }
 fi.Close()
 
-RunWait '*compile AutoHotkey_setup.ahk'
+if !A_Args.Length
+    RunWait '*compile AutoHotkey_setup.ahk'
+

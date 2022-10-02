@@ -321,6 +321,7 @@ if update_installer
     D("! Updating installer")
     if (branch = "alpha")
     {
+        RunWait "%InstDataDir%\AutoHotkey32.exe" "%A_ScriptDir%\make-v2-setup.ahk" no-compile
         RunWait %Ahk2ExeCmd%
             /in "%InstDataDir%\AutoHotkey_setup.ahk"
             /out "%InstPath%"
