@@ -348,7 +348,8 @@ if update_installer
 
 ZipName := "AutoHotkey_" version ".zip"
 ZipPath := OutDir "\" ZipName
-if update_zip && FileExist(A_ScriptDir "\zip-files-" branch ".txt")
+ZipList := A_ScriptDir "\zip-files-" branch ".txt"
+if update_zip && (FileExist(ZipList) || Prompt("zip-files-" branch ".txt not found", 0) && FileExist(ZipList))
 {
     if !update_installer && branch = "master"
         FileCopy %InstDir%\source\WindowSpy.v1.ahk, %InstDataDir%\WindowSpy.ahk, 1
