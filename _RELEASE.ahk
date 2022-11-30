@@ -210,17 +210,15 @@ if building
     ; Update installer/zip includes
     if (version < "2.")
     {
-        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDataDir%\AutoHotkeyU32.exe, 1
-        FileCopy bin\Win32a\AutoHotkey.exe,   %InstDataDir%\AutoHotkeyA32.exe, 1
-        FileCopy bin\x64w\AutoHotkey.exe,     %InstDataDir%\AutoHotkeyU64.exe, 1
-        FileCopy bin\Win32w\AutoHotkeySC.bin, %InstDataDir%\Compiler\Unicode 32-bit.bin, 1
-        FileCopy bin\Win32a\AutoHotkeySC.bin, %InstDataDir%\Compiler\ANSI 32-bit.bin,    1
-        FileCopy bin\x64w\AutoHotkeySC.bin,   %InstDataDir%\Compiler\Unicode 64-bit.bin, 1
+        Loop Parse, % "AutoHotkeyU32.exe,AutoHotkeyA32.exe,AutoHotkeyU64.exe", `,
+            FileCopyAssert("bin\" A_LoopField, InstDataDir "\" A_LoopField)
+        Loop Parse, % "Unicode 32-bit.bin,ANSI 32-bit.bin,Unicode 64-bit.bin", `,
+            FileCopyAssert("bin\" A_LoopField, InstDataDir "\Compiler\" A_LoopField)
     }
     else
     {
-        FileCopy bin\Win32w\AutoHotkey.exe,   %InstDataDir%\AutoHotkey32.exe, 1
-        FileCopy bin\x64w\AutoHotkey.exe,     %InstDataDir%\AutoHotkey64.exe, 1
+        FileCopyAssert("bin\AutoHotkey32.exe", InstDataDir "\AutoHotkey32.exe")
+        FileCopyAssert("bin\AutoHotkey64.exe", InstDataDir "\AutoHotkey64.exe")
     }
 }
 
@@ -508,4 +506,11 @@ ExitError(s)
     D("- " s)
     MsgBox 16,, % s
     ExitApp 1
+}
+
+FileCopyAssert(source, dest) {
+    try
+        FileCopy % source, % dest, 1
+    catch
+        Prompt("FileCopy failed`nsource: " source "`ndest: " dest "`nerror: " A_LastError, false)
 }
