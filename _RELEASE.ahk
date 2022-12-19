@@ -415,15 +415,15 @@ if committing && !on_test_branch
     FileOpen(TempDir "\version.txt", "w").Write(version)
     FtpQPut(TempDir "\version.txt", RemoteDownloadDir "/version.txt")
     
-    if (branch == "master")
-    {
-        ; Update 'last update' date
-        FormatTime date,, MMMM d, yyyy
-        RegExUpdate(WebDir "\index.htm"
-            , "/download/index.htm"
-            , "(?<=<!--update-->).*(?=<!--/update-->)"
-            , "v" version " - " date)
-    }
+    RegExUpdate(WebDir "\versions.txt"
+        , "/download/versions.txt"
+        , "\Q" SubStr(version, 1, 3) "\E.*"
+        , version)
+    
+    RegExUpdate(WebDir "\index.htm"
+        , "/download/index.htm"
+        , "(?<=<span class=""curver"">)\Q" SubStr(version, 1, 3) "\E.*(?=</span>)"
+        , version)
 }
 
 RegExUpdate(local_file, remote_file, needle, replacement)
@@ -431,7 +431,7 @@ RegExUpdate(local_file, remote_file, needle, replacement)
     if !FileExist(local_file)
         return
     FileRead file_text, %local_file%
-    file_text := RegExReplace(file_text, needle, replacement, replaced, 1)
+    file_text := RegExReplace(file_text, needle, replacement, replaced)
     if replaced
     {
         FileOpen(local_file, "w").Write(file_text)
