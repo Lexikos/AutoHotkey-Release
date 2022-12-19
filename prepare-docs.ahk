@@ -97,12 +97,12 @@ PrepareDocsEnd()
     version := PrepareDocsVersion
     
     ; Update version number in docs.
-    FileRead, html, % DocDir "\docs\AutoHotkey.htm"
+    FileRead, html, % DocDir "\docs\index.htm"
     html := RegExReplace(html, "(?<=<!--ver-->).*(?=<!--/ver-->)", version, replaced, 1)
     if replaced
-        FileOpen(DocDir "\docs\AutoHotkey.htm", "w").Write(html)
+        FileOpen(DocDir "\docs\index.htm", "w").Write(html)
     else
-        Prompt("AutoHotkey.htm not updated!", 0)
+        Prompt("index.htm not updated!", 0)
     
     PrepareSearchIndex()
     
