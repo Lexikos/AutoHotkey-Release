@@ -90,7 +90,7 @@ if !RegExMatch(head, "^ref: refs/heads/\K\S+(?=`n$)", branch)
     ExitError(head ? "Not on a branch. Current head:`n" head : ".git\HEAD is missing.")
 }
 
-on_test_branch := branch != "master" && branch != "alpha"
+on_test_branch := !(branch ~= "^(v[\d\.]+|alpha)$")
 
 ; Let git() and each call to a console app use the same console
 DllCall("AllocConsole")
@@ -235,7 +235,7 @@ if committing
         git("commit -m ""v" version """ --only source/ahkversion.h")
     }
 
-    if (branch == "master" || branch == "alpha")
+    if !on_test_branch
     {
         D("! Creating tag v" version)
         git("tag -m v" version " v" RegExReplace(version, "-\Q" cid "\E$"))
@@ -317,7 +317,7 @@ InstPath := OutDir "\" InstName
 if update_installer
 {
     D("! Updating installer")
-    if (branch = "alpha")
+    if VerCompare(version, ">=2-")
     {
         RunWait "%InstDataDir%\AutoHotkey32.exe" "%A_ScriptDir%\make-v2-setup.ahk" no-compile
         RunWait %Ahk2ExeCmd%
