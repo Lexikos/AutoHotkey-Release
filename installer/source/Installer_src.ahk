@@ -37,7 +37,7 @@ AutoRestart := false
 
 ProductName := "AutoHotkey"
 ProductVersion := A_AhkVersion
-ProductPublisher := "Lexikos"
+ProductPublisher := "AutoHotkey Foundation LLC"
 ProductWebsite := "https://www.autohotkey.com/"
 
 EnvGet ProgramW6432, ProgramW6432
