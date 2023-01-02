@@ -80,8 +80,7 @@ _PrepareDocsEndEdit()
     
     ; Insert log entry into docs.
     FileRead, html, %ChangeLogFile%
-    html := RegExReplace(html, "(?<=<!--new revisions go here-->)"
-                            , "`n" log "`n", replaced, 1)
+    html := RegExReplace(html, "(?=\R<h2)", "`n" log "`n", replaced, 1)
     if replaced
         FileOpen(ChangeLogFile, "w`n").Write(html)
 }

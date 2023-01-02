@@ -24,7 +24,6 @@ IniRead FtpPrefix, %IniFile%, FTP, Prefix, % A_Space
 
 ProjDir := SelectProjDir()
 InstDir = %A_ScriptDir%\installer
-InstDataDir = %InstDir%\include  ; May be overridden below
 WebDir = %A_ScriptDir%\files\web  ; Location of index.htm
 Ahk2ExeDir = %A_ScriptDir%\..\Ahk2Exe
 Ahk2ExeCmd = "%A_AhkPath%" "%Ahk2ExeDir%\Ahk2Exe.ahk"
@@ -112,7 +111,7 @@ if (ccnt = 0)
     committing := false
 }
 version := SubStr(ctag, 2)
-if (branch = "alpha" && ccnt)
+if ccnt
     version .= "+" cid
 
 
@@ -125,12 +124,16 @@ if (branch = "master")
     DocDir = %A_ScriptDir%\..\Docs\v1
     ChangeLogFile = %DocDir%\docs\AHKL_ChangeLog.htm
 }
-else if (branch = "alpha")
+else if (branch = "v2.0")
 {
     DocDir = %A_ScriptDir%\..\Docs\v2
-    ChangeLogFile =
-    InstDataDir = %A_ScriptDir%\include-v2
+    ChangeLogFile = %DocDir%\docs\ChangeLog.htm
 }
+
+if (version >= "2.")
+    InstDataDir = %A_ScriptDir%\include-v2
+else
+    InstDataDir = %InstDir%\include  ; May be overridden below
 
 
 /*************************************************************
@@ -138,17 +141,17 @@ else if (branch = "alpha")
  */
 
 has_docs := DocDir != "" && InStr(FileExist(DocDir), "D")
-has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D") && branch = "master"
-has_installer := has_docs && has_ahk2exe || branch = "alpha"
+has_ahk2exe := Ahk2ExeDir != "" && InStr(FileExist(Ahk2ExeDir), "D")
+has_installer := has_docs && has_ahk2exe
 has_github := gh_owner && gh_repo && gh_token && (A_PtrSize=4 || ActiveScript)
 
 committing := !on_test_branch && (committing || committing="" && Prompt("Bump version and commit/tag?"))
 building := committing || Prompt("Build?")
 update_helpfile := has_docs && (committing || Prompt("Update help file?"))
-update_ahk2exe := has_ahk2exe && (building || Prompt("Update Ahk2Exe?"))
+update_ahk2exe := has_ahk2exe && version < "2." && (building || Prompt("Update Ahk2Exe?"))
 update_installer := has_installer && (building || update_helpfile || update_ahk2exe || Prompt("Update installer?"))
 update_zip := SevenZip && (building || update_helpfile || update_ahk2exe || Prompt("Update zip?"))
-gh_release := has_github && branch == "master" && (committing || Prompt("GitHub release?"))
+gh_release := has_github && branch ~= "^v" && (committing || Prompt("GitHub release?"))
 pushing := on_test_branch ? Prompt("Push test branch?") : committing
 
 
@@ -333,7 +336,7 @@ if update_installer
         Prompt("Failed to update installer!", 0)
     else
     {
-        MakeSha256(InstPath)
+        InstHash := MakeSha256(InstPath)
         FtpQPut(InstPath, RemoteDownloadDir "/" InstName)
         FtpQPut(InstPath ".sha256", RemoteDownloadDir "/" InstName ".sha256")
     }
@@ -391,6 +394,11 @@ if gh_release
     
     ; Remove header used for previewing (see prepare-docs.ahk).
     log := Trim(RegExReplace(log, "s)<!--temp.*?/temp-->"), " `t`r`n")
+    
+    ; Add SHA256 hash
+    log .= "`n`n<details><summary>SHA256 hash</summary>`n"
+        . "<code>" InstHash "</code> " InstName "`n"
+        . "</details>"
     
     try
     {
@@ -464,6 +472,7 @@ MakeSha256(path)
     SplitPath path, name
     ; Print the hashes last for easy copying to the forum
     OnExit(Func("D").Bind("[c]" hash "[/c] " name))
+    return hash
 }
 
 Prompt(t, yesNoCancel=true)

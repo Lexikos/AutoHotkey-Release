@@ -38,6 +38,7 @@ PrepareVersion()
         version_n := 0
     
     EnvSet RawAhkVersion, % version
+    EnvSet AhkVersionN, % version_n
 
     local ahkversion_h
     FileReadLine ahkversion_h, source\ahkversion.h, 1
