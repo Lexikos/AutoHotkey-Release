@@ -129,6 +129,11 @@ else if (branch = "v2.0")
     DocDir = %A_ScriptDir%\..\Docs\v2
     ChangeLogFile = %DocDir%\docs\ChangeLog.htm
 }
+else if (branch = "alpha")
+{
+    DocDir = %A_ScriptDir%\..\Docs\alpha
+    ChangeLogFile = %DocDir%\docs\ChangeLog.htm
+}
 
 if (version >= "2.")
     InstDataDir = %A_ScriptDir%\include-v2
