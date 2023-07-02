@@ -119,7 +119,7 @@ if ccnt
  *                  MORE CONFIGURATION
  */
 
-if (branch = "master")
+if (branch = "v1.1")
 {
     DocDir = %A_ScriptDir%\..\Docs\v1
     ChangeLogFile = %DocDir%\docs\AHKL_ChangeLog.htm
@@ -134,6 +134,8 @@ else if (branch = "alpha")
     DocDir = %A_ScriptDir%\..\Docs\alpha
     ChangeLogFile = %DocDir%\docs\ChangeLog.htm
 }
+else
+    Prompt("No documentation directory is set for branch """ branch """")
 
 if (version >= "2.")
     InstDataDir = %A_ScriptDir%\include-v2
