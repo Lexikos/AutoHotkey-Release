@@ -437,7 +437,7 @@ if committing && !on_test_branch
     
     RegExUpdate(WebDir "\index.htm"
         , "/download/index.htm"
-        , "(?<=<span class=""curver"">)\Q" SubStr(version, 1, 3) "\E.*(?=</span>)"
+        , "(?<=<span class=""curver"">)\Q" SubStr(version, 1, 3) "\E.*?(?=</span>)"
         , version)
 }
 
