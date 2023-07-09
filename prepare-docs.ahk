@@ -90,6 +90,10 @@ PrepareDocsEnd()
     global DocDir
     global PrepareDocsEditor, PrepareDocsVersion
     
+    pullRes := git("pull --ff-only", DocDir)
+    if ErrorLevel
+        Prompt("Failed to pull docs (exit code " ErrorLevel "):`n" pullRes, 0)
+    
     if (PrepareDocsEditor != 0)
         _PrepareDocsEndEdit()
     
