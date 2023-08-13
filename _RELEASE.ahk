@@ -135,7 +135,7 @@ else if (branch = "alpha")
     ChangeLogFile = %DocDir%\docs\ChangeLog.htm
 }
 else
-    Prompt("No documentation directory is set for branch """ branch """")
+    Prompt("No documentation directory is set for branch """ branch """", 0)
 
 if (version >= "2.")
     InstDataDir = %A_ScriptDir%\include-v2
@@ -499,6 +499,8 @@ Prompt(t, yesNoCancel=true)
         D("- User cancelled")
         ExitApp 1
     }
+    ifMsgBox OK
+        return true
     ifMsgBox Yes
     {
         D("yes")
