@@ -37,7 +37,7 @@ PrepareDocsBegin(last_tag, version)
     
     ; Header for previewing file.
     header := "<head>"
-        . "<base href=""file:///" DocDir "/"" target=""_blank"">"
+        . "<base href=""file:///" DocDir "/docs/"" target=""_blank"">"
         . "<link href=""file:///" DocDir "/docs/static/theme.css"" rel=""stylesheet"" type=""text/css"" />"
         . "</head>"
     
