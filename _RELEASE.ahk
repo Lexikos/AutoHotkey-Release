@@ -370,7 +370,7 @@ if update_zip && (FileExist(ZipList) || Prompt("zip-files-" branch ".txt not fou
         Prompt("Zipping failed (exit code " ErrorLevel ")", 0)
     else
     {
-        MakeSha256(ZipPath)
+        ZipHash := MakeSha256(ZipPath)
         FtpQPut(ZipPath, RemoteDownloadDir "/" ZipName)
         FtpQPut(ZipPath ".sha256", RemoteDownloadDir "/" ZipName ".sha256")
     }
@@ -405,6 +405,7 @@ if gh_release
     ; Add SHA256 hash
     log .= "`n`n<details><summary>SHA256 hash</summary>`n"
         . "<code>" InstHash "</code> " InstName "`n"
+        . "<code>" ZipHash "</code> " ZipName "`n"
         . "</details>"
     
     try
@@ -413,6 +414,7 @@ if gh_release
         context := new GitHub.Context(gh_owner, gh_repo, gh_token)
         release := new GitHub.Release(context, {tag_name: "v" version, body: log})
         release.AddAsset(InstName, InstPath)
+        release.AddAsset(ZipName, ZipPath)
     }
     catch error
     {
