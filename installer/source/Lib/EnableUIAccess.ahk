@@ -80,7 +80,13 @@ EnableUIAccess_CreateCert(CertName, hStore)
 
     VarSetCapacity(endTime, 16)
     DllCall("GetSystemTime", "ptr", &endTime)
-    NumPut(NumGet(endTime, "ushort") + 10, endTime, "ushort") ; += 10 years
+    NumPut(endYear:=NumGet(endTime, "ushort") + 10, endTime, "ushort") ; += 10 years
+    ;Feb29 doesn't exist after +10years https://techcommunity.microsoft.com/t5/azure-developer-community-blog/it-s-2020-is-your-code-ready-for-leap-day/ba-p/1157279#toc-hId--1858975817
+    if (NumGet(endTime, 6, "ushort")=29 && NumGet(endTime, 2, "ushort")=2) { ;wDay=29 ;wMonth=2
+        if (Mod(endYear,4) || (!Mod(endYear,100) && Mod(endYear,400))) { ;isn't LeapYear
+            NumPut(28, endTime, 6, "ushort") ; -= 1 day
+        }
+    }
 
     if !hCert := DllCall("Crypt32\CertCreateSelfSignCertificate"
         , "ptr", hProv, "ptr", &cnb, "uint", 0, "ptr", 0
