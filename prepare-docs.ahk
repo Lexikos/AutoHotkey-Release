@@ -22,6 +22,8 @@ PrepareDocsBegin(last_tag, version)
     
     ; Get all commit messages since the last tag.
     log := git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD")
+    if FileExist(InstDataDir "\UX")
+        log .= git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD", InstDataDir "\UX")
 
     ; Unwrap. | Remove empty lines.
     log := RegExReplace(log, "`n (?= \S)|`n(?=`n|$)")

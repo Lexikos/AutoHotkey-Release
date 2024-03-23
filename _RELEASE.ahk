@@ -315,6 +315,12 @@ if FileExist(InstDataDir "\UX")
     git("pull --ff-only", InstDataDir "\UX")
     if ErrorLevel
         Prompt("Error updating UX; check log", 0)
+    if committing && branch ~= "^v[\d\.]+$"
+    {
+        D("! Tagging UX v" version)
+        git("tag -m v" version " v" RegExReplace(version, "-\Q" cid "\E$"), InstDataDir "\UX")
+        git("push origin tag v" RegExReplace(version, "-\Q" cid "\E$"), InstDataDir "\UX")
+    }
 }
 
 
