@@ -1,6 +1,7 @@
 ﻿
 PrepareGitHubBegin()
 {
+    global Version
     global TempDir, Editor
     global VersionDocsLog
     if (VersionDocsLog = "")

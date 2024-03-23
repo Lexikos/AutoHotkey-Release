@@ -27,7 +27,7 @@ PrepareDocsBegin(last_tag, version)
     log := RegExReplace(log, "`n (?= \S)|`n(?=`n|$)")
     
     ; Encode < > &
-    log := StrReplace(StrReplace(StrReplace(log, "<", "&lt;"), ">", "&gt;"), "&", "&amp;")
+    log := StrReplace(StrReplace(StrReplace(log, "&", "&amp;"), "<", "&lt;"), ">", "&gt;")
     
     ; `code`
     log := RegExReplace(log, "``(.*?)``", "<code>$1</code>")
