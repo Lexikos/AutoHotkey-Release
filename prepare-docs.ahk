@@ -21,7 +21,7 @@ PrepareDocsBegin(last_tag, version)
     D("! Edit change log entry")
     
     ; Get all commit messages since the last tag.
-    log := git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD")
+    log := git("log --format=format:%s%n%n%b --reverse --first-parent " last_tag "..HEAD")
     if FileExist(InstDataDir "\UX")
         log .= "`n" git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD", InstDataDir "\UX")
 
