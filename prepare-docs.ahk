@@ -1,7 +1,7 @@
 ﻿
 PrepareDocsBegin(last_tag, version)
 {
-    global TempDir, DocDir, Editor, ChangeLogFile
+    global TempDir, DocDir, Editor, ChangeLogFile, InstDataDir
     
     global PrepareDocsLog := TempDir "\ChangeLogEntry.htm"
     global PrepareDocsVersion := version
@@ -23,7 +23,7 @@ PrepareDocsBegin(last_tag, version)
     ; Get all commit messages since the last tag.
     log := git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD")
     if FileExist(InstDataDir "\UX")
-        log .= git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD", InstDataDir "\UX")
+        log .= "`n" git("log --format=format:%s%n%n%b --reverse " last_tag "..HEAD", InstDataDir "\UX")
 
     ; Unwrap. | Remove empty lines.
     log := RegExReplace(log, "`n (?= \S)|`n(?=`n|$)")
