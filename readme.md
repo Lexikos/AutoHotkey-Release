@@ -37,7 +37,7 @@ This script utilises the following tools:
 For building the installer, the following are also required:
 
   - [7-zip Extra](http://www.7-zip.org/download.html) package extracted to `release\installer\tools\7z`
-  - [Resource Hacker](http://www.angusj.com/resourcehacker/) (ResourceHacker.exe) in `release\installer\tools` or `Program Files\Resource Hacker`.
+  - [Resource Hacker](http://www.angusj.com/resourcehacker/) or [Resource Cracker](https://www.pelock.com/products/resource-cracker) (ResourceHacker.exe) in `release\installer\tools` or `Program Files\Resource Hacker or [Resource Cracker](https://www.pelock.com/products/resource-cracker)`.
 
 
 ### Configuring
