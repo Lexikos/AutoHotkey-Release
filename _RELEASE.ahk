@@ -318,8 +318,8 @@ if FileExist(InstDataDir "\UX")
     if committing && branch ~= "^v[\d\.]+$"
     {
         D("! Tagging UX v" version)
-        git("tag -m v" version " v" RegExReplace(version, "-\Q" cid "\E$"), InstDataDir "\UX")
-        git("push origin tag v" RegExReplace(version, "-\Q" cid "\E$"), InstDataDir "\UX")
+        git("tag -m v" version " v" RegExReplace(version, "[+-]\Q" cid "\E$"), InstDataDir "\UX")
+        git("push origin tag v" RegExReplace(version, "[+-]\Q" cid "\E$"), InstDataDir "\UX")
     }
 }
 
