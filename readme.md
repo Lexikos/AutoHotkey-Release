@@ -34,7 +34,7 @@ This script utilises the following tools:
   - [PSFTP](http://www.chiark.greenend.org.uk/~sgtatham/putty/) for uploading the installer and zips (see *Configuring*). PuTTY.exe is probably also required for configuring the connection settings, but isn't used directly. If PSFTP is absent, an FTP script will be created but nothing will be uploaded.
   - hhc.exe for compiling the help file.  This file is expected to be in `Program Files\HTML Help Workshop`.  It is probably installed there by Visual Studio.
 
-For building the installer, the following are also required:
+For building the AutoHotkey v1.1 installer, the following are also required:
 
   - [7-zip Extra](http://www.7-zip.org/download.html) package extracted to `release\installer\tools\7z`
   - [Resource Hacker](http://www.angusj.com/resourcehacker/) (ResourceHacker.exe) in `release\installer\tools` or `Program Files\Resource Hacker`.
