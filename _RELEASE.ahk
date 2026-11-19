@@ -408,6 +408,11 @@ if gh_release
     ; Remove header used for previewing (see prepare-docs.ahk).
     log := Trim(RegExReplace(log, "s)<!--temp.*?/temp-->"), " `t`r`n")
     
+    if (InstHash = "")
+        InstHash := MakeSha256(InstPath)
+    if (ZipHash = "")
+        ZipHash := MakeSha256(ZipPath)
+    
     ; Add SHA256 hash
     log .= "`n`n<details><summary>SHA256 hash</summary>`n"
         . "<code>" InstHash "</code> " InstName "`n"
